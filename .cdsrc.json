@@ -1,0 +1,54 @@
+{
+    "odata": {
+        "flavor": "x4"
+      },
+      "requires": {
+        "plant": {
+          "kind": "rest",
+          "credentials": {
+            "url": "https://tata-projects-limited-btp-dev-0or0hi20-dev-space-plantm790a9887.cfapps.eu10-004.hana.ondemand.com/odata/v4/my",
+            "authentication": "BasicAuthentication",
+            "username":"sb-821cee47-920d-4de0-bec1-2e24ead64ddb!b291531|it-rt-btp-dev-0or0hi20!b182722",
+            "password":"b0b697de-3a91-4ec6-9cd9-cdc5f5852619$7a7M6p0EbnmzYp72doruaGpHvXAUvjHDLnArK2z64Hs="
+          }
+        },
+       
+        "getcall": {
+          "kind": "rest",
+          "credentials": {
+            "url": "https://btp-dev-0or0hi20.it-cpi024-rt.cfapps.eu10-002.hana.ondemand.com/http",
+            "authentication": "BasicAuthentication",
+            "username":"sb-821cee47-920d-4de0-bec1-2e24ead64ddb!b291531|it-rt-btp-dev-0or0hi20!b182722",
+            "password":"b0b697de-3a91-4ec6-9cd9-cdc5f5852619$7a7M6p0EbnmzYp72doruaGpHvXAUvjHDLnArK2z64Hs=",
+            "headers":{
+              "url": "",
+              "query":"",
+              "basis":""
+            }
+          }
+        },
+        "header": {
+          "kind": "rest",
+          "credentials": {
+            "url": "https://tata-projects-limited-btp-dev-0or0hi20-dev-space-main-db2-srv.cfapps.eu10-004.hana.ondemand.com/odata/v4/pan-approval",
+            "authentication": "BasicAuthentication",
+            "username":"avan",
+            "password":"1234"
+            
+          }
+        },
+        "item": {
+          "kind": "rest",
+          "credentials": {
+            "url": "https://tata-projects-limited-btp-dev-0or0hi20-dev-space-main-db2-srv.cfapps.eu10-004.hana.ondemand.com/odata/v4/pan-approval",
+            "authentication": "BasicAuthentication",
+            "username":"avan",
+            "password":"1234"
+            
+          }
+        }
+
+      }
+        
+    
+      }
