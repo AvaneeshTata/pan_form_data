@@ -2186,7 +2186,8 @@ else if(oneround = 1 && type == "RFQ"){
                   
                    
                   else if(pan_web_event[f].eventNo == "Reverse Auction(RA)"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 2)){
-                    var amt2 = (item_details[j].totl_amt/100)*per_value;
+                    // var amt2 = (item_details[j].totl_amt/100)*per_value;
+                    var amt2 = (price_details1[k].amount/100)*per_value;
                     // amt2 =  amt2.toFixed(2)
                   }
                   
