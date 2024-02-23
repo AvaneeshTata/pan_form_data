@@ -23,8 +23,9 @@
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "cds",
       "args": [
-        "serve",
-        "--in-memory?"
+        "watch",
+        "--profile",
+        "hybrid"
       ],
       "console": "internalConsole",
       "internalConsoleOptions": "openOnSessionStart",

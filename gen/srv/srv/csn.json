@@ -961,6 +961,9 @@
         "Amount": {
           "type": "cds.String"
         },
+        "extendedPrice": {
+          "type": "cds.String"
+        },
         "Indian_Tax_PER": {
           "type": "cds.String"
         },
@@ -1992,6 +1995,9 @@
           "type": "cds.String"
         },
         "Amount": {
+          "type": "cds.String"
+        },
+        "extendedPrice": {
           "type": "cds.String"
         },
         "Indian_Tax_PER": {
@@ -3235,6 +3241,9 @@
           "type": "cds.String"
         },
         "Amount": {
+          "type": "cds.String"
+        },
+        "extendedPrice": {
           "type": "cds.String"
         },
         "Indian_Tax_PER": {

@@ -8,6 +8,7 @@ COLUMN TABLE CatalogService_PAN_PRICE_DETAILS_drafts (
   Quantity NVARCHAR(5000) NULL,
   Unit_Price NVARCHAR(5000) NULL,
   Amount NVARCHAR(5000) NULL,
+  extendedPrice NVARCHAR(5000) NULL,
   Indian_Tax_PER NVARCHAR(5000) NULL,
   Quantity_Over_Delivery_Tolerance NVARCHAR(5000) NULL,
   IsActiveEntity BOOLEAN,

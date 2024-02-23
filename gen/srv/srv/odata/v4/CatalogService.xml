@@ -270,6 +270,7 @@
         <Property Name="Quantity" Type="Edm.String"/>
         <Property Name="Unit_Price" Type="Edm.String"/>
         <Property Name="Amount" Type="Edm.String"/>
+        <Property Name="extendedPrice" Type="Edm.String"/>
         <Property Name="Indian_Tax_PER" Type="Edm.String"/>
         <Property Name="Quantity_Over_Delivery_Tolerance" Type="Edm.String"/>
         <NavigationProperty Name="pdtovend" Type="CatalogService.vendor_data"/>

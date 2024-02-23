@@ -21,3 +21,6 @@ mta_archives/
 # .vscode
 # .idea
 
+
+# added by cds
+.cdsrc-private.json

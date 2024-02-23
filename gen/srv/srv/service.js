@@ -16,8 +16,6 @@ module.exports = cds.service.impl(async function () {
         PAN_Details_APR,PAN_WEB_EVENT_APR,PAN_TYPE_APR,PAN_vendor_data_APR,PAN_vendor_response_APR,PAN_PAYMENT_TERM_DETAILS_APR,PAN_PRICE_DETAILS_APR,PAN_WORKFLOW_HISTORY_APR,PAN_attachments_APR,PAN_proj_APR,PAN_Comments_APR
     } = this.entities;
   const plant_data = await cds.connect.to('plant');
-  const header = await cds.connect.to('header');
-  const item = await cds.connect.to('item');
   const getcall = await cds.connect.to('getcall');
 
   // var temp = '';
@@ -238,27 +236,20 @@ module.exports = cds.service.impl(async function () {
       
        uniqueName =  tasks[i].uniqueName;
       // uniqueName = "TSK1011702454";
-      const task_ids = await header.tx(req).get(`/PAN_Details_APR?$filter=(ProjectId eq '${cur_pro_id}')`);
+      // const task_ids = await header.tx(req).get(`/PAN_Details_APR?$filter=(ProjectId eq '${cur_pro_id}')`);
+      const task_ids = await SELECT.from(PAN_Details_APR).where ({ ProjectId : cur_pro_id});
       var ind = 0;
 
-
-      for(let i = 0;i<task_ids.value.length;i++){
-        if(uniqueName == task_ids.value[i].task_id){
+     if(task_ids.length != 0){
+      for(let i = 0;i<task_ids.length;i++){
+        if(uniqueName == task_ids[i].task_id){
           ind = 1;
-          return_doc = task_ids.value[i].PAN_Number;
+          return_doc = task_ids[i].PAN_Number;
         }
       }
+    }
 
-
-      // if(task_ids.length != 0){
-      //   ind = 1;
-      //   return_doc = task_ids.value[0].PAN_Number
-      // }else{
-      //   ind = 0;
-      // }
-   
-      //  const tsk_id = await header.tx(req).get('/PAN_Details_APR?$filter=(task_id eq '+uniqueName+')');   
-      // const exe =  await SELECT.from(PAN_Details_APR).where`task_id='${uniqueName}'`;
+     
      
 
       if(ind == 0){
@@ -277,62 +268,7 @@ module.exports = cds.service.impl(async function () {
       // statu_a = 
       var tsk_doc_id = task_details.document.id;
       
-      // if(response_data1 != " "){
-      // let open_date = response_data1.document.content.openDate/1000;
-      // const dateObject = new Date(open_date * 1000);  // Multiply by 1000 to convert back to milliseconds
-      // const formattedDate = dateObject.toLocaleString('en-US', {
-      //   month: 'numeric',
-      //   day: 'numeric',
-      //   year: 'numeric',
-      //   hour: 'numeric',
-      //   minute: 'numeric',
-      //   hour12: true
-      // });
      
-      // if (response_data1.document.content.eventTypeName == 'RFP') {
-      //   let doc_id = response_data1.document.id;
-      //    doc_status = response_data1.document.content.status;
-      
-
-      // // GETTING PROJECT DETAILS FOR DESCRIPTION FIELD
-      // let project_id  = response_data1.workspaceId
-      // var modifydatefrom = req.data.fromDate;
-      // var modifydateto = req.data.toDate;
-      // var userName = req.data.userName;
-      // var modifydatefrom = "1707609600000";
-      // var modifydateto = "1707778800000";
-      
-      
-      // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/identifiers';
-      // getcall.destination.headers.query = '$filter=(modificationDateFrom gt '+modifydatefrom+' and modificationDateTo lt '+modifydateto+')&realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-      // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-      // const number_of_projects = await getcall.tx(req).get('/getcall');
-      // var prs = number_of_projects;
-      // if(number_of_projects.payload.length != 0){
-      //   no_of_proj = number_of_projects.payload;
-      // }
-      // else{
-      //   return " no projects are there";
-      // }
-     
-    //   const uniqueIds = {};
-    //   const uniqueArr = no_of_proj.filter(obj => {
-    //     if (!uniqueIds[obj.parentProjectId]) {
-    //         uniqueIds[obj.parentProjectId] = true;
-    //         return true;
-    //     }
-    //     return false;
-    // });
-    
-
-      // for(let p = 0;p<uniqueArr.length;p++){
-       
-       
-
-            // project_id = uniqueArr[p].parentProjectId;
-        // let project_id = "WS985772692"
-      //  let project_id = "WS989018252";
-      // let project_id = "WS994760556";
       
       // GETTING ALL THE DOC IDS BASED ON PROJECT ID
       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/documents';
@@ -1127,8 +1063,8 @@ module.exports = cds.service.impl(async function () {
         
                                 if(terms[m].title =="Price"){
                                   if(Object.keys(terms[m]).includes(value1)){
-                                   UnitPrice = terms[m].value.supplierValue.currency;
-                                   Amount = terms[m].value.supplierValue.amount;
+                                   UnitPrice = terms[m].value.moneyValue.currency;
+                                   Amount = terms[m].value.moneyValue.amount;
                                    if(UnitPrice == "INR"){
                                    Amount = Amount.toLocaleString('en-IN');
                                    }
@@ -1215,7 +1151,7 @@ module.exports = cds.service.impl(async function () {
                     }
 
              
-                if(doc_id != tsk_doc_id){
+                // if(doc_id != tsk_doc_id){
 
                 price_details.push({
                   Proposed_Vendor_Code                                                         : `${pvcode}`, 
@@ -1229,11 +1165,12 @@ module.exports = cds.service.impl(async function () {
                   Quantity                                                                     : `${Quantity}`,
                   Unit_Price                                                                   : `${UnitPrice}`,
                   Amount                                                                       : `${l3Amount}`,
+                  extendedPrice                                                                : `${Amount}`,
                   Indian_Tax_PER                                                               : `${IndianTaxPER}`,
                   Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
         
                })
-              }
+              // }
 
                    price_details1.push({
                      PAN_Number : `${doc_id}`,
@@ -1462,6 +1399,7 @@ module.exports = cds.service.impl(async function () {
   }else if(ser_mate == "Service"){
     web_tab_amt = web_amt;
   }
+    
 
     web_tab1.push({
       submissionDate : subdate,
@@ -1551,6 +1489,7 @@ module.exports = cds.service.impl(async function () {
     var date1 = [];
 
     if(web_tab1.length != 0){
+     if(web_tab2.length != 0){
 
       var fstdoc = web_tab1[0].doc_id;
        var oneround = 0;
@@ -1646,7 +1585,7 @@ else if(oneround = 1 && type == "RFQ"){
    }) 
 
 }
-
+}
 
 }
 // else{
@@ -1687,7 +1626,8 @@ else if(oneround = 1 && type == "RFQ"){
   var dates1 = dates.map(dateString => new Date(dateString));
  
   // 
-  if(web_tab1.length == 0){
+  if(web_tab1.length != 0){
+    if(web_tab2.length == 0){
     const smallestDate1 = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
     const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
 
@@ -1776,13 +1716,13 @@ else if(oneround = 1 && type == "RFQ"){
         
        }
 
-
+      }
 
   }
 
 
 
-  if(web_tab1.length != 0){
+  if(web_tab1.length != 0 && web_tab2.length != 0){
   const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
   var final_web_tab = [];
 
@@ -1819,6 +1759,7 @@ else if(oneround = 1 && type == "RFQ"){
       }
     }
    }
+   
   }
   }
  
@@ -1993,167 +1934,7 @@ else if(oneround = 1 && type == "RFQ"){
                       allocate_per : shrt_lst_count.payload[r].supplierBids[k].winningSplitValue,
                       totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
                     })
-                     var pvcode1 = " ";
-                    for(let v=0;v<vendorids1.length;v++){
-                      if(shrt_lst_count.payload[r].supplierBids[k].invitationId == vendorids1[v].vinv_id && vendorids1[v].doc_id ==  tsk_doc_id){
-                         pvcode1 = vendorids1[v].pvcode;
-                      }
-                    }
-                    
-                   if(terms3.length != 0){
-                    for(let it=0;it<terms3.length;it++){
-                      var value2 = "value";
-                          if(terms3[it].title =="HSNCode"){
-                           if(Object.keys(terms3[it]).includes(value2)){
-                              SACCode = terms3[it].value.simpleValue;
-                           }else{
-                             SACCode = "  ";
-                           }
-                         }
-                           
-                           
-                           if(terms3[it].title == "Material Code"){
-                           if(Object.keys(terms3[it]).includes(value2)){
-                           ItemCode = terms3[it].value.simpleValue;
-                           let match = ItemCode.match(/^\d+/); 
-                           let output = match ? match[0] : null;
-                           ItemCode = output;
-                           }else{
-                             ItemCode = " ";
-                           }
-                           }
-                          
-    
-                           if(terms3[it].title =="Quantity"){
-                             if(Object.keys(terms3[it]).includes(value2)){
-                              UOM = terms3[it].value.quantityValue.unitOfMeasureName;
-                              Quantity = terms3[it].fromValue.quantityValue.amount;
-                              Quantity = Quantity.toLocaleString('en-US');
-                             }else{
-                               Quantity = " ";
-                             }
-                           }
-                           if(terms3[it].title == "Total Cost"){
-                             if(Object.keys(terms3[it]).includes(value2)){
-                             l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
-                             bid_currency = terms3[it].value.supplierValue.currency;
-                             var l3Amount = terms3[it].value.moneyValue.amount;
-                             }else{
-                               l1Amount = 0;
-                               bid_currency = " ";
-                               l3Amount = 0;
-                             }
-                           }
-                           
-   
-                           if(terms3[it].title =="Price"){
-                             if(Object.keys(terms3[it]).includes(value2)){
-                              UnitPrice = terms3[it].value.supplierValue.currency;
-                              Amount = terms3[it].value.supplierValue.amount;
-                              if(UnitPrice == "INR"){
-                              Amount = Amount.toLocaleString('en-IN');
-                              }
-                              if(UnitPrice == "USD"){
-                               Amount = Amount.toLocaleString('en-US');   
-                              }
-                             }
-                             else{
-                               UnitPrice = " ";
-                               Amount = " ";
-
-                             }
-                           }
-                           
-                           if(terms3[it].title == "Delivery Schedule - Quantity"){
-                             if(Object.keys(terms3[it]).includes(value2)){
-                               delivery_schedule = terms3[it].value.simpleValue;
-                             }
-                             else{
-                               delivery_schedule = " ";
-                             }
-                           }
-   
-                           if(terms3[it].title == "Delivery Schedule - Date"){
-                             if(Object.keys(terms3[it]).includes(value2)){
-                          
-                               delivery_schedule1 = terms3[it].value.simpleValue;
-                               if(delivery_schedule != " "){
-                                 delivery_schedule = delivery_schedule + " " + delivery_schedule1;
-                               }
-                               
-                             }
-                             else{
-                               delivery_schedule = " "
-                             }
-                          
-                           }
-
-                           if(terms3[it].title == "Quantity Over Delivery Tolerance"){
-                            
-                          
-                               if(Object.keys(terms3[it]).includes(value2)){
-                                 tolerence = terms3[it].value.simpleValue;
-                               }else{
-                                 tolerence = " "
-                               }
-                        
-                            }
-   
-   
-                           if(terms3[it].title == "Delivery Date"){
-                            if(Object.keys(terms3[it]).includes(value2)){
-                              delivery_date = terms3[it].value.dateValue;
-                             var input = new Date(delivery_date);
-                            }else{
-                              delivery_date = " "
-                            }
-   
-                             // Define the days of the week and months
-                             var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-   
-                             // Extract day of the week, day, month, and year
-                             var dayOfWeek = daysOfWeek[input.getUTCDay()];
-                             var day = input.getUTCDate();
-                             var month = months[input.getUTCMonth()];
-                             var year = input.getUTCFullYear();
-   
-                             // Format the date string
-                              delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
-   
-                             // console.log(formattedDate);
-   
-                           }
-                          
-   
-                           if(terms3[it].title =="Tax"){
-                            if(Object.keys(terms3[it]).includes(value2)){
-                              IndianTaxPER = terms3[it].value.simpleValue;
-                            }else{
-                              IndianTaxPER = " "
-                            }
-                           }
-                          
-
-                    }
-                   }
-
-                    price_details.push({
-                      Proposed_Vendor_Code                                                         : `${pvcode1}`, 
-                      PAN_Number                                                                   : `${tsk_doc_id}`,
-                      Item_Code                                                                    : `${ItemCode}`,
-                      PAN_Number                                                                   : `${tsk_doc_id}`,
-                      HSN_OR_SAC_Code                                                              : `${SACCode}`,
-                      Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
-                      UOM                                                                          : `${UOM}`,
-                      Quantity                                                                     : `${Quantity}`,
-                      Unit_Price                                                                   : `${UnitPrice}`,
-                      Amount                                                                       : `${Amount}`,
-                      Indian_Tax_PER                                                               : `${IndianTaxPER}`,
-                      Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
-            
-                   })
-
+                  
 
                   }
                 }
@@ -2326,6 +2107,7 @@ else if(oneround = 1 && type == "RFQ"){
                       Quantity                                                                     : `${Quantity}`,
                       Unit_Price                                                                   : `${UnitPrice}`,
                       Amount                                                                       : `${Amount}`,
+                      extendedPrice                                                                :  `${Amount}`,
                       Indian_Tax_PER                                                               : `${IndianTaxPER}`,
                       Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
             
@@ -2352,31 +2134,7 @@ else if(oneround = 1 && type == "RFQ"){
          }
             
             var save1= 0 ;
-            // for(let j= 0 ;j<item_details.length;j++){
-            //   for(let k = 0;k<price_details1.length;k++){
-            //     if(price_details1[k].PAN_Number == pan_web_event[0].number && item_details[j].inv_id == price_details1[k].inv_id  && item_details[j].item_name == price_details1[k].item_name){
-  
-            //       if(item_details[j].allocation_type == 1){
-            //         var per_value = item_details[j].allocate_per;
-            //         var amt1 = (price_details1[k].amount/100)*per_value;
-            //         var amt2 = (item_details[j].totl_amt/100)*per_value;
-            //         var save = amt2 - amt1;
-            //         save  = Math.abs(save);
-            //         save1 = save1 + save;
-            //         per_value = 0;
-            //         amt1 = 0 ;
-            //         amt2 = 0;
-            //       }
-            //       //  var save = price_details1[k].amount - item_details[j].totl_amt;
-            //       //  save = Math.abs(save);
-            //       //  save1 = save1 + save;
-            //       //  save = 0;
-            //     }
-            //     save = 0;
-  
-            //   }
-            //  }
-
+           
          
              if(ser_mate == "Material"){
 
@@ -2545,45 +2303,7 @@ else if(oneround = 1 && type == "RFQ"){
   console.log("stage6")
   var doc_id_fornow = "  ";
 
-// //  Web event logic
-//   var dates = [];
-//   for(let z=0;z<web_tab_dates.length;z++){
-//    dates.push(web_tab_dates[z].publish_date)
-//    if(web_tab_dates[z].status == "YES"){
-//     //  doc_id_fornow = web_tab_dates[z].document_id;
-//     doc_id_fornow = tsk_doc_id
-//    }
-//   }
-//   var dates1 = dates.map(dateString => new Date(dateString));
- 
-//   // const smallestDate = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
-//   const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]);
 
-//   var final_web_tab = [];
-
-
- 
-//  for(let z=0;z<web_tab_dates.length;z++){
-//    let number = " ";
-//    number = web_tab_dates[z].document_id;
-//   //  number = number.substring(number.length - 4)
-//    var dateString = web_tab_dates[z].publish_date;
-//     var datesub = dateString.substring(0, 10)
-//    var no_v = web_tab_dates[z].pvendor;
-//    var am = web_tab_dates[z].l1amount;
-//    if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
-     
-//      pan_web_event.push({
-//          idd : "3" ,
-//          PAN_Number : tsk_doc_id.toString(),
-//          eventNo : "Reverse Auction",
-//          number:`${number}`,
-//          date:`${datesub}`,
-//          numberOfVendorsParticipated :no_v.toString(),
-//          l1AmountObtained :`${final_quote}` ,
-//         })
-//    }
-//   }
 
 }
  
