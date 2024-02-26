@@ -110,7 +110,7 @@ module.exports = cds.service.impl(async function () {
     var SACCode = "";
     var IndianTaxPER = "";
     var ItemCode= "";
-    var ItemShortDescription = "";
+    var ItemShortDescription = " ";
     var UnitPrice="";
     var  Quantity="";
     var QuantityOverDeliveryTolerance="";
@@ -141,7 +141,7 @@ module.exports = cds.service.impl(async function () {
     var SACCode = "";
     var IndianTaxPER = "";
     var ItemCode= "";
-    var ItemShortDescription = "";
+    var ItemShortDescription = " ";
     var UnitPrice="";
     var  Quantity="";
     var QuantityOverDeliveryTolerance="";   
@@ -195,6 +195,8 @@ module.exports = cds.service.impl(async function () {
     var tolerence = "  ";
     var len1 = 0;
     var pro_ind = 0;
+    var l3Amount = 0;
+    var l4Amount = 0;
    
     
     
@@ -218,11 +220,12 @@ module.exports = cds.service.impl(async function () {
     
     password = "ThirdPartyUser"
     cur_pro_id = req.data.projectid;
-    // cur_pro_id = "WS1007313163";  //usecase 3
-    // cur_pro_id = "WS1018768312"
-    // cur_pro_id = "WS1012623630" // service
-    // cur_pro_id = "WS1014144301"; //usecase 2 scenarios created for both doc
-      //  cur_pro_id = "WS1017070569"; //usecase 1
+    // cur_pro_id = "WS1007313163";  //usecase 3 p
+    // cur_pro_id = "WS1018768312" // not coming under pending
+    // cur_pro_id = "WS1012623630" // service p
+    // cur_pro_id = "WS1014144301"; //usecase 2 scenarios created for both doc p 
+    // cur_pro_id = "WS1012816140"; //p error
+      //  cur_pro_id = "WS1017070569"; //usecase 1 p
     // cur_pro_id = "WS1014197242"
     // cur_pro_id = "WS1014222219"
     // cur_pro_id = "WS1016011306" //usecase 2
@@ -546,7 +549,7 @@ module.exports = cds.service.impl(async function () {
               ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
              }
 
-
+            if(ser_mate == "Material"){
             if (response_data2.payload[j].terms[0].title == "Price"){
               var terms1 = response_data2.payload[j].terms;
               // if (terms1.length != 0){
@@ -561,7 +564,23 @@ module.exports = cds.service.impl(async function () {
                 }
               }
             }
-            // }
+            }
+            else if(ser_mate == "Service"){
+              if (response_data2.payload[j].terms[0].title == "Extended Price"){
+                var terms1 = response_data2.payload[j].terms;
+                // if (terms1.length != 0){
+                for(let s=0;s<terms1.length;s++){
+                  if(terms1[s].title == "Requisition ID" ){
+                  RequisitionID = terms1[s].value.simpleValue;
+                  }
+                  if(terms1[s].title == "Plant"){
+                    plant = terms1[s].value.simpleValue;
+                    plant_id = plant.split(' ')[0];
+                    plant_name = plant.split(' ').slice(1).join(' ');
+                  }
+                }
+              }
+            }
             }
             if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
               order_currency = response_data2.payload[j].currency.name;
@@ -1097,8 +1116,8 @@ module.exports = cds.service.impl(async function () {
                                   if(Object.keys(terms[m]).includes(value1)){
                                   l1Amount = l1Amount +  terms[m].value.moneyValue.amount;
                                   bid_currency = terms[m].value.supplierValue.currency;
-                                  var l3Amount = terms[m].value.moneyValue.amount;
-                                  var l4Amount = returnamt(l3Amount);
+                                   l3Amount = terms[m].value.moneyValue.amount;
+                                   l4Amount = returnamt(l3Amount);
                                   
                                   }else{
                                     l1Amount = 0;
@@ -1206,7 +1225,7 @@ module.exports = cds.service.impl(async function () {
                     }
 
              
-                // if(doc_id != tsk_doc_id){
+                if(doc_id != tsk_doc_id){
 
                 price_details.push({
                   Proposed_Vendor_Code                                                         : `${pvcode}`, 
@@ -1235,9 +1254,10 @@ module.exports = cds.service.impl(async function () {
                   })
       
 
-              // }
+              }
 
                    price_details1.push({
+                    Proposed_Vendor_Code : `${pvcode}`,
                      PAN_Number : `${doc_id}`,
                      item_name : `${ItemShortDescription}`,
                      inv_id : `${sname}` ,
@@ -1897,7 +1917,7 @@ else if(oneround = 1 && type == "RFQ"){
               else if(ser_mate == "Service"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Extended Price"){
                   final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
-  
+                  final_quote1 = returnamt(final_quote);
                   }
               }
               }
@@ -2005,174 +2025,183 @@ else if(oneround = 1 && type == "RFQ"){
                   if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals"){
                     
                     var terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
+                     
+                    var pvcode1 = "";
+                    for(let v=0;v<vendorids1.length;v++){
+                      if(shrt_lst_count.payload[r].supplierBids[k].invitationId == vendorids1[v].vinv_id && vendorids1[v].doc_id ==  tsk_doc_id){
+                         pvcode1 = vendorids1[v].pvcode;
+                      }
+                    }
                     
-                    item_details.push({
+                    
+                    if(terms3.length != 0){
+                      for(let it=0;it<terms3.length;it++){
+                        var value2 = "value";
+                            if(terms3[it].title =="HSNCode"){
+                             if(Object.keys(terms3[it]).includes(value2)){
+                                SACCode = terms3[it].value.simpleValue;
+                             }else{
+                               SACCode = "  ";
+                             }
+                           }
+                             
+                             
+                             if(terms3[it].title == "Material Code"){
+                             if(Object.keys(terms3[it]).includes(value2)){
+                             ItemCode = terms3[it].value.simpleValue;
+                             let match = ItemCode.match(/^\d+/); 
+                             let output = match ? match[0] : null;
+                             ItemCode = output;
+                             }else{
+                               ItemCode = "";
+                             }
+                             }
+                            
+      
+                             if(terms3[it].title =="Quantity"){
+                               if(Object.keys(terms3[it]).includes(value2)){
+                                UOM = terms3[it].value.quantityValue.unitOfMeasureName;
+                                Quantity = terms3[it].fromValue.quantityValue.amount;
+                                Quantity = Quantity.toLocaleString('en-US');
+                               }else{
+                                 Quantity = "";
+                               }
+                             }
+                             if(terms3[it].title == "Total Cost"){
+                               if(Object.keys(terms3[it]).includes(value2)){
+                               l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
+                               bid_currency = terms3[it].value.supplierValue.currency;
+                               l3Amount = terms3[it].value.moneyValue.amount;
+                               l3Amount = returnamt(l3Amount);
+                               }else{
+                                 l1Amount = 0;
+                                 bid_currency = "";
+                                 l3Amount = 0;
+                               }
+                             }
+                             
+     
+                             if(terms3[it].title =="Price"){
+                              if(Object.keys(terms3[it]).includes(value2)){
+                               UnitPrice = terms3[it].value.supplierValue.currency;
+                               Amount = terms3[it].value.supplierValue.amount;
+                               if(UnitPrice == "INR"){
+                               Amount = Amount.toLocaleString('en-IN');
+                               }
+                               if(UnitPrice == "USD"){
+                                Amount = Amount.toLocaleString('en-US');   
+                               }
+                              }
+                              else{
+                                UnitPrice = "";
+                                Amount = "";
+ 
+                              }
+                            }
+                            
+                             
+                             if(terms3[it].title == "Delivery Schedule - Quantity"){
+                               if(Object.keys(terms3[it]).includes(value2)){
+                                 delivery_schedule = terms3[it].value.simpleValue;
+                               }
+                               else{
+                                 delivery_schedule = "";
+                               }
+                             }
+     
+                             if(terms3[it].title == "Delivery Schedule - Date"){
+                               if(Object.keys(terms3[it]).includes(value2)){
+                            
+                                 delivery_schedule1 = terms3[it].value.simpleValue;
+                                 if(delivery_schedule != " "){
+                                   delivery_schedule = delivery_schedule + " " + delivery_schedule1;
+                                 }
+                                 
+                               }
+                               else{
+                                 delivery_schedule = ""
+                               }
+                            
+                             }
+  
+                             if(terms3[it].title == "Quantity Over Delivery Tolerance"){
+                              
+                            
+                                 if(Object.keys(terms3[it]).includes(value2)){
+                                   tolerence = terms3[it].value.simpleValue;
+                                 }else{
+                                   tolerence = ""
+                                 }
+                          
+                              }
+     
+     
+                             if(terms3[it].title == "Delivery Date"){
+                              if(Object.keys(terms3[it]).includes(value2)){
+                                var date_obj =   terms3[it].value.dateValue;
+                               date_obj = new Date(date_obj);
+                                delivery_date = date_obj.toISOString().split('T')[0];
+                                // delivery_date = terms3[it].value.dateValue;
+                                delivery_date = returndate(delivery_date);
+                              //  var input = new Date(delivery_date);
+                              }else{
+                                delivery_date = ""
+                              }
+     
+                              //  // Define the days of the week and months
+                              //  var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                              //  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+     
+                              //  // Extract day of the week, day, month, and year
+                              //  var dayOfWeek = daysOfWeek[input.getUTCDay()];
+                              //  var day = input.getUTCDate();
+                              //  var month = months[input.getUTCMonth()];
+                              //  var year = input.getUTCFullYear();
+     
+                              //  // Format the date string
+                              //   delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
+     
+                               // console.log(formattedDate);
+     
+                             }
+                            
+     
+                             if(terms3[it].title =="Tax"){
+                              if(Object.keys(terms3[it]).includes(value2)){
+                                IndianTaxPER = terms3[it].value.simpleValue;
+                              }else{
+                                IndianTaxPER = ""
+                              }
+                             }
+                            
+  
+                      }
+                     }
+  
+                      price_details.push({
+                        Proposed_Vendor_Code                                                         : `${pvcode1}`, 
+                        PAN_Number                                                                   : `${tsk_doc_id}`,
+                        Item_Code                                                                    : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
+                        PAN_Number                                                                   : `${tsk_doc_id}`,
+                        HSN_OR_SAC_Code                                                              : `${SACCode}`,
+                        Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
+                        UOM                                                                          : `${UOM}`,
+                        Quantity                                                                     : `${Quantity}`,
+                        Unit_Price                                                                   : `${Amount}`,
+                        Amount                                                                       : `${l3Amount}`,
+                        extendedPrice                                                                :  `${Amount}`,
+                        Indian_Tax_PER                                                               : `${IndianTaxPER}`,
+                        Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
+              
+                     })
+                     item_details.push({
                       item_name : shrt_lst_count.payload[r].supplierBids[k].item.title,
                       inv_id :shrt_lst_count.payload[r].supplierBids[k].invitationId,
                       allocation_type : shrt_lst_count.payload[r].supplierBids[k].winningSplitType,
                       allocate_per : shrt_lst_count.payload[r].supplierBids[k].winningSplitValue,
-                      totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
+                      // totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
+                      totl_amt : `${l3Amount}`,
                     })
-                    
-                    // if(terms3.length != 0){
-                    //   for(let it=0;it<terms3.length;it++){
-                    //     var value2 = "value";
-                    //         if(terms3[it].title =="HSNCode"){
-                    //          if(Object.keys(terms3[it]).includes(value2)){
-                    //             SACCode = terms3[it].value.simpleValue;
-                    //          }else{
-                    //            SACCode = "  ";
-                    //          }
-                    //        }
-                             
-                             
-                    //          if(terms3[it].title == "Material Code"){
-                    //          if(Object.keys(terms3[it]).includes(value2)){
-                    //          ItemCode = terms3[it].value.simpleValue;
-                    //          let match = ItemCode.match(/^\d+/); 
-                    //          let output = match ? match[0] : null;
-                    //          ItemCode = output;
-                    //          }else{
-                    //            ItemCode = "";
-                    //          }
-                    //          }
-                            
-      
-                    //          if(terms3[it].title =="Quantity"){
-                    //            if(Object.keys(terms3[it]).includes(value2)){
-                    //             UOM = terms3[it].value.quantityValue.unitOfMeasureName;
-                    //             Quantity = terms3[it].fromValue.quantityValue.amount;
-                    //             Quantity = Quantity.toLocaleString('en-US');
-                    //            }else{
-                    //              Quantity = "";
-                    //            }
-                    //          }
-                    //          if(terms3[it].title == "Total Cost"){
-                    //            if(Object.keys(terms3[it]).includes(value2)){
-                    //            l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
-                    //            bid_currency = terms3[it].value.supplierValue.currency;
-                    //            var l3Amount = terms3[it].value.moneyValue.amount;
-                    //            }else{
-                    //              l1Amount = 0;
-                    //              bid_currency = "";
-                    //              l3Amount = 0;
-                    //            }
-                    //          }
-                             
-     
-                    //          if(terms3[it].title =="Price"){
-                    //           if(Object.keys(terms3[it]).includes(value2)){
-                    //            UnitPrice = terms3[it].value.supplierValue.currency;
-                    //            Amount = terms3[it].value.supplierValue.amount;
-                    //            if(UnitPrice == "INR"){
-                    //            Amount = Amount.toLocaleString('en-IN');
-                    //            }
-                    //            if(UnitPrice == "USD"){
-                    //             Amount = Amount.toLocaleString('en-US');   
-                    //            }
-                    //           }
-                    //           else{
-                    //             UnitPrice = "";
-                    //             Amount = "";
- 
-                    //           }
-                    //         }
-                            
-                             
-                    //          if(terms3[it].title == "Delivery Schedule - Quantity"){
-                    //            if(Object.keys(terms3[it]).includes(value2)){
-                    //              delivery_schedule = terms3[it].value.simpleValue;
-                    //            }
-                    //            else{
-                    //              delivery_schedule = "";
-                    //            }
-                    //          }
-     
-                    //          if(terms3[it].title == "Delivery Schedule - Date"){
-                    //            if(Object.keys(terms3[it]).includes(value2)){
-                            
-                    //              delivery_schedule1 = terms3[it].value.simpleValue;
-                    //              if(delivery_schedule != " "){
-                    //                delivery_schedule = delivery_schedule + " " + delivery_schedule1;
-                    //              }
-                                 
-                    //            }
-                    //            else{
-                    //              delivery_schedule = ""
-                    //            }
-                            
-                    //          }
-  
-                    //          if(terms3[it].title == "Quantity Over Delivery Tolerance"){
-                              
-                            
-                    //              if(Object.keys(terms3[it]).includes(value2)){
-                    //                tolerence = terms3[it].value.simpleValue;
-                    //              }else{
-                    //                tolerence = ""
-                    //              }
-                          
-                    //           }
-     
-     
-                    //          if(terms3[it].title == "Delivery Date"){
-                    //           if(Object.keys(terms3[it]).includes(value2)){
-                    //             var date_obj =   terms3[it].value.dateValue;
-                    //            date_obj = new Date(date_obj);
-                    //             delivery_date = date_obj.toISOString().split('T')[0];
-                    //             // delivery_date = terms3[it].value.dateValue;
-                    //             delivery_date = returndate(delivery_date);
-                    //           //  var input = new Date(delivery_date);
-                    //           }else{
-                    //             delivery_date = ""
-                    //           }
-     
-                    //           //  // Define the days of the week and months
-                    //           //  var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                    //           //  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-     
-                    //           //  // Extract day of the week, day, month, and year
-                    //           //  var dayOfWeek = daysOfWeek[input.getUTCDay()];
-                    //           //  var day = input.getUTCDate();
-                    //           //  var month = months[input.getUTCMonth()];
-                    //           //  var year = input.getUTCFullYear();
-     
-                    //           //  // Format the date string
-                    //           //   delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
-     
-                    //            // console.log(formattedDate);
-     
-                    //          }
-                            
-     
-                    //          if(terms3[it].title =="Tax"){
-                    //           if(Object.keys(terms3[it]).includes(value2)){
-                    //             IndianTaxPER = terms3[it].value.simpleValue;
-                    //           }else{
-                    //             IndianTaxPER = ""
-                    //           }
-                    //          }
-                            
-  
-                    //   }
-                    //  }
-  
-                    //   price_details.push({
-                    //     Proposed_Vendor_Code                                                         : `${pvcode1}`, 
-                    //     PAN_Number                                                                   : `${tsk_doc_id}`,
-                    //     Item_Code                                                                    : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
-                    //     PAN_Number                                                                   : `${tsk_doc_id}`,
-                    //     HSN_OR_SAC_Code                                                              : `${SACCode}`,
-                    //     Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
-                    //     UOM                                                                          : `${UOM}`,
-                    //     Quantity                                                                     : `${Quantity}`,
-                    //     Unit_Price                                                                   : `${UnitPrice}`,
-                    //     Amount                                                                       : `${Amount}`,
-                    //     extendedPrice                                                                :  `${Amount}`,
-                    //     Indian_Tax_PER                                                               : `${IndianTaxPER}`,
-                    //     Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
-              
-                    //  })
                   
 
 
@@ -2237,8 +2266,8 @@ else if(oneround = 1 && type == "RFQ"){
                              if(Object.keys(terms3[it]).includes(value2)){
                              l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
                              bid_currency = terms3[it].value.supplierValue.currency;
-                             var l3Amount = terms3[it].value.moneyValue.amount;
-                             var l4Amount = returnamt(l3Amount);
+                              l3Amount = terms3[it].value.moneyValue.amount;
+                              l4Amount = returnamt(l3Amount);
                              }else{
                                l1Amount = 0;
                                bid_currency = "";
@@ -2354,7 +2383,7 @@ else if(oneround = 1 && type == "RFQ"){
                       Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
                       UOM                                                                          : `${UOM}`,
                       Quantity                                                                     : `${Quantity}`,
-                      Unit_Price                                                                   : `${UnitPrice}`,
+                      Unit_Price                                                                   : `${Amount}`,
                       Amount                                                                       : `${Amount}`,
                       extendedPrice                                                                :  `${Amount}`,
                       Indian_Tax_PER                                                               : `${IndianTaxPER}`,
@@ -2381,6 +2410,25 @@ else if(oneround = 1 && type == "RFQ"){
             }
           }
          }
+  
+      if(price_details1.length != 0){
+       if(price_details1[0].amount != 0){
+        for(let j=0;j<price_details.length;j++){
+          for(let j1=0;j1<price_details1.length;j1++){
+            if(price_details[j].PAN_Number == tsk_doc_id && price_details1[j1].PAN_Number == tsk_doc_id){
+              if(price_details[j].Proposed_Vendor_Code == price_details1[j1].Proposed_Vendor_Code){
+                if( price_details[j].Item_Short_Description == price_details1[j1].item_name){
+                  var pamount = returnamt(price_details1[j1].amount)
+                  price_details[j].Amount = `${pamount}`;
+                }
+              }  
+              
+            }
+          }
+        }
+      }
+    }
+
             
             var save1= 0 ;
            
@@ -2404,7 +2452,7 @@ else if(oneround = 1 && type == "RFQ"){
                     }
                   }
                 save1 =  save1.toFixed(2)
-                save1 = returnamt(save1);
+                // save1 = returnamt(save1);
                 // pan_web_event[f].l1AmountObtained = `${save1}`;
                 if(pan_web_event[f].number == tsk_doc_id){
                   pan_web_event[f].l1AmountObtained = `${save1}`;
@@ -2509,8 +2557,11 @@ else if(oneround = 1 && type == "RFQ"){
           if(pan_web_event[2].number != "NA"){
             discount_amt1 = pan_web_event[0].l1AmountObtained -  pan_web_event[2].l1AmountObtained;
           }
-          else if(pan_web_event[1].number == "NA"){
+          else if(pan_web_event[1].number != "NA"){
             discount_amt1 =   pan_web_event[0].l1AmountObtained - pan_web_event[1].l1AmountObtained;
+          }
+          else if(pan_web_event[0].number != "NA"){
+            discount_amt1 = "0"
           }
         
         discount_amt1 = Math.abs(discount_amt1)
