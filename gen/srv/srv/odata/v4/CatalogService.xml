@@ -35,6 +35,7 @@
         <EntitySet Name="attachments" EntityType="CatalogService.attachments">
           <NavigationPropertyBinding Path="pdftotab1" Target="tab1"/>
         </EntitySet>
+        <EntitySet Name="vendorTaxDetails" EntityType="CatalogService.vendorTaxDetails"/>
         <FunctionImport Name="sendforapproval" Function="CatalogService.sendforapproval"/>
         <FunctionImport Name="InsertData" Function="CatalogService.InsertData"/>
         <FunctionImport Name="getData" Function="CatalogService.getData"/>
@@ -50,7 +51,7 @@
           <PropertyRef Name="PAN_Number"/>
           <PropertyRef Name="IsActiveEntity"/>
         </Key>
-        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
+        <Property Name="PAN_Number" Type="Edm.String" Nullable="false" DefaultValue="def"/>
         <Property Name="SBG" Type="Edm.String"/>
         <Property Name="SBU" Type="Edm.String"/>
         <Property Name="BUORPurchasing_Group" Type="Edm.String"/>
@@ -83,7 +84,7 @@
         <Property Name="task_id" Type="Edm.String"/>
         <Property Name="type" Type="Edm.String"/>
         <Property Name="status_a" Type="Edm.String"/>
-        <Property Name="switch_control" Type="Edm.Boolean"/>
+        <Property Name="switch_control" Type="Edm.Boolean" DefaultValue="false"/>
         <Property Name="ProjectId" Type="Edm.String"/>
         <Property Name="number_of_vendors_invited" Type="Edm.String"/>
         <Property Name="total_levels_of_approval" Type="Edm.String" MaxLength="2"/>
@@ -241,7 +242,7 @@
         <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
         <Property Name="iddd" Type="Edm.String" Nullable="false"/>
         <Property Name="slNo" Type="Edm.Int32"/>
-        <Property Name="Payment_methord" Type="Edm.String"/>
+        <Property Name="Payment_methord" Type="Edm.String" DefaultValue="RTGS payment"/>
         <Property Name="Percentage" Type="Edm.String"/>
         <Property Name="Description" Type="Edm.String"/>
         <Property Name="Due_date" Type="Edm.String"/>
@@ -265,12 +266,12 @@
         <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
         <Property Name="Item_Code" Type="Edm.String" Nullable="false"/>
         <Property Name="HSN_OR_SAC_Code" Type="Edm.String"/>
+        <Property Name="extendedPrice" Type="Edm.String"/>
         <Property Name="Item_Short_Description" Type="Edm.String"/>
         <Property Name="UOM" Type="Edm.String"/>
         <Property Name="Quantity" Type="Edm.String"/>
         <Property Name="Unit_Price" Type="Edm.String"/>
         <Property Name="Amount" Type="Edm.String"/>
-        <Property Name="extendedPrice" Type="Edm.String"/>
         <Property Name="Indian_Tax_PER" Type="Edm.String"/>
         <Property Name="Quantity_Over_Delivery_Tolerance" Type="Edm.String"/>
         <NavigationProperty Name="pdtovend" Type="CatalogService.vendor_data"/>
@@ -325,6 +326,20 @@
         <NavigationProperty Name="pdftotab1" Type="CatalogService.tab1">
           <ReferentialConstraint Property="PAN_Number" ReferencedProperty="PAN_Number"/>
         </NavigationProperty>
+      </EntityType>
+      <EntityType Name="vendorTaxDetails">
+        <Key>
+          <PropertyRef Name="Proposed_Vendor_Code"/>
+          <PropertyRef Name="PAN_Number"/>
+          <PropertyRef Name="Item_Code"/>
+          <PropertyRef Name="idd"/>
+        </Key>
+        <Property Name="Proposed_Vendor_Code" Type="Edm.String" Nullable="false"/>
+        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
+        <Property Name="Item_Code" Type="Edm.String" Nullable="false"/>
+        <Property Name="idd" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="name" Type="Edm.String"/>
+        <Property Name="value" Type="Edm.String"/>
       </EntityType>
       <EntityType Name="PAN_Comments">
         <Key>
@@ -589,6 +604,9 @@
       </Annotations>
       <Annotations Target="CatalogService.attachments/mediaType">
         <Annotation Term="Core.IsMediaType" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CatalogService.vendorTaxDetails/idd">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
       <Annotations Target="CatalogService.PAN_Comments/createdAt">
         <Annotation Term="UI.HiddenFilter" Bool="true"/>

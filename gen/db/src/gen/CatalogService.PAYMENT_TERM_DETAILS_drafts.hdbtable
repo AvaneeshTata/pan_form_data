@@ -3,7 +3,7 @@ COLUMN TABLE CatalogService_PAYMENT_TERM_DETAILS_drafts (
   PAN_Number NVARCHAR(5000) NOT NULL,
   iddd NVARCHAR(5000) NOT NULL,
   slNo INTEGER NULL,
-  Payment_methord NVARCHAR(5000) NULL,
+  Payment_methord NVARCHAR(5000) NULL DEFAULT 'RTGS payment',
   Percentage NVARCHAR(5000) NULL,
   Description NVARCHAR(5000) NULL,
   Due_date NVARCHAR(5000) NULL,

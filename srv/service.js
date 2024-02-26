@@ -6,6 +6,7 @@ const axios = require('axios');
 const { array, insert } = require('@sap/cds/lib');
 const { URLSearchParams } = require('url');
 const { isNumberObject } = require('util/types');
+const { vary } = require('express/lib/response');
 require('log-timestamp');
 // const { request } = require('http');
 
@@ -13,7 +14,7 @@ require('log-timestamp');
 module.exports = cds.service.impl(async function () {
     let {
         attachments,tab1,tab2,tab3,vendor_data,Fvendor_responseoo,PAYMENT_TERM_DETAILS,WORKFLOW_HISTORY,PAN_PRICE_DETAILS,PAN_proj,PAN_Comments ,
-        PAN_Details_APR,PAN_WEB_EVENT_APR,PAN_TYPE_APR,PAN_vendor_data_APR,PAN_vendor_response_APR,PAN_PAYMENT_TERM_DETAILS_APR,PAN_PRICE_DETAILS_APR,PAN_WORKFLOW_HISTORY_APR,PAN_attachments_APR,PAN_proj_APR,PAN_Comments_APR
+        PAN_Details_APR,PAN_WEB_EVENT_APR,PAN_TYPE_APR,PAN_vendor_data_APR,PAN_vendor_response_APR,PAN_PAYMENT_TERM_DETAILS_APR,PAN_PRICE_DETAILS_APR,PAN_WORKFLOW_HISTORY_APR,PAN_attachments_APR,PAN_proj_APR,PAN_Comments_APR,vendorTaxDetails_APR
     } = this.entities;
   const plant_data = await cds.connect.to('plant');
   const getcall = await cds.connect.to('getcall');
@@ -42,14 +43,15 @@ module.exports = cds.service.impl(async function () {
     var vendorids = [];
     var vendorids1 = [];
     const unique2 = [];
-    var purchasing_grp = " ";
-    var document_type = " ";
+    var purchasing_grp = "";
+    var document_type = "";
    
-    var baselinespend = " ";
-    var sbg = " ";
-    var sbu = " ";
+    var baselinespend = "";
+    var baselinespend1 = "";
+    var sbg =null;
+    var sbu =null;
     var savings=0;
-    var ser_mate = " ";
+    var ser_mate = "";
     
 
     let supplier = [];
@@ -58,27 +60,34 @@ module.exports = cds.service.impl(async function () {
     let supplier1 = [];
     let payment_details = [];
     let pan_vendor_response = [];
+    let vendortaxdetails = [];
     let event_id;
     let number_of_vendors = 0;
     let plant;
-    let finalproposedvalue = " ";
-    let plant_id = " ";
-    let plant_name = " ";
-    let GstNo = " ";
-    let sup_main_add =" ";
-    let cescore =" ";
+    let finalproposedvalue = "";
+    let plant_id = "";
+    let plant_name = "";
+    let GstNo = "";
+    let sup_main_add ="";
+    let cescore ="";
     let region1;
-   var  discount_amt = 0;
+    var  Freight = ""
+    var  discount_amt = 0;
     var discount_amt1 = 0
-    var erp_ind = " ";
-    var return_doc =" ";
+    var erp_ind = "";
+    var return_doc ="";
     var password = "";
     var original_quote = 0;
+    
+    var discount_amt2 = 0;
+    var final_quote1 = 0;
+    var original_quote1 = 0;
     var moneyValue = 0;
     
-    var proj_desc = " ";
+    var proj_desc = "";
     var proj_currency;
     var web_publish_date;
+    var web_publish_date1="";
     var final_date;
     var doc_status;
     var plant_details = [];
@@ -91,97 +100,98 @@ module.exports = cds.service.impl(async function () {
     var pan_type = [];
     var web_tab1_amt = [];
     var web_tab_amt = 0;
-    var subdate = " ";
+    var subdate = "";
     var web_tab_dates = [];
     var lead_bid_amount =[];
     var material_items = [];
     var no_of_proj = [];
-    var UOM = " ";
-    var Amount = " ";
-    var SACCode = " ";
-    var IndianTaxPER = " ";
-    var ItemCode= " ";
-    var ItemShortDescription = " ";
-    var UnitPrice=" ";
-    var  Quantity=" ";
-    var QuantityOverDeliveryTolerance=" ";
+    var UOM = "";
+    var Amount = "";
+    var SACCode = "";
+    var IndianTaxPER = "";
+    var ItemCode= "";
+    var ItemShortDescription = "";
+    var UnitPrice="";
+    var  Quantity="";
+    var QuantityOverDeliveryTolerance="";
     var flag = 0;
     var flag1 = 0;
     var ex_price = 0;
     var web_amt = 0;
     var ex_price1 = [];
-    var payment_type =" ";
-    var progress = " ";
-    var progress_documents = " ";
-    var retention_documents = " ";
-    var by = " ";
-    var by1 =" ";
-    var due_date = " ";
-    var retention = " ";
-    var percentage1 = " ";
-    var inco_terms = " ";
-    var srv_inco_terms = " ";
-    var abg = " ";
-    var cpbg = " ";
-    var ScopeandResponsibilities = " ";
-    var CommercialTerms = " ";
-    var ComplianceTerms = " ";
-    var Others = " ";
-    var UOM = " ";
-    var Amount =" ";
-    var SACCode = " ";
-    var IndianTaxPER = " ";
-    var ItemCode= " ";
-    var ItemShortDescription = " ";
-    var UnitPrice=" ";
-    var  Quantity=" ";
-    var QuantityOverDeliveryTolerance=" ";   
-    var RequisitionID = " "; 
-    var Subject_of_ProposalOROrder = " ";
-    var subject_of_proposal = " ";
-    var delivery_date =" ";
+    var payment_type ="";
+    var progress = "";
+    var progress_documents = "";
+    var retention_documents = "";
+    var by = "";
+    var by1 ="";
+    var due_date = "";
+    var retention = "";
+    var percentage1 = "";
+    var inco_terms = "";
+    var srv_inco_terms = "";
+    var abg = "";
+    var cpbg = "";
+    var ScopeandResponsibilities = "";
+    var CommercialTerms = "";
+    var ComplianceTerms = "";
+    var Others = "";
+    var UOM = "";
+    var Amount ="";
+    var SACCode = "";
+    var IndianTaxPER = "";
+    var ItemCode= "";
+    var ItemShortDescription = "";
+    var UnitPrice="";
+    var  Quantity="";
+    var QuantityOverDeliveryTolerance="";   
+    var RequisitionID = ""; 
+    var Subject_of_ProposalOROrder = "";
+    var subject_of_proposal = "";
+    var delivery_date ="";
     var create_date;
-    var first_name = " ";
-    var last_name = " ";
-    var email = " ";
-    var mobile_phone = " ";
-    var contact_phone  = " ";
-    var supplier_contact1 = " ";
+    var create_date1 = "";
+    var first_name = "";
+    var last_name = "";
+    var email = "";
+    var mobile_phone = "";
+    var contact_phone  = "";
+    var supplier_contact1 = "";
     var awarded_vendor = "NO";
-    var erpVendorID = " ";
-    var vendorname = " ";
-    var vendor_loc = " ";
-    var web_sup_count = " ";
+    var erpVendorID = "";
+    var vendorname = "";
+    var vendor_loc = "";
+    var web_sup_count = "";
     var pvendor = 0;
     var l1amount =[];
-    var icon_type = " ";
-    var l1AmountObtained = " ";
-    var final_quote = " ";
-    var order_currency = " ";
+    var icon_type = "";
+    var l1AmountObtained = "";
+    var final_quote = "";
+    var order_currency = "";
     var tech_commitee_clearedproposal = "";
-    var delivery_schedule = " ";
-    var per_pay_pro = " ";
-    var per_pay_ret = " ";
-    var Advance = " ";  
-    var int_id = " ";
+    var delivery_schedule = "";
+    var per_pay_pro = "";
+    var per_pay_ret = "";
+    var Advance = "";  
+    var int_id = "";
     var l1Amount = 0;
-    var uniqueName1 = " ";
-    var uniqueName = " ";
+    var uniqueName1 = "";
+    var uniqueName = "";
     var lamount = 0;
     var web_tab1 = [];
     var web_tab2 = [];
     var venador_names=[];
     var terms2 = [];
     var sc_web_tab2 = [];
-    var bid_currency = " ";
+    var bid_currency = "";
     var  ven_award = 0;
     var l2Amount = 0;
-    var delivery_schedule1 = " ";
+    var delivery_schedule1 = "";
     var award_vendor1 = "NO";
     var vendordata1 = [];
     var scenario_data = [];
     var sup_count = 0;
-    var cur_pro_id = " ";
+    var cur_pro_id = "";
     var tolerence = "  ";
     var len1 = 0;
     var pro_ind = 0;
@@ -193,7 +203,7 @@ module.exports = cds.service.impl(async function () {
 
    
 
-   var createdby = " ";
+   var createdby = "";
     // // GETTING ALL PENDING TASKS
     var userName1 = "PANCreator";
    
@@ -209,8 +219,9 @@ module.exports = cds.service.impl(async function () {
     password = "ThirdPartyUser"
     cur_pro_id = req.data.projectid;
     // cur_pro_id = "WS1007313163";  //usecase 3
+    // cur_pro_id = "WS1018768312"
     // cur_pro_id = "WS1012623630" // service
-    // cur_pro_id = "WS1014144301"; //usecase 1
+    // cur_pro_id = "WS1014144301"; //usecase 2 scenarios created for both doc
       //  cur_pro_id = "WS1017070569"; //usecase 1
     // cur_pro_id = "WS1014197242"
     // cur_pro_id = "WS1014222219"
@@ -312,6 +323,12 @@ module.exports = cds.service.impl(async function () {
           // let doc_id = "Doc994856201";
 
        
+          function returnamt(amt){
+            let formattedamt = parseFloat(amt);
+            formattedamt = formattedamt.toLocaleString('en-IN');;
+            return formattedamt;
+           }
+
 
       // let doc_id = response_data1.document.id
       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
@@ -323,6 +340,10 @@ module.exports = cds.service.impl(async function () {
         purchasing_grp = `${proj_details.businessSystem.purchasingGroup[0].value}`
         // document_type = `${proj_details.businessSystem.documentType[0].value}`
         baselinespend = `${proj_details.baselineSpend.amount}`
+        baselinespend1 = returnamt(baselinespend);
+        
+        // baselinespend = baselinespend.toLocaleString('en-IN');
+        
 
          }
        
@@ -385,9 +406,18 @@ module.exports = cds.service.impl(async function () {
        function returndate(input){
         let a = input;
         let [y,m,d] = a.split('-');
-        let jumbleDate = d + "-" + m + "-" + y
+        let jumbleDate = d + "/" + m + "/" + y
         return jumbleDate
+
+        // var date = new Date(input);
+
+        // var options = { weekday:'short',day: '2-digit',month: 'short', year: 'numeric' };
+        // var formattedDate = date.toLocaleDateString('en-US', options);
+
+        //  return formattedDate
        }
+
+       
 
         
          //GETTING PROJECT CURRENCY
@@ -401,11 +431,11 @@ module.exports = cds.service.impl(async function () {
           web_publish_date = project_currency.openDate;
           const dateObj = new Date(web_publish_date);
           web_publish_date = dateObj.toISOString().split('T')[0];
-          // web_publish_date =  returndate(web_publish_date);
+          web_publish_date1 =  returndate(web_publish_date);
           create_date = project_currency.createDate;
           const dateObj1 = new Date(create_date);
           create_date = dateObj1.toISOString().split('T')[0];
-          // create_date = returndate(create_date)
+          create_date1 = returndate(create_date)
          
           var formatdate = new Date(web_publish_date);
           var formatdate1 = new Date(create_date);
@@ -562,8 +592,8 @@ module.exports = cds.service.impl(async function () {
               sbu = plant_details.value[0].SBU;
              }
              else{
-              sbg = "         ";
-              sbu = "       ";
+              sbg =null;
+              sbu =null;
              }
             // var plant_res = plant_details;
              
@@ -864,6 +894,9 @@ module.exports = cds.service.impl(async function () {
                   let a = response_data3.payload[k2].invitationId;
                   let b = response_data3.payload[k2].item.itemId;
                   var pay_date = response_data3.payload[k2].submissionDate;
+                  pay_date = pay_date.substring(0, 10);
+
+                  pay_date = returndate(pay_date);
 
                   
                   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Payment Method" ) {
@@ -936,6 +969,7 @@ module.exports = cds.service.impl(async function () {
                    if( response_data3.payload[k2].invitationId == sname  && response_data3.payload[k2].item.title == "Retention Due Date"){
                     due_date = response_data3.payload[k2].item.terms[0].value.dateValue;
                     due_date = due_date.substring(0, 10);
+                    due_date = returndate(due_date);
                    
 
                 }
@@ -1034,7 +1068,7 @@ module.exports = cds.service.impl(async function () {
                                 let output = match ? match[0] : null;
                                 ItemCode = output;
                                 }else{
-                                  ItemCode = " ";
+                                  ItemCode = "";
                                 }
                                 }
                                
@@ -1045,17 +1079,30 @@ module.exports = cds.service.impl(async function () {
                                    Quantity = terms[m].value.quantityValue.amount;
                                    Quantity = Quantity.toLocaleString('en-US');
                                   }else{
-                                    Quantity = " ";
+                                    Quantity = "";
                                   }
                                 }
+
+                                if(terms[m].title =="Freight"){
+                                  if(Object.keys(terms[m]).includes(value1)){
+                                    Freight = terms[m].value.moneyValue.amount;
+                                   
+                                  }else{
+                                    Freight = "";
+                                  }
+                                }
+
+
                                 if(terms[m].title == "Total Cost"){
                                   if(Object.keys(terms[m]).includes(value1)){
                                   l1Amount = l1Amount +  terms[m].value.moneyValue.amount;
                                   bid_currency = terms[m].value.supplierValue.currency;
                                   var l3Amount = terms[m].value.moneyValue.amount;
+                                  var l4Amount = returnamt(l3Amount);
+                                  
                                   }else{
                                     l1Amount = 0;
-                                    bid_currency = " ";
+                                    bid_currency = "";
                                     l3Amount = 0;
                                   }
                                 }
@@ -1073,8 +1120,8 @@ module.exports = cds.service.impl(async function () {
                                    }
                                   }
                                   else{
-                                    UnitPrice = " ";
-                                    Amount = " ";
+                                    UnitPrice = "";
+                                    Amount = "";
 
                                   }
                                 }
@@ -1084,7 +1131,7 @@ module.exports = cds.service.impl(async function () {
                                     delivery_schedule = terms[m].value.simpleValue;
                                   }
                                   else{
-                                    delivery_schedule = " ";
+                                    delivery_schedule = "";
                                   }
                                 }
         
@@ -1098,7 +1145,7 @@ module.exports = cds.service.impl(async function () {
                                     
                                   }
                                   else{
-                                    delivery_schedule = " "
+                                    delivery_schedule = ""
                                   }
                                
                                 }
@@ -1109,28 +1156,36 @@ module.exports = cds.service.impl(async function () {
                                     if(Object.keys(terms[m]).includes(value1)){
                                       tolerence = terms[m].value.simpleValue;
                                     }else{
-                                      tolerence = " "
+                                      tolerence = ""
                                     }
                              
                                  }
         
         
                                 if(terms[m].title == "Delivery Date"){
-                                   delivery_date = terms[m].value.dateValue;
-                                  var input = new Date(delivery_date);
+                                  if(Object.keys(terms[m]).includes(value1)){
+                                   var date_obj =   terms[m].value.dateValue;
+                                    date_obj = new Date(date_obj);
+                                    delivery_date = date_obj.toISOString().split('T')[0];
+                                    delivery_date = returndate(delivery_date);
+                                  }else{
+                                    delivery_date = ""
+                                  }
+                                  
+                                  // var input = new Date(delivery_date);
         
-                                  // Define the days of the week and months
-                                  var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                                  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                  // // Define the days of the week and months
+                                  // var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                                  // var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         
-                                  // Extract day of the week, day, month, and year
-                                  var dayOfWeek = daysOfWeek[input.getUTCDay()];
-                                  var day = input.getUTCDate();
-                                  var month = months[input.getUTCMonth()];
-                                  var year = input.getUTCFullYear();
+                                  // // Extract day of the week, day, month, and year
+                                  // var dayOfWeek = daysOfWeek[input.getUTCDay()];
+                                  // var day = input.getUTCDate();
+                                  // var month = months[input.getUTCMonth()];
+                                  // var year = input.getUTCFullYear();
         
-                                  // Format the date string
-                                   delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
+                                  // // Format the date string
+                                  //  delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
         
                                   // console.log(formattedDate);
         
@@ -1163,13 +1218,23 @@ module.exports = cds.service.impl(async function () {
                   Item_Short_Description                                                       : `${ItemShortDescription}`,
                   UOM                                                                          : `${UOM}`,
                   Quantity                                                                     : `${Quantity}`,
-                  Unit_Price                                                                   : `${UnitPrice}`,
-                  Amount                                                                       : `${l3Amount}`,
+                  Unit_Price                                                                   : `${Amount}`,
+                  Amount                                                                       : `${l4Amount}`,
                   extendedPrice                                                                : `${Amount}`,
                   Indian_Tax_PER                                                               : `${IndianTaxPER}`,
                   Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
         
                })
+                 
+                  vendortaxdetails.push({
+                        Proposed_Vendor_Code : `${pvcode}`, 
+                        PAN_Number : `${doc_id}`,
+                        Item_Code : `${ItemCode}`,
+                        name :"Freight",
+                        value :`${Freight}`,
+                  })
+      
+
               // }
 
                    price_details1.push({
@@ -1186,6 +1251,7 @@ module.exports = cds.service.impl(async function () {
                     l1Amount,
                  ) 
                  l2Amount = l1Amount;
+                 l2Amount = returnamt(l2Amount);
                  l1Amount = 0;
 
 
@@ -1260,8 +1326,8 @@ module.exports = cds.service.impl(async function () {
 
 
 
-          progress_documents = " ";
-          retention_documents=" ";
+          progress_documents = "";
+          retention_documents="";
 
           pan_vendor_response.push({
             Proposed_Vendor_Code                                                         : `${pvcode}`,
@@ -1322,7 +1388,7 @@ module.exports = cds.service.impl(async function () {
           Original_quote                     :"              ",//disp
           Final_Quote                        : "         ", //disp
           Order_amount_OR_Split_order_amount : "           ",
-          // Proposed_Vendor_Code_nav           : " ",
+          // Proposed_Vendor_Code_nav           : "",
           Discount_Amount                    : "            ",
           Discount_percentage                : "          ",
           Rank                               : "0",
@@ -1431,11 +1497,11 @@ module.exports = cds.service.impl(async function () {
         "Previous_PAN_References": "     ",
         "Split_OrderORNo_of_vendors":sup_count.toString(),
         "SOP_Type": "     ",
-        "Order_Type_OR_Document_tyFuuidpe": " ",
+        "Order_Type_OR_Document_tyFuuidpe": "",
         "Asset_Type": "     ", //hided
         "Nature_of_Transaction": "     ",
         "Order_Location_OR_Plant":`${plant_name}`,
-        "Base_line_spend": baselinespend.toString(),
+        "Base_line_spend": baselinespend1.toString(),
         "Project_CurrencyORBase_Currency": `${project_currency.currency}`,
         "Order_CurrencyORBid_currency": `${order_currency}`,
         "Final_proposed_Value": l1AmountObtained.toString(),
@@ -1446,22 +1512,22 @@ module.exports = cds.service.impl(async function () {
         // "Number_of_Vendors_Shortlisted_for_RFP":supplier_count,
         "Number_of_Vendors_Shortlisted_for_RFP":sup_count.toString(),
         "Number_of_Vendors_Technically_Qualified": "        ",
-        "Required_at_Site_Date":delivery_date,
-        "RFP_Number": doc_id,
-        "RFP_Publish_Date":web_publish_date,
+        "Required_at_Site_Date":`${delivery_date}`,
+        "RFP_Number": `${doc_id}`,
+        "RFP_Publish_Date":`${web_publish_date1}`,
         "Time_Taken_for_FinalizationDASHIn_DAYS": final_date.toString(),
         // "Vendor_Final_Quotation_Date": web_publish_date,  //present in payment table
         // "Vendor_Final_Quotation_Amount": l1AmountObtained.toString(),  //present in payment table
-        "status": " ",
+        "status": "",
         "created_by": `${createdby}`,
         "task_id": `${uniqueName1}`,
         "type":`${number_of_docs.payload[i1].iconType}`,
         "status_a":`${number_of_docs.payload[i1].status}`,
         "ProjectId":`${cur_pro_id}`,
-        "total_levels_of_approval" : " ",
-        "Current_level_of_approval" : " ",
-        "Sap_workitem_id":" ", 
-        // "justification": " ",
+        "total_levels_of_approval" : "",
+        "Current_level_of_approval" : "",
+        "Sap_workitem_id":"", 
+        // "justification": "",
         "Comments": "        ",
         "submitted_by": "     ",
         "submitted_date": "     ",
@@ -1517,8 +1583,10 @@ for(let r=0;r<web_tab1.length;r++){
   if((web_tab1[r].submissionDate == smallestdate)&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
     var dateString = web_tab1[r].submissionDate;
     var datesub = dateString.substring(0, 10)
+    datesub = returndate(datesub);
     var no_v = sc_web_tab2[q].scount;
     var am = web_tab1[r].amount;
+    am = returnamt(am);
     number = sc_web_tab2[q].doc_id;
     // number = number.substring(number.length - 4)
     if(pan_web_event.length == 0){
@@ -1550,8 +1618,10 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
     if((web_tab1[r].submissionDate == round2_date)&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
       var dateString = web_tab1[r].submissionDate;
       var datesub = dateString.substring(0, 10)
+      datesub = returndate(datesub);
       var no_v = sc_web_tab2[q].scount;
       var am = web_tab1[r].amount;
+      am = returnamt(am);
       number = sc_web_tab2[q].doc_id;
       // number = number.substring(number.length - 4)
       if(pan_web_event.length == 1){
@@ -1635,13 +1705,15 @@ else if(oneround = 1 && type == "RFQ"){
     
   
       for(let z=0;z<web_tab_dates.length;z++){
-        let number = " ";
+        let number = "";
         number = web_tab_dates[z].document_id;
        //  number = number.substring(number.length - 4)
         var dateString = web_tab_dates[z].publish_date;
          var datesub = dateString.substring(0, 10)
+         datesub = returndate(datesub);
         var no_v = web_tab_dates[z].pvendor;
         var am = web_tab_dates[z].l1amount;
+        am = returnamt(am);
         if((web_tab_dates[z].publish_date == smallestDate1 && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "NO")||(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") ){
            
          if(pan_web_event.length == 0){
@@ -1667,13 +1739,15 @@ else if(oneround = 1 && type == "RFQ"){
            if(oneround1 == 1 && type1 == "RFP"){
             last_rfp_date =  date2.reduce((acc, curr) => curr > acc ? curr : acc, date2[0]);
             for(let z=0;z<web_tab_dates.length;z++){
-              let number = " ";
+              let number = "";
               number = web_tab_dates[z].document_id;
              //  number = number.substring(number.length - 4)
               var dateString = web_tab_dates[z].publish_date;
                var datesub = dateString.substring(0, 10)
+               datesub = returndate(datesub);
               var no_v = web_tab_dates[z].pvendor;
               var am = web_tab_dates[z].l1amount;
+              am = returnamt(am);
              if(web_tab_dates[z].publish_date == last_rfp_date){
               if(pan_web_event.length == 1){
               pan_web_event.push({
@@ -1727,13 +1801,15 @@ else if(oneround = 1 && type == "RFQ"){
   var final_web_tab = [];
 
   for(let z=0;z<web_tab_dates.length;z++){
-    let number = " ";
+    let number = "";
     number = web_tab_dates[z].document_id;
    //  number = number.substring(number.length - 4)
     var dateString = web_tab_dates[z].publish_date;
      var datesub = dateString.substring(0, 10)
+     datesub = returndate(datesub);
     var no_v = web_tab_dates[z].pvendor;
     var am = web_tab_dates[z].l1amount;
+    am = returnamt(am);
     if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
       if(pan_web_event.length == 0 || pan_web_event.length == 2){
         if(pan_web_event.length == 0){
@@ -1814,6 +1890,7 @@ else if(oneround = 1 && type == "RFQ"){
                 if(ser_mate == "Material"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Total Cost"){
                 final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
+                final_quote1 = returnamt(final_quote);
 
                 }
               }
@@ -1844,15 +1921,16 @@ else if(oneround = 1 && type == "RFQ"){
                  for(let r=0;r<web_tab2.length;r++){
                   if(pan_web_event[0].number == web_tab2[r].doc_id && web_tab2[r].smid == sm_id){
                      original_quote = web_tab2[r].amount;
+                     original_quote1 = returnamt(original_quote);
                   }
                  }
                 }
 
                  for(let k =0;k<pan_vendor_response.length;k++){
                   if(pan_vendor_response[k].PAN_Number == tsk_doc_id){
-                    pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT = `${final_quote}`;
-                    pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${final_quote}`;
-                    pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote}`;
+                    pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT = `${final_quote1}`;
+                    pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${final_quote1}`;
+                    pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote1}`;
                   }
                  }
 
@@ -1864,6 +1942,7 @@ else if(oneround = 1 && type == "RFQ"){
                   // var str = discount_amt.toString();
                   discount_amt = Math.abs(discount_amt)
                   discount_amt =  discount_amt.toFixed(2)
+                  discount_amt2 = returnamt(discount_amt);
 
                   var dis_per = ( ( original_quote - final_quote ) / final_quote) * 100;
                  dis_per = Math.abs(dis_per);
@@ -1892,11 +1971,11 @@ else if(oneround = 1 && type == "RFQ"){
                   Vendor_Name                        : `${vname}`,//disp
                   Vendor_Location                    : `${vendor_loc}`,
                   Technically_Approved               : "       ",
-                  Original_quote                     :`${original_quote}`,//disp
-                  Final_Quote                        : `${final_quote}`, //disp
-                  Order_amount_OR_Split_order_amount : `${final_quote}`,
+                  Original_quote                     :`${original_quote1}`,//disp
+                  Final_Quote                        : `${final_quote1}`, //disp
+                  Order_amount_OR_Split_order_amount : `${final_quote1}`,
                   // Proposed_Vendor_Code_nav           : " ",
-                  Discount_Amount                    : `${discount_amt}`,
+                  Discount_Amount                    : `${discount_amt2}`,
                   Discount_percentage                : `${dis_per}`,
                   Rank                               : "1",
           
@@ -1934,6 +2013,169 @@ else if(oneround = 1 && type == "RFQ"){
                       allocate_per : shrt_lst_count.payload[r].supplierBids[k].winningSplitValue,
                       totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
                     })
+                    
+                    // if(terms3.length != 0){
+                    //   for(let it=0;it<terms3.length;it++){
+                    //     var value2 = "value";
+                    //         if(terms3[it].title =="HSNCode"){
+                    //          if(Object.keys(terms3[it]).includes(value2)){
+                    //             SACCode = terms3[it].value.simpleValue;
+                    //          }else{
+                    //            SACCode = "  ";
+                    //          }
+                    //        }
+                             
+                             
+                    //          if(terms3[it].title == "Material Code"){
+                    //          if(Object.keys(terms3[it]).includes(value2)){
+                    //          ItemCode = terms3[it].value.simpleValue;
+                    //          let match = ItemCode.match(/^\d+/); 
+                    //          let output = match ? match[0] : null;
+                    //          ItemCode = output;
+                    //          }else{
+                    //            ItemCode = "";
+                    //          }
+                    //          }
+                            
+      
+                    //          if(terms3[it].title =="Quantity"){
+                    //            if(Object.keys(terms3[it]).includes(value2)){
+                    //             UOM = terms3[it].value.quantityValue.unitOfMeasureName;
+                    //             Quantity = terms3[it].fromValue.quantityValue.amount;
+                    //             Quantity = Quantity.toLocaleString('en-US');
+                    //            }else{
+                    //              Quantity = "";
+                    //            }
+                    //          }
+                    //          if(terms3[it].title == "Total Cost"){
+                    //            if(Object.keys(terms3[it]).includes(value2)){
+                    //            l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
+                    //            bid_currency = terms3[it].value.supplierValue.currency;
+                    //            var l3Amount = terms3[it].value.moneyValue.amount;
+                    //            }else{
+                    //              l1Amount = 0;
+                    //              bid_currency = "";
+                    //              l3Amount = 0;
+                    //            }
+                    //          }
+                             
+     
+                    //          if(terms3[it].title =="Price"){
+                    //           if(Object.keys(terms3[it]).includes(value2)){
+                    //            UnitPrice = terms3[it].value.supplierValue.currency;
+                    //            Amount = terms3[it].value.supplierValue.amount;
+                    //            if(UnitPrice == "INR"){
+                    //            Amount = Amount.toLocaleString('en-IN');
+                    //            }
+                    //            if(UnitPrice == "USD"){
+                    //             Amount = Amount.toLocaleString('en-US');   
+                    //            }
+                    //           }
+                    //           else{
+                    //             UnitPrice = "";
+                    //             Amount = "";
+ 
+                    //           }
+                    //         }
+                            
+                             
+                    //          if(terms3[it].title == "Delivery Schedule - Quantity"){
+                    //            if(Object.keys(terms3[it]).includes(value2)){
+                    //              delivery_schedule = terms3[it].value.simpleValue;
+                    //            }
+                    //            else{
+                    //              delivery_schedule = "";
+                    //            }
+                    //          }
+     
+                    //          if(terms3[it].title == "Delivery Schedule - Date"){
+                    //            if(Object.keys(terms3[it]).includes(value2)){
+                            
+                    //              delivery_schedule1 = terms3[it].value.simpleValue;
+                    //              if(delivery_schedule != " "){
+                    //                delivery_schedule = delivery_schedule + " " + delivery_schedule1;
+                    //              }
+                                 
+                    //            }
+                    //            else{
+                    //              delivery_schedule = ""
+                    //            }
+                            
+                    //          }
+  
+                    //          if(terms3[it].title == "Quantity Over Delivery Tolerance"){
+                              
+                            
+                    //              if(Object.keys(terms3[it]).includes(value2)){
+                    //                tolerence = terms3[it].value.simpleValue;
+                    //              }else{
+                    //                tolerence = ""
+                    //              }
+                          
+                    //           }
+     
+     
+                    //          if(terms3[it].title == "Delivery Date"){
+                    //           if(Object.keys(terms3[it]).includes(value2)){
+                    //             var date_obj =   terms3[it].value.dateValue;
+                    //            date_obj = new Date(date_obj);
+                    //             delivery_date = date_obj.toISOString().split('T')[0];
+                    //             // delivery_date = terms3[it].value.dateValue;
+                    //             delivery_date = returndate(delivery_date);
+                    //           //  var input = new Date(delivery_date);
+                    //           }else{
+                    //             delivery_date = ""
+                    //           }
+     
+                    //           //  // Define the days of the week and months
+                    //           //  var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    //           //  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+     
+                    //           //  // Extract day of the week, day, month, and year
+                    //           //  var dayOfWeek = daysOfWeek[input.getUTCDay()];
+                    //           //  var day = input.getUTCDate();
+                    //           //  var month = months[input.getUTCMonth()];
+                    //           //  var year = input.getUTCFullYear();
+     
+                    //           //  // Format the date string
+                    //           //   delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
+     
+                    //            // console.log(formattedDate);
+     
+                    //          }
+                            
+     
+                    //          if(terms3[it].title =="Tax"){
+                    //           if(Object.keys(terms3[it]).includes(value2)){
+                    //             IndianTaxPER = terms3[it].value.simpleValue;
+                    //           }else{
+                    //             IndianTaxPER = ""
+                    //           }
+                    //          }
+                            
+  
+                    //   }
+                    //  }
+  
+                    //   price_details.push({
+                    //     Proposed_Vendor_Code                                                         : `${pvcode1}`, 
+                    //     PAN_Number                                                                   : `${tsk_doc_id}`,
+                    //     Item_Code                                                                    : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
+                    //     PAN_Number                                                                   : `${tsk_doc_id}`,
+                    //     HSN_OR_SAC_Code                                                              : `${SACCode}`,
+                    //     Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
+                    //     UOM                                                                          : `${UOM}`,
+                    //     Quantity                                                                     : `${Quantity}`,
+                    //     Unit_Price                                                                   : `${UnitPrice}`,
+                    //     Amount                                                                       : `${Amount}`,
+                    //     extendedPrice                                                                :  `${Amount}`,
+                    //     Indian_Tax_PER                                                               : `${IndianTaxPER}`,
+                    //     Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
+              
+                    //  })
+                  
+
+
                   
 
                   }
@@ -1951,7 +2193,7 @@ else if(oneround = 1 && type == "RFQ"){
                       totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
                     })
 
-                    var pvcode1 = " ";
+                    var pvcode1 = "";
                     for(let v=0;v<vendorids1.length;v++){
                       if(shrt_lst_count.payload[r].supplierBids[k].invitationId == vendorids1[v].vinv_id && vendorids1[v].doc_id ==  tsk_doc_id){
                          pvcode1 = vendorids1[v].pvcode;
@@ -1977,7 +2219,7 @@ else if(oneround = 1 && type == "RFQ"){
                            let output = match ? match[0] : null;
                            ItemCode = output;
                            }else{
-                             ItemCode = " ";
+                             ItemCode = "";
                            }
                            }
                           
@@ -1988,7 +2230,7 @@ else if(oneround = 1 && type == "RFQ"){
                               Quantity = terms3[it].fromValue.quantityValue.amount;
                               Quantity = Quantity.toLocaleString('en-US');
                              }else{
-                               Quantity = " ";
+                               Quantity = "";
                              }
                            }
                            if(terms3[it].title == "Total Cost"){
@@ -1996,9 +2238,10 @@ else if(oneround = 1 && type == "RFQ"){
                              l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
                              bid_currency = terms3[it].value.supplierValue.currency;
                              var l3Amount = terms3[it].value.moneyValue.amount;
+                             var l4Amount = returnamt(l3Amount);
                              }else{
                                l1Amount = 0;
-                               bid_currency = " ";
+                               bid_currency = "";
                                l3Amount = 0;
                              }
                            }
@@ -2010,14 +2253,16 @@ else if(oneround = 1 && type == "RFQ"){
                               Amount = terms3[it].value.supplierValue.amount;
                               if(UnitPrice == "INR"){
                               Amount = Amount.toLocaleString('en-IN');
+                              Amount = returnamt(Amount);
                               }
                               if(UnitPrice == "USD"){
-                               Amount = Amount.toLocaleString('en-US');   
+                               Amount = Amount.toLocaleString('en-US'); 
+                               Amount = returnamt(Amount);  
                               }
                              }
                              else{
-                               UnitPrice = " ";
-                               Amount = " ";
+                               UnitPrice = "";
+                               Amount = "";
 
                              }
                            }
@@ -2027,7 +2272,7 @@ else if(oneround = 1 && type == "RFQ"){
                                delivery_schedule = terms3[it].value.simpleValue;
                              }
                              else{
-                               delivery_schedule = " ";
+                               delivery_schedule = "";
                              }
                            }
    
@@ -2041,7 +2286,7 @@ else if(oneround = 1 && type == "RFQ"){
                                
                              }
                              else{
-                               delivery_schedule = " "
+                               delivery_schedule = ""
                              }
                           
                            }
@@ -2052,7 +2297,7 @@ else if(oneround = 1 && type == "RFQ"){
                                if(Object.keys(terms3[it]).includes(value2)){
                                  tolerence = terms3[it].value.simpleValue;
                                }else{
-                                 tolerence = " "
+                                 tolerence = ""
                                }
                         
                             }
@@ -2060,24 +2305,28 @@ else if(oneround = 1 && type == "RFQ"){
    
                            if(terms3[it].title == "Delivery Date"){
                             if(Object.keys(terms3[it]).includes(value2)){
-                              delivery_date = terms3[it].value.dateValue;
-                             var input = new Date(delivery_date);
+                              var date_obj =   terms3[it].value.dateValue;
+                             date_obj = new Date(date_obj);
+                              delivery_date = date_obj.toISOString().split('T')[0];
+                              // delivery_date = terms3[it].value.dateValue;
+                              delivery_date = returndate(delivery_date);
+                            //  var input = new Date(delivery_date);
                             }else{
-                              delivery_date = " "
+                              delivery_date = ""
                             }
    
-                             // Define the days of the week and months
-                             var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                            //  // Define the days of the week and months
+                            //  var daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                            //  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
    
-                             // Extract day of the week, day, month, and year
-                             var dayOfWeek = daysOfWeek[input.getUTCDay()];
-                             var day = input.getUTCDate();
-                             var month = months[input.getUTCMonth()];
-                             var year = input.getUTCFullYear();
+                            //  // Extract day of the week, day, month, and year
+                            //  var dayOfWeek = daysOfWeek[input.getUTCDay()];
+                            //  var day = input.getUTCDate();
+                            //  var month = months[input.getUTCMonth()];
+                            //  var year = input.getUTCFullYear();
    
-                             // Format the date string
-                              delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
+                            //  // Format the date string
+                            //   delivery_date = `${dayOfWeek}, ${day} ${month}, ${year}`;
    
                              // console.log(formattedDate);
    
@@ -2088,7 +2337,7 @@ else if(oneround = 1 && type == "RFQ"){
                             if(Object.keys(terms3[it]).includes(value2)){
                               IndianTaxPER = terms3[it].value.simpleValue;
                             }else{
-                              IndianTaxPER = " "
+                              IndianTaxPER = ""
                             }
                            }
                           
@@ -2155,6 +2404,7 @@ else if(oneround = 1 && type == "RFQ"){
                     }
                   }
                 save1 =  save1.toFixed(2)
+                save1 = returnamt(save1);
                 // pan_web_event[f].l1AmountObtained = `${save1}`;
                 if(pan_web_event[f].number == tsk_doc_id){
                   pan_web_event[f].l1AmountObtained = `${save1}`;
@@ -2203,7 +2453,8 @@ else if(oneround = 1 && type == "RFQ"){
 
             }
            }
-           save1 =  save1.toFixed(2)
+           save1 =  save1.toFixed(2);
+          //  save1 = returnamt(save1);
            pan_web_event[f].l1AmountObtained = `${save1}`;
            save1 = 0;
           }
@@ -2237,7 +2488,8 @@ else if(oneround = 1 && type == "RFQ"){
 
             }
 
-            save1 =  save1.toFixed(2)
+            save1 =  save1.toFixed(2);
+            save1 = returnamt(save1);
             pan_web_event[f].l1AmountObtained = `${save1}`;
             save1 = 0;
           }
@@ -2250,18 +2502,20 @@ else if(oneround = 1 && type == "RFQ"){
 
          var savings1 = final_quote - baselinespend;
          savings1  = Math.abs(savings1);
-        //  savings1 =  savings1.toFixed(2)
+         savings1 =  savings1.toFixed(2)
+         savings1 = returnamt(savings1)
         //  discount_amt1  =   final_quote - pan_web_event[0].l1AmountObtained;
         if(pan_web_event.length != 1 && pan_web_event.length != 0){
           if(pan_web_event[2].number != "NA"){
-            discount_amt1 =  pan_web_event[2].l1AmountObtained - pan_web_event[0].l1AmountObtained;
+            discount_amt1 = pan_web_event[0].l1AmountObtained -  pan_web_event[2].l1AmountObtained;
           }
-          else if(pan_web_event[2].number == "NA"){
-            discount_amt1 = pan_web_event[1].l1AmountObtained - pan_web_event[0].l1AmountObtained
+          else if(pan_web_event[1].number == "NA"){
+            discount_amt1 =   pan_web_event[0].l1AmountObtained - pan_web_event[1].l1AmountObtained;
           }
         
-          discount_amt1 = Math.abs(discount_amt1)
+        discount_amt1 = Math.abs(discount_amt1)
          discount_amt1 =  discount_amt1.toFixed(2)
+         discount_amt1 = returnamt(discount_amt1);
 
         }
         else{
@@ -2271,7 +2525,7 @@ else if(oneround = 1 && type == "RFQ"){
         if(panheader[t].PAN_Number == tsk_doc_id){
           panheader[t].Savings_achieved_btw_initial_and_final_quote = `${discount_amt1}`;
           panheader[t].Savings_against_base_line_spend_of_RFP = `${savings1}`;
-          panheader[t].Final_proposed_Value = `${final_quote}`;
+          panheader[t].Final_proposed_Value = `${final_quote1}`;
           
         }
       }   
@@ -2298,6 +2552,11 @@ else if(oneround = 1 && type == "RFQ"){
          }
       }
       
+      for(let k = 0;k<pan_web_event.length;k++){
+        if(pan_web_event[k].l1AmountObtained !=0){
+          pan_web_event[k].l1AmountObtained = returnamt(pan_web_event[k].l1AmountObtained);
+        }
+      }
       
 
 
@@ -2366,6 +2625,7 @@ else{
     for(let j = 0;j<panheader.length;j++){
       let body3 = JSON.parse(JSON.stringify(panheader[j]));
       let re = await SELECT.from(PAN_Details_APR).where`PAN_Number=${body3.PAN_Number}`;
+      let re1 = re[0];
       if(re.length !=0){
         let num = body3.PAN_Number;
         delete body3.PAN_Number;
@@ -2626,6 +2886,33 @@ else{
   }
     // const resp9 = await INSERT.into(PAN_PRICE_DETAILS_APR).entries(price_details)
     console.log("pricedetails");
+  
+  if(vendortaxdetails.length != 0){
+    for(let j=0;j<vendortaxdetails.length ;j++){
+      let body8 = JSON.parse(JSON.stringify(vendortaxdetails[j]));
+      vtd = await SELECT.from(vendorTaxDetails_APR).where`PAN_Number = ${body8.PAN_Number} and Proposed_Vendor_Code = ${body8.Proposed_Vendor_Code} and Item_Code = ${body8.Item_Code}`;
+      if(vtd.length != 0){
+        delete body8.PAN_Number;
+        delete body8.Proposed_Vendor_Code;
+        delete body8.Item_Code;
+        let putvtd= await  UPDATE(vendorTaxDetails_APR,({
+          PAN_Number:vendortaxdetails[j].PAN_Number,
+          Proposed_Vendor_Code:vendortaxdetails[j].Proposed_Vendor_Code,
+          Item_Code:vendortaxdetails[j].Item_Code
+        })).with(body8);
+        console.log(vtd);
+      }else{
+        const response_tax = await INSERT.into(vendorTaxDetails_APR).entries(body8);
+        console.log(response_tax);
+      }
+
+    }
+  }
+
+
+
+
+
 
     //CLEARING ALL THE ARRAYS
     projects_docs =[];

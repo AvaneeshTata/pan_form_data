@@ -12,6 +12,7 @@ service CatalogService {
  entity PAN_PRICE_DETAILS as projection on my.PAN_PRICE_DETAILS;
  entity WORKFLOW_HISTORY as projection on my.PAN_WORKFLOW_HISTORY;
  entity attachments as projection on my.PAN_attachments;
+ entity vendorTaxDetails as projection on my.vendorTaxDetails;
 
 entity PAN_Comments as projection on my.PAN_Comments;
 function sendforapproval(data:String) returns LargeString;
@@ -35,6 +36,7 @@ service PanApproval {
  entity PAN_WORKFLOW_HISTORY_APR as projection on my.PAN_WORKFLOW_HISTORY;
  entity PAN_attachments_APR as projection on my.PAN_attachments;
  entity vendorTaxDetails_APR as projection on my.vendorTaxDetails;
+ 
 
  entity PAN_Comments_APR as projection on my.PAN_Comments;
   function sendforapproval(data:String) returns LargeString;

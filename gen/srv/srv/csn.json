@@ -7,7 +7,10 @@
       "elements": {
         "PAN_Number": {
           "key": true,
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "def"
+          }
         },
         "SBG": {
           "type": "cds.String"
@@ -106,7 +109,10 @@
           "type": "cds.String"
         },
         "switch_control": {
-          "type": "cds.Boolean"
+          "type": "cds.Boolean",
+          "default": {
+            "val": false
+          }
         },
         "ProjectId": {
           "type": "cds.String"
@@ -713,7 +719,10 @@
           "type": "cds.Integer"
         },
         "Payment_methord": {
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "RTGS payment"
+          }
         },
         "Percentage": {
           "type": "cds.String"
@@ -946,6 +955,9 @@
         "HSN_OR_SAC_Code": {
           "type": "cds.String"
         },
+        "extendedPrice": {
+          "type": "cds.String"
+        },
         "Item_Short_Description": {
           "type": "cds.String"
         },
@@ -959,9 +971,6 @@
           "type": "cds.String"
         },
         "Amount": {
-          "type": "cds.String"
-        },
-        "extendedPrice": {
           "type": "cds.String"
         },
         "Indian_Tax_PER": {
@@ -1181,7 +1190,10 @@
       "elements": {
         "PAN_Number": {
           "key": true,
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "def"
+          }
         },
         "SBG": {
           "type": "cds.String"
@@ -1280,7 +1292,10 @@
           "type": "cds.String"
         },
         "switch_control": {
-          "type": "cds.Boolean"
+          "type": "cds.Boolean",
+          "default": {
+            "val": false
+          }
         },
         "ProjectId": {
           "type": "cds.String"
@@ -1917,7 +1932,10 @@
           "type": "cds.Integer"
         },
         "Payment_methord": {
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "RTGS payment"
+          }
         },
         "Percentage": {
           "type": "cds.String"
@@ -1982,6 +2000,9 @@
         "HSN_OR_SAC_Code": {
           "type": "cds.String"
         },
+        "extendedPrice": {
+          "type": "cds.String"
+        },
         "Item_Short_Description": {
           "type": "cds.String"
         },
@@ -1995,9 +2016,6 @@
           "type": "cds.String"
         },
         "Amount": {
-          "type": "cds.String"
-        },
-        "extendedPrice": {
           "type": "cds.String"
         },
         "Indian_Tax_PER": {
@@ -2208,6 +2226,40 @@
               ]
             }
           ]
+        }
+      }
+    },
+    "CatalogService.vendorTaxDetails": {
+      "kind": "entity",
+      "projection": {
+        "from": {
+          "ref": [
+            "proj_schema.vendorTaxDetails"
+          ]
+        }
+      },
+      "elements": {
+        "Proposed_Vendor_Code": {
+          "key": true,
+          "type": "cds.String"
+        },
+        "PAN_Number": {
+          "key": true,
+          "type": "cds.String"
+        },
+        "Item_Code": {
+          "key": true,
+          "type": "cds.String"
+        },
+        "idd": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "name": {
+          "type": "cds.String"
+        },
+        "value": {
+          "type": "cds.String"
         }
       }
     },
@@ -2427,7 +2479,10 @@
       "elements": {
         "PAN_Number": {
           "key": true,
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "def"
+          }
         },
         "SBG": {
           "type": "cds.String"
@@ -2526,7 +2581,10 @@
           "type": "cds.String"
         },
         "switch_control": {
-          "type": "cds.Boolean"
+          "type": "cds.Boolean",
+          "default": {
+            "val": false
+          }
         },
         "ProjectId": {
           "type": "cds.String"
@@ -3163,7 +3221,10 @@
           "type": "cds.Integer"
         },
         "Payment_methord": {
-          "type": "cds.String"
+          "type": "cds.String",
+          "default": {
+            "val": "RTGS payment"
+          }
         },
         "Percentage": {
           "type": "cds.String"
@@ -3228,6 +3289,9 @@
         "HSN_OR_SAC_Code": {
           "type": "cds.String"
         },
+        "extendedPrice": {
+          "type": "cds.String"
+        },
         "Item_Short_Description": {
           "type": "cds.String"
         },
@@ -3241,9 +3305,6 @@
           "type": "cds.String"
         },
         "Amount": {
-          "type": "cds.String"
-        },
-        "extendedPrice": {
           "type": "cds.String"
         },
         "Indian_Tax_PER": {

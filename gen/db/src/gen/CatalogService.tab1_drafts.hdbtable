@@ -1,5 +1,5 @@
 COLUMN TABLE CatalogService_tab1_drafts (
-  PAN_Number NVARCHAR(5000) NOT NULL,
+  PAN_Number NVARCHAR(5000) NOT NULL DEFAULT 'def',
   SBG NVARCHAR(5000) NULL,
   SBU NVARCHAR(5000) NULL,
   BUORPurchasing_Group NVARCHAR(5000) NULL,
@@ -32,7 +32,7 @@ COLUMN TABLE CatalogService_tab1_drafts (
   task_id NVARCHAR(5000) NULL,
   type NVARCHAR(5000) NULL,
   status_a NVARCHAR(5000) NULL,
-  switch_control BOOLEAN NULL,
+  switch_control BOOLEAN NULL DEFAULT FALSE,
   ProjectId NVARCHAR(5000) NULL,
   number_of_vendors_invited NVARCHAR(5000) NULL,
   total_levels_of_approval NVARCHAR(2) NULL,

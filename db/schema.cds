@@ -6,7 +6,7 @@ using {
 
 @cds.persistence.exists
 entity PAN_Details{
-key PAN_Number : String;
+key PAN_Number : String default'def';
 
 
 SBG : String;
@@ -41,7 +41,7 @@ created_by :String;
 task_id : String;
 type : String;
 status_a :String;
-switch_control:Boolean;
+switch_control:Boolean default false;
 //vendor data
 // Proposed_Vendor_Name : String; 
 // Proposed_Vendor_Code : String; 
@@ -113,12 +113,12 @@ submitted_date :String;
    tab1toWORKFLOW_HISTORY : Composition of many PAN_WORKFLOW_HISTORY on tab1toWORKFLOW_HISTORY.WORKFLOW_HISTORYtotab1 = $self;
    tab1topdf : Association to many PAN_attachments on tab1topdf.PAN_Number =PAN_Number;
     tab1tovendor_data : Composition of many PAN_vendor_data on tab1tovendor_data.vendor_datatotab1 = $self;
-     tab1tocom : Composition of many PAN_Comments on tab1tocom.comtotab1 = $self;
+    tab1tocom : Composition of many PAN_Comments on tab1tocom.comtotab1 = $self;
 }
 
 // PAN_RA_Details changed as PAN_WEB_EVENT
-
 @cds.persistence.exists
+
 entity  PAN_WEB_EVENT{
 key idd : String;
 key PAN_Number : String;
@@ -134,8 +134,8 @@ l1AmountObtained : String;
 // Client_approval_data : String;
 tab2totab1 : Association to one PAN_Details on tab2totab1.PAN_Number = PAN_Number; 
 }
-
 @cds.persistence.exists
+
 entity  PAN_TYPE{
 key idd : String;
 key PAN_Number : String;
@@ -146,11 +146,10 @@ receivedOn:String;
 timeTakenForApproval:String;
 tab3totab1 : Association to one PAN_Details on tab3totab1.PAN_Number = PAN_Number; 
 }
-
 @cds.persistence.exists
+
 entity PAN_vendor_data {
     //vendor response summary table
-    
 key Proposed_Vendor_Code : String; //disp
 key  PAN_Number : String;
 
@@ -178,8 +177,8 @@ vendor_datatotab1 :  Association to one PAN_Details on vendor_datatotab1.PAN_Num
 
 
 
-
 @cds.persistence.exists
+
 entity PAN_vendor_response{
     
 key Proposed_Vendor_Code : String; 
@@ -199,7 +198,7 @@ Technical_Committee_who_cleared_the_proposal : String;
 Commercial_Committee_who_cleared_the_proposal : String; 
 Vendor_References_to_be_displayed_in_Order : String; 
 Shortlisted_Vendors_Response_summary : String; 
-Order_Value_BKTIn_Project_CurrencyBKT : String;
+   Order_Value_BKTIn_Project_CurrencyBKT : String;
 Order_Value_BKTIn_Bid_CurrencyBKT : String;
 Vendor_Final_Quotation_Date : String;
 Vendor_Final_Quotation_Amount : String;
@@ -236,15 +235,15 @@ Number_of_Back_to_back_Terms_agreed_with_Vendor_as_per_GPC_OR_GCC : String;
    venrtovend :  Association to one PAN_vendor_data on venrtovend.Proposed_Vendor_Code = Proposed_Vendor_Code ; 
  }
  
-
 @cds.persistence.exists
+
 entity PAN_PAYMENT_TERM_DETAILS {
-     
+          
 key Proposed_Vendor_Code : String; 
     key  PAN_Number : String;
    key iddd : String;
    slNo:Integer;
-  Payment_methord : String;
+  Payment_methord : String default'RTGS payment';
   //  ADVANCE : String;
   //  Progress : String;
   //  Retention : String;
@@ -259,6 +258,7 @@ key Proposed_Vendor_Code : String;
    ptdtovend : Association to one PAN_vendor_data on ptdtovend.Proposed_Vendor_Code = Proposed_Vendor_Code ; 
 //    PAYMENT_TERM_DETAILStotab1 :  Association to one tab1 on PAYMENT_TERM_DETAILStotab1.id = idd; 
 }
+
 
 @cds.persistence.exists
 entity PAN_attachments:cuid,managed{
@@ -277,7 +277,9 @@ entity PAN_attachments:cuid,managed{
     pdftotab1 : Association to one PAN_Details on pdftotab1.PAN_Number = PAN_Number;
 }
 
+
 @cds.persistence.exists
+
 entity PAN_WORKFLOW_HISTORY { 
    key idd : String;
    key PAN_Number :String;
@@ -300,8 +302,8 @@ entity PAN_WORKFLOW_HISTORY {
 
 
 
-
 @cds.persistence.exists
+
 entity PAN_PRICE_DETAILS{
   
   key Proposed_Vendor_Code : String; 
@@ -309,26 +311,26 @@ entity PAN_PRICE_DETAILS{
   key Item_Code : String;
     HSN_OR_SAC_Code : String;
    
+   extendedPrice:String;
    Item_Short_Description : String;
    UOM : String;
    Quantity : String;
    Unit_Price : String;
    Amount : String;
-   extendedPrice:String;
    Indian_Tax_PER : String;
    Quantity_Over_Delivery_Tolerance : String;
    pdtovend : Association to one PAN_vendor_data on pdtovend.Proposed_Vendor_Code = Proposed_Vendor_Code;
 }
 
-
 @cds.persistence.exists
-entity
- PAN_Payment_Method_Drop {
+
+entity PAN_Payment_Method_Drop {
   
   key id :UUID;
   Payment_method :String;
   
 }
+
 @cds.persistence.exists
 entity PAN_Comments:managed{
   key idd : UUID;
@@ -338,6 +340,7 @@ entity PAN_Comments:managed{
   status:String;
   comtotab1:Association to one PAN_Details on comtotab1.PAN_Number = PAN_Number;
 }
+
 @cds.persistence.exists
 entity vendorTaxDetails{
   key Proposed_Vendor_Code : String; 
@@ -347,4 +350,5 @@ entity vendorTaxDetails{
   name :String;
   value :String;
 }
+
 
