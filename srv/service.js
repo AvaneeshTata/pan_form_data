@@ -52,7 +52,7 @@ module.exports = cds.service.impl(async function () {
     var sbu =null;
     var savings=0;
     var ser_mate = "";
-    
+    var itemid = "";
 
     let supplier = [];
     var awarded_vendors = [];
@@ -63,7 +63,7 @@ module.exports = cds.service.impl(async function () {
     let vendortaxdetails = [];
     let event_id;
     let number_of_vendors = 0;
-    let plant;
+    let plant="";
     let finalproposedvalue = "";
     let plant_id = "";
     let plant_name = "";
@@ -85,7 +85,7 @@ module.exports = cds.service.impl(async function () {
     var moneyValue = 0;
     
     var proj_desc = "";
-    var proj_currency;
+    var proj_currency = "";
     var web_publish_date;
     var web_publish_date1="";
     var final_date;
@@ -334,6 +334,7 @@ module.exports = cds.service.impl(async function () {
 
 
       // let doc_id = response_data1.document.id
+      if(doc_id == tsk_doc_id){
       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
       getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
       getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH'
@@ -349,6 +350,7 @@ module.exports = cds.service.impl(async function () {
         
 
          }
+        }
        
         // let task_id = response_data1.id;
 
@@ -359,7 +361,7 @@ module.exports = cds.service.impl(async function () {
         // console.log(doc_details);
 
 
-        // if(doc_id == tsk_doc_id){
+        if(doc_id == tsk_doc_id){
           getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/scenarios';
           getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
           getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
@@ -375,17 +377,19 @@ module.exports = cds.service.impl(async function () {
 
               break;
             }
-            else{
-              award_vendor1 = "NO";
-            }
+            // else{
+            //   award_vendor1 = "NO";
+            // }
 
 
            }
-          // }
+          }else{
+            award_vendor1 = "NO";
+          }
 
         // TECHNIACAL TEAM INFORMATION
-
-       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
+      if(doc_id == tsk_doc_id){
+      getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
       getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
       getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH'
       const teams = await getcall.tx(req).get('/getcall');
@@ -402,6 +406,7 @@ module.exports = cds.service.impl(async function () {
         }
       }
     }
+  }
       // tech_commitee_clearedproposal      
 
        console.log("stage1")
@@ -534,7 +539,7 @@ module.exports = cds.service.impl(async function () {
 
        // GETTING DETAILS FROM EVENT API
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items';
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
           const response_data2 = await getcall.tx(req).get('/getcall');
 
@@ -548,7 +553,8 @@ module.exports = cds.service.impl(async function () {
              if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
               ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
              }
-
+              
+            if(doc_id == tsk_doc_id){
             if(ser_mate == "Material"){
             if (response_data2.payload[j].terms[0].title == "Price"){
               var terms1 = response_data2.payload[j].terms;
@@ -581,9 +587,10 @@ module.exports = cds.service.impl(async function () {
                 }
               }
             }
-            }
+            
             if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
-              order_currency = response_data2.payload[j].currency.name;
+              // order_currency = response_data2.payload[j].currency.name;
+              itemid = response_data2.payload[j].itemId;
               if(response_data2.payload[j].terms.length != 0){
               for(let s=0;s<response_data2.payload[j].terms.length;s++){
                   if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
@@ -600,21 +607,33 @@ module.exports = cds.service.impl(async function () {
               // if
 
             }
-
+          }
+          }
           
 
           }
-            var plant_query = "/plant?$filter=plant eq '"+plant_id+"'";
-             plant_details = await plant_data.tx(req).get(plant_query);
-             if(plant_details.value.length != 0 ){
-              sbg = plant_details.value[0].SBG;
-              sbu = plant_details.value[0].SBU;
-             }
-             else{
-              sbg =null;
-              sbu =null;
-             }
+            // var plant_query = "/plant?$filter=plant eq '"+plant_id+"'";
+            //  plant_details = await plant_data.tx(req).get(plant_query);
+            //  if(plant_details.value.length != 0 ){
+            //   sbg = plant_details.value[0].SBG;
+            //   sbu = plant_details.value[0].SBU;
+            //  }
+            //  else{
+            //   sbg =null;
+            //   sbu =null;
+            //  }
             // var plant_res = plant_details;
+
+            if(doc_id==tsk_doc_id){
+            getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/'+itemid;
+            getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+            getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+            const currency = await getcall.tx(req).get('/getcall');
+            // var d = currency
+            order_currency = currency.currency.name;
+        }
+
+
              
           }
           else{
@@ -659,14 +678,23 @@ module.exports = cds.service.impl(async function () {
         // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
         // const supbids = await getcall.tx(req).get('getcall');
         // var c = supbids;
+       
+        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
+        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
+        getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
+        const response_data4 = await getcall.tx(req).get('getcall');
+        var d = response_data4;
+
+
+
 
        
         
-        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True';
-        getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-        const response_data4 = await getcall.tx(req).get('getcall');
-        var b = response_data4;
+        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
+        // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
+        // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
+        // const response_data4 = await getcall.tx(req).get('getcall');
+        // var b = response_data4;
 
         if(ser_mate == "Material"){
         var inviid ;
@@ -676,7 +704,7 @@ module.exports = cds.service.impl(async function () {
         for(let v = 0;v<response_data4.payload.length;v++){
           // var vcount = vcount + 
           if ((Array.isArray(response_data4.payload[v].item.terms))&&(response_data4.payload[v].item.terms.length != 0)) {
-          if(response_data4.payload[v].item.terms[0].title == "Price" && response_data4.payload[v].invitationId == sname){
+          if(response_data4.payload[v].item.terms[0].title == "Price"){
              subdate = response_data4.payload[v].submissionDate;
             var inv_id = 
              terms2 = response_data4.payload[v].item.terms;
@@ -738,7 +766,10 @@ module.exports = cds.service.impl(async function () {
           }
         }
       }
+      console.log("stage1.1");
       }
+
+      
      
       else if(ser_mate == "Service"){
         if(response_data4.payload.length != 0){
@@ -784,6 +815,7 @@ module.exports = cds.service.impl(async function () {
       }
        
       }
+      
 
         
         // console.log("responsedata3");
@@ -832,6 +864,29 @@ module.exports = cds.service.impl(async function () {
 
           //GETTING SUPPLIER INFORMATION LIKE LOC,GST,CE SCORE
           console.log("stage2")
+          // var ven_ind = 0;
+          // var ven_ind1 = 0
+          // if(pan_vendor_response.length != 0){
+          //   for(let v=0;v<pan_vendor_response.length;v++){
+          //     ven_ind = 0;
+          //     if(pan_vendor_response[v].Proposed_Vendor_Code == pvcode){
+          //        ven_ind = 1;
+          //        GstNo = pan_vendor_response[v].Vendor_GST_Number;
+          //        cescore = pan_vendor_response[v].Vendor_CE_Score;
+          //        region1 = pan_vendor_response[v].Supplier_Origin_State;
+          //        sup_main_add = pan_vendor_response[v].Destination_State_BKTShipDASHto_LocationBKT;
+          //        supplier_contact1 = pan_vendor_response[v].Vendor_Contact_PersonDASH1;
+
+
+          //     }
+          //     // else{
+          //     //   ven_ind1 = 1;
+          //     // }
+          //   }
+          // }
+          
+
+          // if(ven_ind == 0 ){
           getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
           getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
           getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
@@ -888,21 +943,26 @@ module.exports = cds.service.impl(async function () {
             supplier_contact1 =   first_name + " " + last_name ;
             // + " " +email + " " +mobile_phone+" "+"ph2 :"+contact_phone;
           }
-         
+        // }
           
           // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/Doc1007341724/items';
           // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
           // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
           // const items = await getcall.tx(req).get('/getcall');
-
-
-
-
-
-        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+        
+        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
+        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
         const response_data3 = await getcall.tx(req).get('getcall');
+        var r= response_data3;
+
+
+        
+
+        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
+        // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
+        // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
+        // const response_data3 = await getcall.tx(req).get('getcall');
 
            
           if (response_data3.payload.length != 0){
@@ -918,32 +978,32 @@ module.exports = cds.service.impl(async function () {
                   pay_date = returndate(pay_date);
 
                   
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Payment Method" ) {
+                  if( response_data3.payload[k2].item.title == "Payment Method" ) {
                       payment_type = response_data3.payload[k2].item.terms[0].value.simpleValue;
                      payment_type = payment_type.toString();
                   }
-                   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Progress"){
+                   if( response_data3.payload[k2].item.title == "Progress"){
                        progress = response_data3.payload[k2].item.terms[0].value.simpleValue;
                       progress = progress.toString(); 
                   }
 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Percentage Payment for Progress"){
+                  if( response_data3.payload[k2].item.title == "Percentage Payment for Progress"){
                   
                     per_pay_pro = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_pro = per_pay_pro.toString() + "%";
                   }
 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Percentage Payment for Retention"){
+                  if(response_data3.payload[k2].item.title == "Percentage Payment for Retention"){
                     per_pay_ret = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_ret = per_pay_ret.toString() + "%";
                   }
 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Advance"){
+                  if( response_data3.payload[k2].item.title == "Advance"){
                     Advance = response_data3.payload[k2].item.terms[0].value.simpleValue;
                     Advance = Advance.toString();
                   }
 
-                   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
+                   if( response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
                     if (Array.isArray(response_data3.payload[k2].item.terms[0].value.simpleValues)) {
                       var res = response_data3.payload[k2].item.terms[0].value;
                     
@@ -957,7 +1017,7 @@ module.exports = cds.service.impl(async function () {
                  
                   }
 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
+                  if(response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
                     if (Array.isArray(response_data3.payload[k2].item.terms[0].value.simpleValues)) {
                       var res1 = response_data3.payload[k2].item.terms[0].value;
                      
@@ -974,18 +1034,18 @@ module.exports = cds.service.impl(async function () {
                   }
 
 
-                   if( response_data3.payload[k2].invitationId == sname  && response_data3.payload[k2].item.title == "To be certified in Company by for Progress"){
+                   if( response_data3.payload[k2].item.title == "To be certified in Company by for Progress"){
                       by = response_data3.payload[k2].item.terms[0].value.simpleValue;
                    
 
                   }
                    
-                  if( response_data3.payload[k2].invitationId == sname  && response_data3.payload[k2].item.title == "To be certified in Company by for Retention"){
+                  if( response_data3.payload[k2].item.title == "To be certified in Company by for Retention"){
                     by1 = response_data3.payload[k2].item.terms[0].value.simpleValue;
               
                    }
 
-                   if( response_data3.payload[k2].invitationId == sname  && response_data3.payload[k2].item.title == "Retention Due Date"){
+                   if( response_data3.payload[k2].item.title == "Retention Due Date"){
                     due_date = response_data3.payload[k2].item.terms[0].value.dateValue;
                     due_date = due_date.substring(0, 10);
                     due_date = returndate(due_date);
@@ -993,70 +1053,72 @@ module.exports = cds.service.impl(async function () {
 
                 }
 
-                   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Retention" ) {
+                   if(response_data3.payload[k2].item.title == "Retention" ) {
                      retention = response_data3.payload[k2].item.terms[0].value.simpleValue;
                     retention = retention.toString();
                   }
-                   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Percentage Total" ) {
+                   if(response_data3.payload[k2].item.title == "Percentage Total" ) {
                     var percentage = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
                      percentage1 = percentage.toString();
               }
 
                    //Terms and conditions to be compared with
                    if(ser_mate == "Meterial"){
-                     if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "IncoTerms" ){
+                     if(response_data3.payload[k2].item.title == "IncoTerms" ){
                        inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
                         inco_terms = inco_terms.toString();
                      }
                   }
 
                     if(ser_mate == "Service"){
-                    //   if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "IncoTerms" ){
+                    //   if(   response_data3.payload[k2].item.title == "IncoTerms" ){
                     //     inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
                     //      inco_terms = inco_terms.toString();
                     // }
-                    if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "IncoTerms (Service)" ){
+                    if( response_data3.payload[k2].item.title == "IncoTerms (Service)" ){
                       inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
                       inco_terms = inco_terms.toString();
                     }
                 }
 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
+                  if(response_data3.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
                      abg = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
                     abg = abg.toString();
                     abg = abg + " %"
                     }
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
+                  if(   response_data3.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
                        cpbg= response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
                       cpbg = cpbg.toString();
                       cpbg = cpbg + " %"
                     }
 
                  //other terms and conditions
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Scope and Responsibilities" ) {
+                  if(   response_data3.payload[k2].item.title == "Scope and Responsibilities" ) {
                        ScopeandResponsibilities = response_data3.payload[k2].item.terms[0].value.simpleValue;
                       ScopeandResponsibilities = ScopeandResponsibilities.toString();
                       }
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Commercial Terms" ) {
+                  if(   response_data3.payload[k2].item.title == "Commercial Terms" ) {
                        CommercialTerms = response_data3.payload[k2].item.terms[0].value.simpleValue;
                      
                       } 
-                 if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Compliance Terms" ) {
+                 if(   response_data3.payload[k2].item.title == "Compliance Terms" ) {
                        ComplianceTerms = response_data3.payload[k2].item.terms[0].value.simpleValue;
                      
                       } 
-                  if(response_data3.payload[k2].invitationId ==sname  && response_data3.payload[k2].item.title == "Others" ) {
+                  if(   response_data3.payload[k2].item.title == "Others" ) {
                        Others = response_data3.payload[k2].item.terms[0].value.simpleValue;
                       
                 } 
                 
                 //price details
-                if(response_data3.payload[k2].invitationId ==sname && response_data3.payload[k2].item.title == "Totals"){
+                if(response_data3.payload[k2].item.title == "Totals"){
                   for(let v = 0;v<response_data3.payload[k2].itemsWithBid.length;v++ ){
                     material_items.push({
                       itemid : response_data3.payload[k2].itemsWithBid[v],
                     }) 
                   }
+
+                  console.log("stage2.1")
              
                 if(ser_mate == "Material"){
                 if(material_items.length != 0){
@@ -1065,7 +1127,7 @@ module.exports = cds.service.impl(async function () {
                       for(let a = 0;a<response_data3.payload.length;a++){
                         // var invt_id = response_data3.payload[a].invitationId;
                       // if(e.itemId == material_items[b].itemid && e.internalId == sname){
-                        if(response_data3.payload[a].invitationId == sname && response_data3.payload[a].itemId == material_items[b].itemid){
+                        if( response_data3.payload[a].itemId == material_items[b].itemid){
                           ItemShortDescription = response_data3.payload[a].item.title;
                         let terms = response_data3.payload[a].item.terms;
                           if(terms.length != 0){
@@ -1352,7 +1414,7 @@ module.exports = cds.service.impl(async function () {
           pan_vendor_response.push({
             Proposed_Vendor_Code                                                         : `${pvcode}`,
             PAN_Number                                                                   : `${doc_id}`,
-            Proposed_Vendor_Name                                                         : vendorids[k].org_name,
+            Proposed_Vendor_Name                                                         :  vendorids[k].org_name,
             Supplier_Origin_State                                                        : `${region1}`,
             Destination_State_BKTShipDASHto_LocationBKT                                  : `${sup_main_add}`,
             Vendor_GST_Number                                                            : `${GstNo}`,
@@ -1446,7 +1508,7 @@ module.exports = cds.service.impl(async function () {
   }   
 
  
-   console.log("stage5")
+   
     
     if(ser_mate == "Material"){
       web_amt = l1AmountObtained
@@ -1502,7 +1564,7 @@ module.exports = cds.service.impl(async function () {
 
     
   
-
+     console.log("stage5")
 
       panheader.push({
         "PAN_Number": doc_id,
@@ -1510,7 +1572,7 @@ module.exports = cds.service.impl(async function () {
         "SBU": `${sbu}`,
         "BUORPurchasing_Group": purchasing_grp,
         "Plant_Code": `${plant_id}`,
-        "Project_Description": `${proj_details.description}`,
+        "Project_Description": `${proj_desc}`,
         PR_NumberBKTsBKT : `${project_id}`,
         "PR_NumberBKTsBKT":RequisitionID.toString() ,
         "Subject_of_ProposalOROrder": `${subject_of_proposal}`,
@@ -1522,7 +1584,7 @@ module.exports = cds.service.impl(async function () {
         "Nature_of_Transaction": "     ",
         "Order_Location_OR_Plant":`${plant_name}`,
         "Base_line_spend": baselinespend1.toString(),
-        "Project_CurrencyORBase_Currency": `${project_currency.currency}`,
+        "Project_CurrencyORBase_Currency": `${proj_currency}`,
         "Order_CurrencyORBid_currency": `${order_currency}`,
         "Final_proposed_Value": l1AmountObtained.toString(),
         // "Order_Value_BKTIn_Project_CurrencyBKT": "     ", //present in payment table
@@ -1570,6 +1632,8 @@ module.exports = cds.service.impl(async function () {
   }
 
   
+
+  console.log("stage5.1")
   // scenario 4
     var date = [];
     var date1 = [];
@@ -1690,6 +1754,7 @@ else if(oneround = 1 && type == "RFQ"){
   //Web event logic
   var dates = [];
   var date2 = [];
+ 
  if(web_tab_dates.length != 0){
 
   var fstdoc1 = web_tab_dates[0].document_id;
@@ -1715,7 +1780,7 @@ else if(oneround = 1 && type == "RFQ"){
   }
   var dates1 = dates.map(dateString => new Date(dateString));
  
-  // 
+   console.log("stage5.2")
   if(web_tab1.length != 0){
     if(web_tab2.length == 0){
     const smallestDate1 = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
@@ -1895,7 +1960,7 @@ else if(oneround = 1 && type == "RFQ"){
    web_tab_dates = [];
        
 
-    
+    console.log("stage5.3")
 
        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+tsk_doc_id+'/scenarios';
         getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
@@ -2000,6 +2065,8 @@ else if(oneround = 1 && type == "RFQ"){
                   Rank                               : "1",
           
                  })
+
+                 console.log("stage5.4")
               }
 
 
@@ -2411,6 +2478,8 @@ else if(oneround = 1 && type == "RFQ"){
           }
          }
   
+
+         console.log("stage5.5")
       if(price_details1.length != 0){
        if(price_details1[0].amount != 0){
         for(let j=0;j<price_details.length;j++){
@@ -2428,7 +2497,7 @@ else if(oneround = 1 && type == "RFQ"){
         }
       }
     }
-
+    console.log("stage5.6")
             
             var save1= 0 ;
            
@@ -2581,6 +2650,8 @@ else if(oneround = 1 && type == "RFQ"){
         }
       }   
      
+      console.log("stage5.7")
+
       var vendordata3=[];
       var ven_ind;
       var ven_ind1;
