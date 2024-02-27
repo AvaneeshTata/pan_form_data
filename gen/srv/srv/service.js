@@ -2181,7 +2181,7 @@ else if(oneround = 1 && type == "RFQ"){
                       price_details.push({
                         Proposed_Vendor_Code                                                         : `${pvcode1}`, 
                         PAN_Number                                                                   : `${tsk_doc_id}`,
-                        Item_Code                                                                    : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
+                        Item_Code                                                                    : `${ItemCode}`,
                         PAN_Number                                                                   : `${tsk_doc_id}`,
                         HSN_OR_SAC_Code                                                              : `${SACCode}`,
                         Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
