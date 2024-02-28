@@ -197,6 +197,12 @@ module.exports = cds.service.impl(async function () {
     var pro_ind = 0;
     var l3Amount = 0;
     var l4Amount = 0;
+    var pro_ind = 0;
+    var no_of_docs = [];
+    var tsk_doc_id = "";
+    var tsk_id = "";
+    var tsk_ind = 0;
+    var web_pub_date="";
    
     
     
@@ -210,7 +216,8 @@ module.exports = cds.service.impl(async function () {
     var userName1 = "PANCreator";
    
     var userName = req.data.userName;
-    // var userName = "TPLBuyer"
+    // var userName = "TPLBuyer";
+   
     if(userName == "TPLBuyer"){
        createdby = "harshvardhans-v@tataprojects.com";
     }else{
@@ -221,109 +228,147 @@ module.exports = cds.service.impl(async function () {
     password = "ThirdPartyUser"
     cur_pro_id = req.data.projectid;
     // cur_pro_id = "WS1007313163";  //usecase 3 p
-    // cur_pro_id = "WS1018768312" // not coming under pending
-    // cur_pro_id = "WS1012623630" // service p
-    // cur_pro_id = "WS1014144301"; //usecase 2 scenarios created for both doc p 
-    // cur_pro_id = "WS1012816140"; //p error
-      //  cur_pro_id = "WS1017070569"; //usecase 1 p
-    // cur_pro_id = "WS1014197242"
-    // cur_pro_id = "WS1014222219"
-    // cur_pro_id = "WS1016011306" //usecase 2
-    // const tasks;
-    // try{
-    getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-approval/v2/prod/pendingApprovables';
-    getcall.destination.headers.query = 'user='+userName1+'&passwordAdapter='+password+'&realm=tataprojects-T&apikey=nQcLVavnQ7f2YklQoRtNeVgYFGyyqN4v';
-    getcall.destination.headers.basis = 'Basic MWE4ZWQwOWQtYzdjYy00OWQyLWJhM2EtNzAyMTI0N2Q0YTYyOndvNnJmb2xxNEJmdjBlTGxCYW9jdDcxTkZ5dWFZcnZv';
-    const  tasks = await getcall.tx(req).get('/getcall');
-    // }catch(error){
-    //   console.log(error);
-    // }
-
-    // // event_id = response_data[i].uniqueName;
-    var len = tasks.length;
-    if (tasks.length != 0){
-    for (let i = 0; i < tasks.length; i++) {
-      
-      if(pro_ind == 0){
-        len1 = len1 + 1;
-      }
-      
-       uniqueName =  tasks[i].uniqueName;
-      // uniqueName = "TSK1011702454";
-      // const task_ids = await header.tx(req).get(`/PAN_Details_APR?$filter=(ProjectId eq '${cur_pro_id}')`);
-      const task_ids = await SELECT.from(PAN_Details_APR).where ({ ProjectId : cur_pro_id});
-      var ind = 0;
-
-     if(task_ids.length != 0){
-      for(let i = 0;i<task_ids.length;i++){
-        if(uniqueName == task_ids[i].task_id){
-          ind = 1;
-          return_doc = task_ids[i].PAN_Number;
-        }
-      }
-    }
-
-     
+    // cur_pro_id = "WS1018768312";
+    // cur_pro_id = "WS1014144301";
+    // cur_pro_id = "WS1017070569";
+    // cur_pro_id = "WS1012623630" //service
+    
      
 
-      if(ind == 0){
-      //GETTING ENTITY DETAILS FROM EXTERNAL API
-      getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-approval/v2/prod/Task/'+uniqueName;
-      getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName1+'&passwordadapter='+password+'&apikey=nQcLVavnQ7f2YklQoRtNeVgYFGyyqN4v';
-      getcall.destination.headers.basis = 'Basic MWE4ZWQwOWQtYzdjYy00OWQyLWJhM2EtNzAyMTI0N2Q0YTYyOndvNnJmb2xxNEJmdjBlTGxCYW9jdDcxTkZ5dWFZcnZv';
-      const task_details = await getcall.tx(req).get('/getcall');
-      var d= task_details;
-      
-      
-      if(task_details.workspaceId == cur_pro_id){
-      var project_id = task_details.workspaceId;
-      pro_ind = 1;
+      function returndate(input){
+        let a = input;
+        let [y,m,d] = a.split('-');
+        let jumbleDate = d + "/" + m + "/" + y
+        return jumbleDate
 
-      // statu_a = 
-      var tsk_doc_id = task_details.document.id;
-      
+        // var date = new Date(input);
+
+        // var options = { weekday:'short',day: '2-digit',month: 'short', year: 'numeric' };
+        // var formattedDate = date.toLocaleDateString('en-US', options);
+
+        //  return formattedDate
+       }
+
+
+
+
      
+      var project_id = cur_pro_id;
+
       
+
+
+
+
+
+      // if(tsk_ind == 0){
       // GETTING ALL THE DOC IDS BASED ON PROJECT ID
+      var number_of_docs="";
+      try{
       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/documents';
       getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
       getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH';
-      const number_of_docs = await getcall.tx(req).get('/getcall');
+       number_of_docs = await getcall.tx(req).get('/getcall');
+      }catch(error){
+        return "no data for this user";
+      }
       // let doc = doc_data;
       // console.log(number_of_docs.payload);
       // console.log(number_of_docs.payload[0]);
       if (number_of_docs.payload.length != 0){
-      for(let i1 = 0;i1<number_of_docs.payload.length;i1++){
-        if(number_of_docs.payload[i1].type == 'RFx' && number_of_docs.payload[i1].status != 'Draft'){
-    
-          
-         if(number_of_docs.payload[i1].internalId == tsk_doc_id ){
-           uniqueName1 = uniqueName;
-         }
-         else{
-          uniqueName1 = "     ";
-         }
-          
-
-          icon_type = number_of_docs.payload[i1].iconType;
-         projects_docs.push({
-          "ProjectId":project_id,
-          "PAN_Number":number_of_docs.payload[i1].internalId,
-         })
+     
+      for(let k=0;k<number_of_docs.payload.length;k++){
+        if(number_of_docs.payload[k].type == 'RFx' && number_of_docs.payload[k].status != 'Draft'){
+          let doc_id = number_of_docs.payload[k].internalId;
+          // let doc_id = "Doc1007341724";
          
 
+          getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id;
+          getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+          getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+          project_currency = await getcall.tx(req).get('/getcall');
+          var d = project_currency;
+          if(project_currency != ""){
+            proj_currency = `${project_currency.currency}`;
+            web_publish_date = project_currency.openDate;
+            const dateObj = new Date(web_publish_date);
+            web_pub_date = project_currency.openDate;
+            web_publish_date = dateObj.toISOString().split('T')[0];
+            web_publish_date1 =  returndate(web_publish_date);
+            create_date = project_currency.createDate;
+            const dateObj1 = new Date(create_date);
+            create_date = dateObj1.toISOString().split('T')[0];
+            create_date1 = returndate(create_date)
+           
+            var formatdate = new Date(web_publish_date);
+            var formatdate1 = new Date(create_date);
+  
+            var diffTime = Math.abs(formatdate - formatdate1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            // console.log(diffTime + " milliseconds");
+            final_date = diffDays + " days";
+              }
+          else{
+            proj_currency  = "       ";
+            web_publish_date = "        ";
+                  }
+
+                  no_of_docs.push({
+                    doc_id :number_of_docs.payload[k].internalId,
+                    icon_type : number_of_docs.payload[k].iconType,
+                    status : number_of_docs.payload[k].status,
+                    web_pub_date : web_pub_date,
+                    web_publish_date : web_publish_date1,
+                    create_date : create_date1,
+                    final_date : final_date,
+                  })      
+ 
+          var obj = "pendingAwardApprovalTaskId";
+          // if(project_currency.includes(obj)){
+            if(obj in project_currency){
+            tsk_id = project_currency.pendingAwardApprovalTaskId;
+            tsk_doc_id = doc_id;
+            pro_ind = 1;
+          }
+        }
+      }  
+      
+      const task_ids = await SELECT.from(PAN_Details_APR).where ({ ProjectId : cur_pro_id});
+      if(task_ids.length != 0){
+          for(let i = 0;i<task_ids.length;i++){
+            if(tsk_id == task_ids[i].task_id){
+              tsk_ind = 1;
+              return_doc = task_ids[i].PAN_Number;
+            }
+          }
+        }
+     
+
+
+
+      
+     
+     if(tsk_ind == 0){
+      if(pro_ind == 1){
+      if(no_of_docs.length != 0){
+      for(let i1 = 0;i1<no_of_docs.length;i1++){
+        // if(number_of_docs.payload[i1].type == 'RFx' && number_of_docs.payload[i1].status != 'Draft'){
+
+          // let doc_id = number_of_docs.payload[i1].internalId;
+          doc_id = no_of_docs[i1].doc_id;
+          var doc_status = no_of_docs[i1].status;
+          icon_type = no_of_docs[i1].icon_type;
+
+          
+         if(doc_id == tsk_doc_id ){
+           uniqueName1 = tsk_id;
+         }
+         else{
+          uniqueName1 = "";
+         }
+          
+
         
-
-        //  projects_docs.push({
-        //   "ProjectId":project_id,
-        //   "PAN_Number":doc_id,
-        //  })
-
-
-   
-
-          let doc_id = number_of_docs.payload[i1].internalId;
-          // let doc_id = "Doc994856201";
 
        
           function returnamt(amt){
@@ -410,53 +455,14 @@ module.exports = cds.service.impl(async function () {
       // tech_commitee_clearedproposal      
 
        console.log("stage1")
+       console.log(doc_id);
 
-       function returndate(input){
-        let a = input;
-        let [y,m,d] = a.split('-');
-        let jumbleDate = d + "/" + m + "/" + y
-        return jumbleDate
-
-        // var date = new Date(input);
-
-        // var options = { weekday:'short',day: '2-digit',month: 'short', year: 'numeric' };
-        // var formattedDate = date.toLocaleDateString('en-US', options);
-
-        //  return formattedDate
-       }
+      
 
        
 
         
-         //GETTING PROJECT CURRENCY
-         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id;
-         getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
-         project_currency = await getcall.tx(req).get('/getcall');
-        //  order_currency = project_currency.currencyConversionRateSet.customCurrencyConversionRates[0].toCurrency.name;
-        if(project_currency != ""){
-          proj_currency = `${project_currency.currency}`;
-          web_publish_date = project_currency.openDate;
-          const dateObj = new Date(web_publish_date);
-          web_publish_date = dateObj.toISOString().split('T')[0];
-          web_publish_date1 =  returndate(web_publish_date);
-          create_date = project_currency.createDate;
-          const dateObj1 = new Date(create_date);
-          create_date = dateObj1.toISOString().split('T')[0];
-          create_date1 = returndate(create_date)
-         
-          var formatdate = new Date(web_publish_date);
-          var formatdate1 = new Date(create_date);
-
-          var diffTime = Math.abs(formatdate - formatdate1);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-          // console.log(diffTime + " milliseconds");
-          final_date = diffDays + " days";
-            }
-        else{
-          proj_currency  = "       ";
-          web_publish_date = "        ";
-                }
+        
 
 
 
@@ -469,6 +475,9 @@ module.exports = cds.service.impl(async function () {
          if(web_sup_count.payload.length != 0){
           for(let l = 0;l<web_sup_count.payload.length;l++){
             // if(web_sup_count.payload[l].supplierBidStatus == "Participated"){
+              var bid = "hasBid";
+              if(bid in web_sup_count.payload[l] ){
+                if(web_sup_count.payload[l].hasBid == true){
               pvendor = pvendor + 1;
               supplier.push({
                     supplier_name:web_sup_count.payload[l].invitationId,
@@ -493,8 +502,8 @@ module.exports = cds.service.impl(async function () {
                 vinv_id :web_sup_count.payload[l].invitationId, 
 
               })
-
-            // }
+            }
+            }
           }
         }
           else{
@@ -505,140 +514,7 @@ module.exports = cds.service.impl(async function () {
 
           
 
-        //GETTING SHORTLISTED VENDOR COUNT
-        
-        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/Doc989097519/scenarios';
-        // getcall.destination.headers.query = 'realm=tataprojects-T&user=VGR&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-        // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
-        //  shrt_lst_count = await getcall.tx(req).get('/getcall');
-        //  if (shrt_lst_count.payload.length != 0){
-        //   finalproposedvalue = shrt_lst_count.payload[0].rollupTerms[1].value.moneyValue.amount;
-        //   finalproposedvalue = finalproposedvalue.toLocaleString('en-US');
-        //   finalproposedvalue = finalproposedvalue + " " +shrt_lst_count.payload[0].rollupTerms[1].value.supplierValue.currency;
-        //   supplier_count = `${shrt_lst_count.payload[0].selectedSuppliersCount}`;
-        //   for(let r = 0;r<shrt_lst_count.payload.length;r++){
-        //     if(shrt_lst_count.payload[r].awardStatus == 7 || shrt_lst_count.payload[r].awardStatus == 6){
-        //       // Subject_of_ProposalOROrder = `${shrt_lst_count.payload[r].selectedSuppliersCount}`;
-        //       awarded_vendor = "YES";
-        //       break;
-        //     }
-        //     else{
-        //       awarded_vendor = "NO"
-        //     }
-        //   }
-        //  }
-        //  else{
-        //   finalproposedvalue="       ";
-        //   supplier_count="         ";
-        //   Subject_of_ProposalOROrder = "       ";
-        //   awarded_vendor="       ";
-        //  }
-         
-        
        
-
-       // GETTING DETAILS FROM EVENT API
-        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items';
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
-        getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
-          const response_data2 = await getcall.tx(req).get('/getcall');
-
-          if (response_data2.payload.length != 0) {
-    
-          
-          for( j = 0; j<response_data2.payload.length;j++){
-
-            if(response_data2.payload[j].terms.length != 0){
-
-             if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
-              ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
-             }
-              
-            if(doc_id == tsk_doc_id){
-            if(ser_mate == "Material"){
-            if (response_data2.payload[j].terms[0].title == "Price"){
-              var terms1 = response_data2.payload[j].terms;
-              // if (terms1.length != 0){
-              for(let s=0;s<terms1.length;s++){
-                if(terms1[s].title == "Requisition ID" ){
-                RequisitionID = terms1[s].value.simpleValue;
-                }
-                if(terms1[s].title == "Plant"){
-                  plant = terms1[s].value.simpleValue;
-                  plant_id = plant.split(' ')[0];
-                  plant_name = plant.split(' ').slice(1).join(' ');
-                }
-              }
-            }
-            }
-            else if(ser_mate == "Service"){
-              if (response_data2.payload[j].terms[0].title == "Extended Price"){
-                var terms1 = response_data2.payload[j].terms;
-                // if (terms1.length != 0){
-                for(let s=0;s<terms1.length;s++){
-                  if(terms1[s].title == "Requisition ID" ){
-                  RequisitionID = terms1[s].value.simpleValue;
-                  }
-                  if(terms1[s].title == "Plant"){
-                    plant = terms1[s].value.simpleValue;
-                    plant_id = plant.split(' ')[0];
-                    plant_name = plant.split(' ').slice(1).join(' ');
-                  }
-                }
-              }
-            }
-            
-            if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
-              // order_currency = response_data2.payload[j].currency.name;
-              itemid = response_data2.payload[j].itemId;
-              if(response_data2.payload[j].terms.length != 0){
-              for(let s=0;s<response_data2.payload[j].terms.length;s++){
-                  if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
-                    var value = "value";
-                    if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
-                      subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
-                   }else{
-                    subject_of_proposal = "  ";
-                   }
-                  }
-
-              }
-            }
-              // if
-
-            }
-          }
-          }
-          
-
-          }
-            // var plant_query = "/plant?$filter=plant eq '"+plant_id+"'";
-            //  plant_details = await plant_data.tx(req).get(plant_query);
-            //  if(plant_details.value.length != 0 ){
-            //   sbg = plant_details.value[0].SBG;
-            //   sbu = plant_details.value[0].SBU;
-            //  }
-            //  else{
-            //   sbg =null;
-            //   sbu =null;
-            //  }
-            // var plant_res = plant_details;
-
-            if(doc_id==tsk_doc_id){
-            getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/'+itemid;
-            getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-            getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
-            const currency = await getcall.tx(req).get('/getcall');
-            // var d = currency
-            order_currency = currency.currency.name;
-        }
-
-
-             
-          }
-          else{
-            return "no response data from event API ";
-          }
           //GETTING VENDOR DETAILS
             
           if(supplier.length != 0){
@@ -678,23 +554,165 @@ module.exports = cds.service.impl(async function () {
         // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
         // const supbids = await getcall.tx(req).get('getcall');
         // var c = supbids;
-       
+
+        
+        number_of_vendors = number_of_vendors + 1;
+        if(vendorids.length != 0){
+          var vendorid = vendorids[k].smvendor_id;
+          var pvcode =  vendorids[k].pvcode;
+        }else{
+          var vendorid = "       ";
+          var pvcode = "     ";
+        }
+        
+        // let vendorid = "S65873336";
+    
+       // GETTING CE DETAILS
+
+      //   getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod/vendors/'+vendorid+'/workspaces/questionnaires';
+      //   getcall.destination.headers.query = 'realm=tataprojects-T&user=VGR&passwordAdapter='+password+'&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
+      //   getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
+      //   const sup_ce_details = await getcall.tx(req).get('getcall');
+      //   var rs = sup_ce_details;
+      //    if(sup_ce_details.length != 0){
+      //   if(sup_ce_details._embedded.questionnaireList.length != 0){
+      //     for(let c=0;c<sup_ce_details._embedded.questionnaireList.length;c++){
+      //       var title = sup_ce_details._embedded.questionnaireList[c].questionnaire.title;
+      //       title = title.substring(0, 3);
+      //         if(title == "CE_"){
+      //           var qna_id = sup_ce_details._embedded.questionnaireList[c].questionnaire.questionnaireId;
+      //           getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod/vendors/'+vendorid+'/workspaces/questionnaires/'+qna_id+'/qna';
+      //           getcall.destination.headers.query = 'realm=tataprojects-T&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
+      //           getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
+      //           const sup_ce_scores = await getcall.tx(req).get('getcall');
+                
+      //         }
+      //     }
+      //   }
+      // }else{
+      //   console.log("NO questonnaries are there for this supplier")
+      // }
+
+        
+
+        //GETTING SUPPLIER INFORMATION LIKE LOC,GST,CE SCORE
+        console.log("stage2")
+        var ven_ind = 0;
+        var ven_ind1 = 0
+        if(pan_vendor_response.length != 0){
+          for(let v=0;v<pan_vendor_response.length;v++){
+            // ven_ind = 0;
+            if(pan_vendor_response[v].Proposed_Vendor_Code == pvcode){
+               ven_ind = 1;
+               GstNo = pan_vendor_response[v].Vendor_GST_Number;
+               cescore = pan_vendor_response[v].Vendor_CE_Score;
+               region1 = pan_vendor_response[v].Supplier_Origin_State;
+               sup_main_add = pan_vendor_response[v].Destination_State_BKTShipDASHto_LocationBKT;
+               supplier_contact1 = pan_vendor_response[v].Vendor_Contact_PersonDASH1;
+
+
+            }
+            // else{
+            //   ven_ind1 = 1;
+            // }
+          }
+        }
+        
+
+        if(ven_ind == 0 ){
+          var supplierdata ="";
+          try{
+        getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
+        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
+        getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
+         supplierdata = await getcall.tx(req).get('getcall');
+          }catch(error){
+            return error;
+          }
+        let d2 = supplierdata;
+        if (supplierdata != ''){
+          
+          for(let h = 0;h<supplierdata._embedded.questionAnswerList.length;h++){
+              if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "GST Number"){
+                GstNo = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+
+              }
+              if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "(Technical) CE Eligibility Yes"){
+                cescore = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+              }
+
+              if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Supplier Main Address"){
+                sup_main_add = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+                const parsedData = JSON.parse(sup_main_add);
+                const streetName = parsedData.default.streetName || '';
+                const houseID = parsedData.default.houseID || '';
+                const city = parsedData.default.cityName || '';
+                const postalCode = parsedData.default.streetPostalCode || '';
+                const region = parsedData.default.regionCode.Name || '';
+                region1 = region;
+                const country = parsedData.default.countryCode.Name || '';
+                
+                const formattedAddress = `${streetName}, ${houseID}, ${city}, ${region}, ${postalCode}, ${country}`;
+                let resultArray = formattedAddress.split(',').map(item => item.trim()).filter(Boolean);
+                 sup_main_add = resultArray.join(', ');
+                
+                // console.log(formattedAddress);
+              }
+
+             if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact First Name"){
+                first_name = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+             }
+             if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Last Name"){
+               last_name  = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+             }
+             if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Email"){
+                email = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+             }
+             if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Mobile Phone"){
+               mobile_phone = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+             }
+             if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Phone"){
+              contact_phone = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+             }
+              
+             
+          }
+
+          supplier_contact1 =   first_name + " " + last_name ;
+          // + " " +email + " " +mobile_phone+" "+"ph2 :"+contact_phone;
+        }
+      }
+
+
+       var response_data4;
+       try{
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
         getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-        const response_data4 = await getcall.tx(req).get('getcall');
+         response_data4 = await getcall.tx(req).get('getcall');
+       }catch(error){
+        return error;
+       }
+
         var d = response_data4;
-
-
+          
+        if(response_data4.payload.length != 0){
+          for(let j=0;j<response_data4.payload.length;j++){
+            if ((Array.isArray(response_data4.payload[j].item.terms))&&(response_data4.payload[j].item.terms.length != 0)) {
+              var terms5 = response_data4.payload[j].item.terms;
+              for(let t=0;t<terms5.length;t++){
+                if(terms5[t].title == "Is this for Material/Service/Both?"){
+                  ser_mate = terms5[t].value.simpleValue;
+                }
+              }
+            }
+          }
+        }
 
 
        
         
-        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
-        // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
-        // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-        // const response_data4 = await getcall.tx(req).get('getcall');
-        // var b = response_data4;
+       
 
         if(ser_mate == "Material"){
         var inviid ;
@@ -732,7 +750,7 @@ module.exports = cds.service.impl(async function () {
            
 
             }
-            else if((inviid==response_data4.payload[v].incitationId)&&(alterid ==response_data4.payload[v].alternativeId)){
+            else if((inviid==response_data4.payload[v].invitationId)&&(alterid ==response_data4.payload[v].alternativeId)){
               // l1Amount = 0;
               if(terms2.length != 0){
                 for(let t =0;t<terms2.length;t++){
@@ -823,203 +841,76 @@ module.exports = cds.service.impl(async function () {
         
         // debugger
 
-          number_of_vendors = number_of_vendors + 1;
-          if(vendorids.length != 0){
-            var vendorid = vendorids[k].smvendor_id;
-            var pvcode =  vendorids[k].pvcode;
-          }else{
-            var vendorid = "       ";
-            var pvcode = "     ";
-          }
-          
-          // let vendorid = "S65873336";
-      
-         // GETTING CE DETAILS
-
-        //   getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod/vendors/'+vendorid+'/workspaces/questionnaires';
-        //   getcall.destination.headers.query = 'realm=tataprojects-T&user=VGR&passwordAdapter='+password+'&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
-        //   getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
-        //   const sup_ce_details = await getcall.tx(req).get('getcall');
-        //   var rs = sup_ce_details;
-        //    if(sup_ce_details.length != 0){
-        //   if(sup_ce_details._embedded.questionnaireList.length != 0){
-        //     for(let c=0;c<sup_ce_details._embedded.questionnaireList.length;c++){
-        //       var title = sup_ce_details._embedded.questionnaireList[c].questionnaire.title;
-        //       title = title.substring(0, 3);
-        //         if(title == "CE_"){
-        //           var qna_id = sup_ce_details._embedded.questionnaireList[c].questionnaire.questionnaireId;
-        //           getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod/vendors/'+vendorid+'/workspaces/questionnaires/'+qna_id+'/qna';
-        //           getcall.destination.headers.query = 'realm=tataprojects-T&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
-        //           getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
-        //           const sup_ce_scores = await getcall.tx(req).get('getcall');
-                  
-        //         }
-        //     }
-        //   }
-        // }else{
-        //   console.log("NO questonnaries are there for this supplier")
-        // }
-
-          
-
-          //GETTING SUPPLIER INFORMATION LIKE LOC,GST,CE SCORE
-          console.log("stage2")
-          // var ven_ind = 0;
-          // var ven_ind1 = 0
-          // if(pan_vendor_response.length != 0){
-          //   for(let v=0;v<pan_vendor_response.length;v++){
-          //     ven_ind = 0;
-          //     if(pan_vendor_response[v].Proposed_Vendor_Code == pvcode){
-          //        ven_ind = 1;
-          //        GstNo = pan_vendor_response[v].Vendor_GST_Number;
-          //        cescore = pan_vendor_response[v].Vendor_CE_Score;
-          //        region1 = pan_vendor_response[v].Supplier_Origin_State;
-          //        sup_main_add = pan_vendor_response[v].Destination_State_BKTShipDASHto_LocationBKT;
-          //        supplier_contact1 = pan_vendor_response[v].Vendor_Contact_PersonDASH1;
-
-
-          //     }
-          //     // else{
-          //     //   ven_ind1 = 1;
-          //     // }
-          //   }
-          // }
-          
-
-          // if(ven_ind == 0 ){
-          getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
-          getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
-          getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
-          const supplierdata = await getcall.tx(req).get('getcall');
-          let d2 = supplierdata;
-          if (supplierdata != ''){
-            
-            for(let h = 0;h<supplierdata._embedded.questionAnswerList.length;h++){
-                if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "GST Number"){
-                  GstNo = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-
-                }
-                if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "(Technical) CE Eligibility Yes"){
-                  cescore = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-                }
-
-                if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Supplier Main Address"){
-                  sup_main_add = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-                  const parsedData = JSON.parse(sup_main_add);
-                  const streetName = parsedData.default.streetName || '';
-                  const houseID = parsedData.default.houseID || '';
-                  const city = parsedData.default.cityName || '';
-                  const postalCode = parsedData.default.streetPostalCode || '';
-                  const region = parsedData.default.regionCode.Name || '';
-                  region1 = region;
-                  const country = parsedData.default.countryCode.Name || '';
-                  
-                  const formattedAddress = `${streetName}, ${houseID}, ${city}, ${region}, ${postalCode}, ${country}`;
-                  let resultArray = formattedAddress.split(',').map(item => item.trim()).filter(Boolean);
-                   sup_main_add = resultArray.join(', ');
-                  
-                  // console.log(formattedAddress);
-                }
-
-               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact First Name"){
-                  first_name = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-               }
-               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Last Name"){
-                 last_name  = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-               }
-               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Email"){
-                  email = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-               }
-               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Mobile Phone"){
-                 mobile_phone = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-               }
-               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Phone"){
-                contact_phone = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
-               }
-                
-               
-            }
-
-            supplier_contact1 =   first_name + " " + last_name ;
-            // + " " +email + " " +mobile_phone+" "+"ph2 :"+contact_phone;
-          }
-        // }
           
           // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/Doc1007341724/items';
           // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
           // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
           // const items = await getcall.tx(req).get('/getcall');
         
-        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
-        getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-        const response_data3 = await getcall.tx(req).get('getcall');
-        var r= response_data3;
-
-
-        
-
-        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids';
+        // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
         // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=BASIC';
         // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
         // const response_data3 = await getcall.tx(req).get('getcall');
+        // var r= response_data3;
+
 
            
-          if (response_data3.payload.length != 0){
+          if (response_data4.payload.length != 0){
 
           
 
-            for(let k2 = 0;k2<response_data3.payload.length;k2++){
-                  let a = response_data3.payload[k2].invitationId;
-                  let b = response_data3.payload[k2].item.itemId;
-                  var pay_date = response_data3.payload[k2].submissionDate;
+            for(let k2 = 0;k2<response_data4.payload.length;k2++){
+                if(response_data4.payload[k2].bidStatus == "Accepted"){
+                  let a = response_data4.payload[k2].invitationId;
+                  let b = response_data4.payload[k2].item.itemId;
+                  var pay_date = response_data4.payload[k2].submissionDate;
                   pay_date = pay_date.substring(0, 10);
 
                   pay_date = returndate(pay_date);
 
-                  
-                  if( response_data3.payload[k2].item.title == "Payment Method" ) {
-                      payment_type = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                   
+                  if( response_data4.payload[k2].item.title == "Payment Method" ) {
+                      payment_type = response_data4.payload[k2].item.terms[0].value.simpleValue;
                      payment_type = payment_type.toString();
                   }
-                   if( response_data3.payload[k2].item.title == "Progress"){
-                       progress = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                   if( response_data4.payload[k2].item.title == "Progress"){
+                       progress = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       progress = progress.toString(); 
                   }
 
-                  if( response_data3.payload[k2].item.title == "Percentage Payment for Progress"){
+                  if( response_data4.payload[k2].item.title == "Percentage Payment for Progress"){
                   
-                    per_pay_pro = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
+                    per_pay_pro = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_pro = per_pay_pro.toString() + "%";
                   }
 
-                  if(response_data3.payload[k2].item.title == "Percentage Payment for Retention"){
-                    per_pay_ret = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
+                  if(response_data4.payload[k2].item.title == "Percentage Payment for Retention"){
+                    per_pay_ret = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_ret = per_pay_ret.toString() + "%";
                   }
 
-                  if( response_data3.payload[k2].item.title == "Advance"){
-                    Advance = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                  if( response_data4.payload[k2].item.title == "Advance"){
+                    Advance = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     Advance = Advance.toString();
                   }
 
-                   if( response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
-                    if (Array.isArray(response_data3.payload[k2].item.terms[0].value.simpleValues)) {
-                      var res = response_data3.payload[k2].item.terms[0].value;
+                   if( response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
+                    if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
+                      var res = response_data4.payload[k2].item.terms[0].value;
                     
                       for(let es = 0;es<res.simpleValues.length;es++){
                         progress_documents = res.simpleValues[es] +" ,"+ progress_documents;
                       }
                         progress_documents = progress_documents.trim();
                       } else {
-                       progress_documents = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                       progress_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
                  
                   }
 
-                  if(response_data3.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
-                    if (Array.isArray(response_data3.payload[k2].item.terms[0].value.simpleValues)) {
-                      var res1 = response_data3.payload[k2].item.terms[0].value;
+                  if(response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
+                    if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
+                      var res1 = response_data4.payload[k2].item.terms[0].value;
                      
                       for(let es = 0;es<res1.simpleValues.length;es++){
                         retention_documents = res1.simpleValues[es] +", "+retention_documents;
@@ -1028,93 +919,93 @@ module.exports = cds.service.impl(async function () {
                       
                       retention_documents = retention_documents.trim();
                       } else {
-                        retention_documents = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                        retention_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
                     
                   }
 
 
-                   if( response_data3.payload[k2].item.title == "To be certified in Company by for Progress"){
-                      by = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                   if( response_data4.payload[k2].item.title == "To be certified in Company by for Progress"){
+                      by = response_data4.payload[k2].item.terms[0].value.simpleValue;
                    
 
                   }
                    
-                  if( response_data3.payload[k2].item.title == "To be certified in Company by for Retention"){
-                    by1 = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                  if( response_data4.payload[k2].item.title == "To be certified in Company by for Retention"){
+                    by1 = response_data4.payload[k2].item.terms[0].value.simpleValue;
               
                    }
 
-                   if( response_data3.payload[k2].item.title == "Retention Due Date"){
-                    due_date = response_data3.payload[k2].item.terms[0].value.dateValue;
+                   if( response_data4.payload[k2].item.title == "Retention Due Date"){
+                    due_date = response_data4.payload[k2].item.terms[0].value.dateValue;
                     due_date = due_date.substring(0, 10);
                     due_date = returndate(due_date);
                    
 
                 }
 
-                   if(response_data3.payload[k2].item.title == "Retention" ) {
-                     retention = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                   if(response_data4.payload[k2].item.title == "Retention" ) {
+                     retention = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     retention = retention.toString();
                   }
-                   if(response_data3.payload[k2].item.title == "Percentage Total" ) {
-                    var percentage = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
+                   if(response_data4.payload[k2].item.title == "Percentage Total" ) {
+                    var percentage = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                      percentage1 = percentage.toString();
               }
 
                    //Terms and conditions to be compared with
                    if(ser_mate == "Meterial"){
-                     if(response_data3.payload[k2].item.title == "IncoTerms" ){
-                       inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                     if(response_data4.payload[k2].item.title == "IncoTerms" ){
+                       inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                         inco_terms = inco_terms.toString();
                      }
                   }
 
                     if(ser_mate == "Service"){
-                    //   if(   response_data3.payload[k2].item.title == "IncoTerms" ){
-                    //     inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                    //   if(   response_data4.payload[k2].item.title == "IncoTerms" ){
+                    //     inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     //      inco_terms = inco_terms.toString();
                     // }
-                    if( response_data3.payload[k2].item.title == "IncoTerms (Service)" ){
-                      inco_terms = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                    if( response_data4.payload[k2].item.title == "IncoTerms (Service)" ){
+                      inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       inco_terms = inco_terms.toString();
                     }
                 }
 
-                  if(response_data3.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
-                     abg = response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
+                  if(response_data4.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
+                     abg = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     abg = abg.toString();
                     abg = abg + " %"
                     }
-                  if(   response_data3.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
-                       cpbg= response_data3.payload[k2].item.terms[0].value.bigDecimalValue;
+                  if(   response_data4.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
+                       cpbg= response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                       cpbg = cpbg.toString();
                       cpbg = cpbg + " %"
                     }
 
                  //other terms and conditions
-                  if(   response_data3.payload[k2].item.title == "Scope and Responsibilities" ) {
-                       ScopeandResponsibilities = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                  if(   response_data4.payload[k2].item.title == "Scope and Responsibilities" ) {
+                       ScopeandResponsibilities = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       ScopeandResponsibilities = ScopeandResponsibilities.toString();
                       }
-                  if(   response_data3.payload[k2].item.title == "Commercial Terms" ) {
-                       CommercialTerms = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                  if(   response_data4.payload[k2].item.title == "Commercial Terms" ) {
+                       CommercialTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                      
                       } 
-                 if(   response_data3.payload[k2].item.title == "Compliance Terms" ) {
-                       ComplianceTerms = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                 if(   response_data4.payload[k2].item.title == "Compliance Terms" ) {
+                       ComplianceTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                      
                       } 
-                  if(   response_data3.payload[k2].item.title == "Others" ) {
-                       Others = response_data3.payload[k2].item.terms[0].value.simpleValue;
+                  if(   response_data4.payload[k2].item.title == "Others" ) {
+                       Others = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       
                 } 
                 
                 //price details
-                if(response_data3.payload[k2].item.title == "Totals"){
-                  for(let v = 0;v<response_data3.payload[k2].itemsWithBid.length;v++ ){
+                if(response_data4.payload[k2].item.title == "Totals"){
+                  for(let v = 0;v<response_data4.payload[k2].itemsWithBid.length;v++ ){
                     material_items.push({
-                      itemid : response_data3.payload[k2].itemsWithBid[v],
+                      itemid : response_data4.payload[k2].itemsWithBid[v],
                     }) 
                   }
 
@@ -1123,13 +1014,14 @@ module.exports = cds.service.impl(async function () {
                 if(ser_mate == "Material"){
                 if(material_items.length != 0){
                   for(let b = 0 ;b<material_items.length;b++){
-                    // response_data3.payload.forEach(e => {
-                      for(let a = 0;a<response_data3.payload.length;a++){
-                        // var invt_id = response_data3.payload[a].invitationId;
+                    // response_data4.payload.forEach(e => {
+                      for(let a = 0;a<response_data4.payload.length;a++){
+                        // var invt_id = response_data4.payload[a].invitationId;
                       // if(e.itemId == material_items[b].itemid && e.internalId == sname){
-                        if( response_data3.payload[a].itemId == material_items[b].itemid){
-                          ItemShortDescription = response_data3.payload[a].item.title;
-                        let terms = response_data3.payload[a].item.terms;
+                        if( response_data4.payload[a].itemId == material_items[b].itemid){
+                          if(response_data4.payload[a].bidStatus == "Accepted"){
+                          ItemShortDescription = response_data4.payload[a].item.title;
+                        let terms = response_data4.payload[a].item.terms;
                           if(terms.length != 0){
                              var value1 = "value";
                            for(let m= 0;m<terms.length;m++){
@@ -1241,6 +1133,40 @@ module.exports = cds.service.impl(async function () {
                                     }
                              
                                  }
+                                 if(terms[m].title == "Requisition ID"){
+                                 
+                               
+                                  if(Object.keys(terms[m]).includes(value1)){
+                                    RequisitionID = terms[m].value.simpleValue;
+                                  }else{
+                                    RequisitionID = ""
+                                  }
+                           
+                               }
+                               if(terms[m].title == "Plant"){
+                                 
+                               
+                                if(Object.keys(terms[m]).includes(value1)){
+                                  plant = terms[m].value.simpleValue;
+                                  plant_id = plant.split(' ')[0];
+                                  plant_name = plant.split(' ').slice(1).join(' ');
+                                }else{
+                                  plant = "";
+                                  plant_id = "";
+                                  plant_name = "";
+                                }
+                         
+                             }
+                             if(terms[m].title == "Subject of Proposal/Order"){
+                                 
+                               
+                              if(Object.keys(terms[m]).includes(value1)){
+                                subject_of_proposal = terms[m].value.simpleValue;
+                              }else{
+                                tolerence = ""
+                              }
+                       
+                           }
         
         
                                 if(terms[m].title == "Delivery Date"){
@@ -1274,7 +1200,11 @@ module.exports = cds.service.impl(async function () {
                                
         
                                 if(terms[m].title =="Tax"){
+                                  if(Object.keys(terms[m]).includes(value1)){
                                    IndianTaxPER = terms[m].value.simpleValue;
+                                  }else{
+                                    IndianTaxPER = "";
+                                  }
                                 }
                                
         
@@ -1282,7 +1212,7 @@ module.exports = cds.service.impl(async function () {
                                
                               }
                             }
-
+                          }
                       }
                     }
 
@@ -1344,6 +1274,7 @@ module.exports = cds.service.impl(async function () {
               }
                 
                }
+              }
                
                }
 
@@ -1458,7 +1389,7 @@ module.exports = cds.service.impl(async function () {
 
          })       
      
-        //  if(doc_id != tsk_doc_id){
+         if(doc_id != tsk_doc_id){
 
          vendordata.push({
           Proposed_Vendor_Code               : `${pvcode}`, //disp
@@ -1476,7 +1407,7 @@ module.exports = cds.service.impl(async function () {
           Rank                               : "0",
     
          })
-        // }
+        }
       }
      
       vendorids = [];
@@ -1525,7 +1456,7 @@ module.exports = cds.service.impl(async function () {
     }
      web_tab_dates.push({
       document_id : `${doc_id}`,
-      publish_date : `${project_currency.openDate}`,
+      publish_date : `${no_of_docs[i1].web_pub_date}`,
       pvendor : `${pvendor}`,
       icon_type : icon_type,
       status : `${award_vendor1}`,
@@ -1560,6 +1491,7 @@ module.exports = cds.service.impl(async function () {
       type : icon_type,
     })
   
+    web_tab1_amt = [];
      // L1 AMOUNT OBTAINED CALUCLATION
 
     
@@ -1576,12 +1508,12 @@ module.exports = cds.service.impl(async function () {
         PR_NumberBKTsBKT : `${project_id}`,
         "PR_NumberBKTsBKT":RequisitionID.toString() ,
         "Subject_of_ProposalOROrder": `${subject_of_proposal}`,
-        "Previous_PAN_References": "     ",
+        "Previous_PAN_References": "",
         "Split_OrderORNo_of_vendors":sup_count.toString(),
-        "SOP_Type": "     ",
+        "SOP_Type": "",
         "Order_Type_OR_Document_tyFuuidpe": "",
-        "Asset_Type": "     ", //hided
-        "Nature_of_Transaction": "     ",
+        "Asset_Type": "", //hided
+        "Nature_of_Transaction": "",
         "Order_Location_OR_Plant":`${plant_name}`,
         "Base_line_spend": baselinespend1.toString(),
         "Project_CurrencyORBase_Currency": `${proj_currency}`,
@@ -1593,26 +1525,26 @@ module.exports = cds.service.impl(async function () {
         "Savings_against_base_line_spend_of_RFP": savings.toString(),
         // "Number_of_Vendors_Shortlisted_for_RFP":supplier_count,
         "Number_of_Vendors_Shortlisted_for_RFP":sup_count.toString(),
-        "Number_of_Vendors_Technically_Qualified": "        ",
+        "Number_of_Vendors_Technically_Qualified": "",
         "Required_at_Site_Date":`${delivery_date}`,
         "RFP_Number": `${doc_id}`,
-        "RFP_Publish_Date":`${web_publish_date1}`,
-        "Time_Taken_for_FinalizationDASHIn_DAYS": final_date.toString(),
+        "RFP_Publish_Date":`${no_of_docs[i1].web_publish_date}`,
+        "Time_Taken_for_FinalizationDASHIn_DAYS": `${no_of_docs[i1].final_date}`,
         // "Vendor_Final_Quotation_Date": web_publish_date,  //present in payment table
         // "Vendor_Final_Quotation_Amount": l1AmountObtained.toString(),  //present in payment table
         "status": "",
         "created_by": `${createdby}`,
         "task_id": `${uniqueName1}`,
-        "type":`${number_of_docs.payload[i1].iconType}`,
-        "status_a":`${number_of_docs.payload[i1].status}`,
+        "type":`${icon_type}`,
+        "status_a":`${doc_status}`,
         "ProjectId":`${cur_pro_id}`,
         "total_levels_of_approval" : "",
         "Current_level_of_approval" : "",
         "Sap_workitem_id":"", 
         // "justification": "",
-        "Comments": "        ",
-        "submitted_by": "     ",
-        "submitted_date": "     ",
+        "Comments": "",
+        "submitted_by": "",
+        "submitted_date": "",
         
       })
 
@@ -1624,14 +1556,18 @@ module.exports = cds.service.impl(async function () {
        l1AmountObtained = "      "
 
 
-    }
-    else{
-      console.log("no document ids are under pending for selection");
-    }
+    // }
+    
 
   }
-
-  
+}
+      } else{
+      return "no data for this project";
+    }
+     }else{
+      return return_doc;
+     }
+    
 
   console.log("stage5.1")
   // scenario 4
@@ -1740,6 +1676,40 @@ else if(oneround = 1 && type == "RFQ"){
 
 }
 }
+
+for(let q= 0;q<sc_web_tab2.length;q++){
+  for(let r=0;r<web_tab1.length;r++){
+    if((web_tab1[r].type == "RFQ")&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
+      var dateString = web_tab1[r].submissionDate;
+      var datesub = dateString.substring(0, 10)
+      datesub = returndate(datesub);
+      var no_v = sc_web_tab2[q].scount;
+      var am = web_tab1[r].amount;
+      am = returnamt(am);
+      number = sc_web_tab2[q].doc_id;
+      // number = number.substring(number.length - 4)
+      if(pan_web_event.length == 2){
+        // if(web_tab_dates.length !=1){
+      pan_web_event.push({
+        idd : "3" ,
+        PAN_Number :tsk_doc_id.toString(),
+        eventNo : "Reverse Auction(RA)",
+        number:`${number}`,
+        date:`${datesub}`,
+        numberOfVendorsParticipated :no_v.toString(),
+        l1AmountObtained :am.toString(),
+       }) 
+      // }
+      }
+  
+    }
+    // break;
+    }
+    // break;
+  }
+
+
+
 
 }
 // else{
@@ -1881,47 +1851,47 @@ else if(oneround = 1 && type == "RFQ"){
 
 
 
-  if(web_tab1.length != 0 && web_tab2.length != 0){
-  const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
-  var final_web_tab = [];
+  // if(web_tab1.length != 0 && web_tab2.length != 0){
+  // const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
+  // var final_web_tab = [];
 
-  for(let z=0;z<web_tab_dates.length;z++){
-    let number = "";
-    number = web_tab_dates[z].document_id;
-   //  number = number.substring(number.length - 4)
-    var dateString = web_tab_dates[z].publish_date;
-     var datesub = dateString.substring(0, 10)
-     datesub = returndate(datesub);
-    var no_v = web_tab_dates[z].pvendor;
-    var am = web_tab_dates[z].l1amount;
-    am = returnamt(am);
-    if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
-      if(pan_web_event.length == 0 || pan_web_event.length == 2){
-        if(pan_web_event.length == 0){
-          var idd = "1";
-          var  eventno = "First Published";
-          var web_ind = 1;
-        }
-        else if(pan_web_event.length == 2){
-          var idd = "3";
-          var eventno = "Reverse Auction(RA)";
-          var web_ind = 0;
-        }
+  // for(let z=0;z<web_tab_dates.length;z++){
+  //   let number = "";
+  //   number = web_tab_dates[z].document_id;
+  //  //  number = number.substring(number.length - 4)
+  //   var dateString = web_tab_dates[z].publish_date;
+  //    var datesub = dateString.substring(0, 10)
+  //    datesub = returndate(datesub);
+  //   var no_v = web_tab_dates[z].pvendor;
+  //   var am = web_tab_dates[z].l1amount;
+  //   am = returnamt(am);
+  //   if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
+  //     if(pan_web_event.length == 0 || pan_web_event.length == 2){
+  //       if(pan_web_event.length == 0){
+  //         var idd = "1";
+  //         var  eventno = "First Published";
+  //         var web_ind = 1;
+  //       }
+  //       else if(pan_web_event.length == 2){
+  //         var idd = "3";
+  //         var eventno = "Reverse Auction(RA)";
+  //         var web_ind = 0;
+  //       }
 
-      pan_web_event.push({
-          idd : `${idd}` ,
-          PAN_Number : tsk_doc_id.toString(),
-          eventNo : eventno,
-          number:`${number}`,
-          date:`${datesub}`,
-          numberOfVendorsParticipated :no_v.toString(),
-          l1AmountObtained :am.toString(),
-         })
-      }
-    }
-   }
+  //     pan_web_event.push({
+  //         idd : `${idd}` ,
+  //         PAN_Number : tsk_doc_id.toString(),
+  //         eventNo : eventno,
+  //         number:`${number}`,
+  //         date:`${datesub}`,
+  //         numberOfVendorsParticipated :no_v.toString(),
+  //         l1AmountObtained :am.toString(),
+  //        })
+  //     }
+  //   }
+  //  }
    
-  }
+  // }
   }
  
   if( pan_web_event.length == 1){
@@ -2139,6 +2109,7 @@ else if(oneround = 1 && type == "RFQ"){
                                l1Amount = l1Amount +  terms3[it].value.moneyValue.amount;
                                bid_currency = terms3[it].value.supplierValue.currency;
                                l3Amount = terms3[it].value.moneyValue.amount;
+                                var l4Amount = l3Amount;
                                l3Amount = returnamt(l3Amount);
                                }else{
                                  l1Amount = 0;
@@ -2267,7 +2238,7 @@ else if(oneround = 1 && type == "RFQ"){
                       allocation_type : shrt_lst_count.payload[r].supplierBids[k].winningSplitType,
                       allocate_per : shrt_lst_count.payload[r].supplierBids[k].winningSplitValue,
                       // totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
-                      totl_amt : `${l3Amount}`,
+                      totl_amt : `${l4Amount}`,
                     })
                   
 
@@ -2500,7 +2471,8 @@ else if(oneround = 1 && type == "RFQ"){
     console.log("stage5.6")
             
             var save1= 0 ;
-           
+            var amt2 = 0;
+            var per_value = 0;
          
              if(ser_mate == "Material"){
 
@@ -2513,8 +2485,8 @@ else if(oneround = 1 && type == "RFQ"){
                     if(pan_web_event[f].number != "NA"){
                     for(let j= 0 ;j<item_details.length;j++){
                       if(item_details[j].allocation_type == 1){
-                        var per_value = item_details[j].allocate_per;
-                        var amt2 = (item_details[j].totl_amt/100)*per_value;
+                         per_value = item_details[j].allocate_per;
+                         amt2 = (item_details[j].totl_amt/100)*per_value;
                         save1 = save1 + amt2;
                            amt2 = 0;
                       }
@@ -2545,16 +2517,16 @@ else if(oneround = 1 && type == "RFQ"){
               if(price_details1[k].PAN_Number == pan_web_event[f].number && item_details[j].inv_id == price_details1[k].inv_id  && item_details[j].item_name == price_details1[k].item_name){
 
                 if(item_details[j].allocation_type == 1){
-                  var per_value = item_details[j].allocate_per;
+                   per_value = item_details[j].allocate_per;
                   if(pan_web_event[f].eventNo == "First Published"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 3)){
-                     var amt2 = (price_details1[k].amount/100)*per_value;
+                      amt2 = (price_details1[k].amount/100)*per_value;
                     //  amt2 =  amt2.toFixed(2)
                   }
                   
                    
                   else if(pan_web_event[f].eventNo == "Reverse Auction(RA)"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 2)){
                     // var amt2 = (item_details[j].totl_amt/100)*per_value;
-                    var amt2 = (price_details1[k].amount/100)*per_value;
+                     amt2 = (price_details1[k].amount/100)*per_value;
                     // amt2 =  amt2.toFixed(2)
                   }
                   
@@ -2585,7 +2557,7 @@ else if(oneround = 1 && type == "RFQ"){
             if(pan_web_event[f].number != "NA"){
             for(let j= 0 ;j<item_details.length;j++){
               if(item_details[j].allocation_type == 1){
-                var per_value = item_details[j].allocate_per;
+                 per_value = item_details[j].allocate_per;
                   if(pan_web_event[f].eventNo == "First Published"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 3)){
                     //  var amt2 = (price_details1[k].amount/100)*per_value;
                     //  amt2 =  amt2.toFixed(2)
@@ -2593,7 +2565,7 @@ else if(oneround = 1 && type == "RFQ"){
                   
                    
                   // else if(pan_web_event[f].eventNo == "Reverse Auction(RA)"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 2)){
-                    var amt2 = (item_details[j].totl_amt/100)*per_value;
+                     amt2 = (item_details[j].totl_amt/100)*per_value;
                     // amt2 =  amt2.toFixed(2)
                   // }
                   
@@ -2688,32 +2660,35 @@ else if(oneround = 1 && type == "RFQ"){
 
 
 }
+  // }else{
+  //   return return_doc;
+  // }
  
-  else{
-     return "NO documents available for this project";
-  } 
+  // else{
+  //    return "NO documents available for this project";
+  // } 
 
  
 
 
   // }
  
-}else if(len1 == len){
-    return "No Pan Form Data Available"
-}
+// }else if(len1 == len){
+//     return "No Pan Form Data Available"
+// }
 
 
-}
-else{
-  return return_doc;
-}
+// }
+// else{
+//   return return_doc;
+// }
 
-   }
+  //  }
 
-  }
-  else{
-    return "NO pending tasks are available for this user"
-  }
+  // }
+  // else{
+  //   return "NO pending tasks are available for this user"
+  // }
  
 
   // PUSHING DATA INTO PROJECTS AND DOCS TABLE
@@ -3022,7 +2997,7 @@ else{
           Proposed_Vendor_Code:vendortaxdetails[j].Proposed_Vendor_Code,
           Item_Code:vendortaxdetails[j].Item_Code
         })).with(body8);
-        console.log(vtd);
+        console.log(putvtd);
       }else{
         const response_tax = await INSERT.into(vendorTaxDetails_APR).entries(body8);
         console.log(response_tax);
