@@ -48,8 +48,8 @@ module.exports = cds.service.impl(async function () {
    
     var baselinespend = "";
     var baselinespend1 = "";
-    var sbg =null;
-    var sbu =null;
+    var sbg ="";
+    var sbu ="";
     var savings=0;
     var ser_mate = "";
     var itemid = "";
@@ -236,7 +236,7 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1017070569";
     // cur_pro_id = "WS1012623630" //service
     // cur_pro_id = "WS1005421389" //usecase4
-    // cur_pro_id = ""
+    // cur_pro_id = "WS1024436148"
 
     
      
@@ -1397,6 +1397,8 @@ module.exports = cds.service.impl(async function () {
             Order_Value_BKTIn_Bid_CurrencyBKT                                            : `${bid_currency}`,
             Vendor_Final_Quotation_Date                                                  : `${pay_date}`,
             Vendor_Final_Quotation_Amount                                                : `${l2Amount}`,
+            Project_CurrencyORBase_Currency                                              : `${UnitPrice}`,
+            Order_CurrencyORBid_currency                                                 : `${UnitPrice}`,
             
 
          })       
@@ -2112,7 +2114,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                              if(terms3[it].title =="Quantity"){
                                if(Object.keys(terms3[it]).includes(value2)){
                                 UOM = terms3[it].value.quantityValue.unitOfMeasureName;
-                                Quantity = terms3[it].fromValue.quantityValue.amount;
+                                Quantity = terms3[it].value.quantityValue.amount;
                                 Quantity = Quantity.toLocaleString('en-US');
                                }else{
                                  Quantity = "";
@@ -2436,7 +2438,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       UOM                                                                          : `${UOM}`,
                       Quantity                                                                     : `${Quantity}`,
                       Unit_Price                                                                   : `${Amount}`,
-                      Amount                                                                       : `${Amount}`,
+                      Amount                                                                       : `${Amount }`,
                       extendedPrice                                                                :  `${Amount}`,
                       Indian_Tax_PER                                                               : `${IndianTaxPER}`,
                       Quantity_Over_Delivery_Tolerance                                             : `${tolerence}`,
@@ -2666,6 +2668,14 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         }
       }
       
+      
+      for(let h=0;h<panheader.length;h++){
+      
+        if(panheader[h].PAN_Number == tsk_doc_id){
+          panheader[h].Required_at_Site_Date = `${delivery_date}`;
+        }
+        
+      }
 
 
   console.log("stage6")
