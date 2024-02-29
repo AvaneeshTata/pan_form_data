@@ -217,15 +217,18 @@ module.exports = cds.service.impl(async function () {
    
     var userName = req.data.userName;
     // var userName = "TPLBuyer";
-   
+    password = "PasswordAdapter1"
     if(userName == "TPLBuyer"){
        createdby = "harshvardhans-v@tataprojects.com";
+       password = "ThirdPartyUser"
     }else{
       createdby = userName;
+
     }
     console.log(createdby);
     
-    password = "ThirdPartyUser"
+    // password = "ThirdPartyUser"
+    
     cur_pro_id = req.data.projectid;
     // cur_pro_id = "WS1007313163";  //usecase 3 p
     // cur_pro_id = "WS1018768312";
@@ -233,6 +236,8 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1017070569";
     // cur_pro_id = "WS1012623630" //service
     // cur_pro_id = "WS1005421389" //usecase4
+    // cur_pro_id = ""
+
     
      
 
