@@ -165,7 +165,7 @@ module.exports = cds.service.impl(async function () {
     var pvendor = 0;
     var l1amount =[];
     var icon_type = "";
-    var l1AmountObtained = "";
+    var l1AmountObtained = 0;
     var final_quote = "";
     var order_currency = "";
     var tech_commitee_clearedproposal = "";
@@ -232,6 +232,7 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1014144301";
     // cur_pro_id = "WS1017070569";
     // cur_pro_id = "WS1012623630" //service
+    // cur_pro_id = "WS1005421389" //usecase4
     
      
 
@@ -476,8 +477,8 @@ module.exports = cds.service.impl(async function () {
           for(let l = 0;l<web_sup_count.payload.length;l++){
             // if(web_sup_count.payload[l].supplierBidStatus == "Participated"){
               var bid = "hasBid";
-              if(bid in web_sup_count.payload[l] ){
-                if(web_sup_count.payload[l].hasBid == true){
+              // if(bid in web_sup_count.payload[l] ){
+                // if(web_sup_count.payload[l].hasBid == true){
               pvendor = pvendor + 1;
               supplier.push({
                     supplier_name:web_sup_count.payload[l].invitationId,
@@ -502,8 +503,8 @@ module.exports = cds.service.impl(async function () {
                 vinv_id :web_sup_count.payload[l].invitationId, 
 
               })
-            }
-            }
+            // }
+            // }
           }
         }
           else{
@@ -625,7 +626,7 @@ module.exports = cds.service.impl(async function () {
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
         getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
         getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
-         supplierdata = await getcall.tx(req).get('getcall');
+         supplierdata = await getcall.tx(req).get('/getcall');
           }catch(error){
             return error;
           }
@@ -689,11 +690,16 @@ module.exports = cds.service.impl(async function () {
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
         getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
-         response_data4 = await getcall.tx(req).get('getcall');
-       }catch(error){
-        return error;
+         response_data4 = await getcall.tx(req).get('/getcall');
+       }catch(e){
+        // return e;
+         continue;
+        
        }
-
+      //  finally{
+      //  
+      //  }
+        
         var d = response_data4;
           
         if(response_data4.payload.length != 0){
@@ -750,7 +756,7 @@ module.exports = cds.service.impl(async function () {
            
 
             }
-            else if((inviid==response_data4.payload[v].invitationId)&&(alterid ==response_data4.payload[v].alternativeId)){
+            else if((alterid ==response_data4.payload[v].alternativeId)){
               // l1Amount = 0;
               if(terms2.length != 0){
                 for(let t =0;t<terms2.length;t++){
@@ -762,7 +768,9 @@ module.exports = cds.service.impl(async function () {
                   }
                 }
              }
-             web_tab2.push({
+            
+            }
+            web_tab2.push({
               submissionDate : subdate,
               amount : lamount,
               doc_id : doc_id,
@@ -774,7 +782,6 @@ module.exports = cds.service.impl(async function () {
             web_tab1_amt.push(lamount);
             flag3 = 0;
             lamount = 0;
-            }
          
             alterid = response_data4.payload[v].alternativeId;
         
@@ -1408,6 +1415,7 @@ module.exports = cds.service.impl(async function () {
     
          })
         }
+        
       }
      
       vendorids = [];
@@ -1480,16 +1488,16 @@ module.exports = cds.service.impl(async function () {
   }
     
 
-    web_tab1.push({
-      submissionDate : subdate,
-      doc_id : doc_id,
-      amount : web_tab_amt,
-      status : `${award_vendor1}`,
-      // unit : unit,
-      // smid : supplier[k].smvendor_id,
-      // smid : vendorids[k].smvendor_id,
-      type : icon_type,
-    })
+    // web_tab1.push({
+    //   submissionDate : subdate,
+    //   doc_id : doc_id,
+    //   amount : web_tab_amt,
+    //   status : `${award_vendor1}`,
+    //   // unit : unit,
+    //   // smid : supplier[k].smvendor_id,
+    //   // smid : vendorids[k].smvendor_id,
+    //   type : icon_type,
+    // })
   
     web_tab1_amt = [];
      // L1 AMOUNT OBTAINED CALUCLATION
@@ -1553,7 +1561,7 @@ module.exports = cds.service.impl(async function () {
        l1amount = [];
        number_of_vendors = 0;
        pvendor = 0;
-       l1AmountObtained = "      "
+       l1AmountObtained = 0;
 
 
     // }
@@ -1574,22 +1582,22 @@ module.exports = cds.service.impl(async function () {
     var date = [];
     var date1 = [];
 
-    if(web_tab1.length != 0){
+    // if(web_tab1.length != 0){
      if(web_tab2.length != 0){
 
-      var fstdoc = web_tab1[0].doc_id;
+      var fstdoc = web_tab2[0].doc_id;
        var oneround = 0;
        var type = "";
 
-     for(let d=0;d<web_tab1.length;d++){
-      date.push(web_tab1[d].submissionDate)
-      if(web_tab1[d].type != "RFQ"){
-        date1.push(web_tab1[d].submissionDate)
+     for(let d=0;d<web_tab2.length;d++){
+      date.push(web_tab2[d].submissionDate)
+      if(web_tab2[d].type != "RFQ"){
+        date1.push(web_tab2[d].submissionDate)
       }
        if(oneround == 0){
-        if(fstdoc !=web_tab1[d].doc_id){
+        if(fstdoc !=web_tab2[d].doc_id){
           oneround = 1;
-          type = web_tab1[d].type;
+          type = web_tab2[d].type;
       }
       }
      }
@@ -1599,13 +1607,13 @@ var smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
 // console.log(smallestdate);
 
 for(let q= 0;q<sc_web_tab2.length;q++){
-for(let r=0;r<web_tab1.length;r++){
-  if((web_tab1[r].submissionDate == smallestdate)&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
-    var dateString = web_tab1[r].submissionDate;
+for(let r=0;r<web_tab2.length;r++){
+  if((web_tab2[r].submissionDate == smallestdate)&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
+    var dateString = web_tab2[r].submissionDate;
     var datesub = dateString.substring(0, 10)
     datesub = returndate(datesub);
     var no_v = sc_web_tab2[q].scount;
-    var am = web_tab1[r].amount;
+    var am = web_tab2[r].amount;
     am = returnamt(am);
     number = sc_web_tab2[q].doc_id;
     // number = number.substring(number.length - 4)
@@ -1634,13 +1642,13 @@ for(let r=0;r<web_tab1.length;r++){
 if(oneround = 1 && type == "RFP"){
 var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0]);
  for(let q= 0;q<sc_web_tab2.length;q++){
-  for(let r=0;r<web_tab1.length;r++){
-    if((web_tab1[r].submissionDate == round2_date)&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
-      var dateString = web_tab1[r].submissionDate;
+  for(let r=0;r<web_tab2.length;r++){
+    if((web_tab2[r].submissionDate == round2_date)&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
+      var dateString = web_tab2[r].submissionDate;
       var datesub = dateString.substring(0, 10)
       datesub = returndate(datesub);
       var no_v = sc_web_tab2[q].scount;
-      var am = web_tab1[r].amount;
+      var am = web_tab2[r].amount;
       am = returnamt(am);
       number = sc_web_tab2[q].doc_id;
       // number = number.substring(number.length - 4)
@@ -1678,13 +1686,13 @@ else if(oneround = 1 && type == "RFQ"){
 }
 
 for(let q= 0;q<sc_web_tab2.length;q++){
-  for(let r=0;r<web_tab1.length;r++){
-    if((web_tab1[r].type == "RFQ")&&(web_tab1[r].doc_id == sc_web_tab2[q].doc_id)){
-      var dateString = web_tab1[r].submissionDate;
+  for(let r=0;r<web_tab2.length;r++){
+    if((web_tab2[r].type == "RFQ")&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
+      var dateString = web_tab2[r].submissionDate;
       var datesub = dateString.substring(0, 10)
       datesub = returndate(datesub);
       var no_v = sc_web_tab2[q].scount;
-      var am = web_tab1[r].amount;
+      var am = web_tab2[r].amount;
       am = returnamt(am);
       number = sc_web_tab2[q].doc_id;
       // number = number.substring(number.length - 4)
@@ -1711,7 +1719,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
 
 
-}
+// }
 // else{
 //   console.log("item details are not there")
 // }
@@ -1751,7 +1759,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   var dates1 = dates.map(dateString => new Date(dateString));
  
    console.log("stage5.2")
-  if(web_tab1.length != 0){
+  // if(web_tab1.length != 0){
     if(web_tab2.length == 0){
     const smallestDate1 = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
     const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
@@ -1780,7 +1788,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var idd = "2";
           var eventno = "Last Published(Before RA)"
          }
-
+          if(pan_web_event.length ==0||pan_web_event.length==1){
           pan_web_event.push({
               idd : `${idd}` ,
               PAN_Number : tsk_doc_id.toString(),
@@ -1790,6 +1798,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               numberOfVendorsParticipated :no_v.toString(),
               l1AmountObtained :am.toString(),
              })
+            }
           }
            if(oneround1 == 1 && type1 == "RFP"){
             last_rfp_date =  date2.reduce((acc, curr) => curr > acc ? curr : acc, date2[0]);
@@ -1847,7 +1856,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
       }
 
-  }
+  // }
 
 
 
