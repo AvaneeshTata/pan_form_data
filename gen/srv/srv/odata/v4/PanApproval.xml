@@ -26,6 +26,7 @@
         <EntitySet Name="PAN_attachments_APR" EntityType="PanApproval.PAN_attachments_APR">
           <NavigationPropertyBinding Path="pdftotab1" Target="PAN_Details_APR"/>
         </EntitySet>
+        <EntitySet Name="PAN_Payment_Method_Drop_APR" EntityType="PanApproval.PAN_Payment_Method_Drop_APR"/>
         <EntitySet Name="vendorTaxDetails_APR" EntityType="PanApproval.vendorTaxDetails_APR"/>
         <FunctionImport Name="sendforapproval" Function="PanApproval.sendforapproval"/>
         <FunctionImport Name="InsertData" Function="PanApproval.InsertData"/>
@@ -136,7 +137,49 @@
         <Property Name="Discount_Amount" Type="Edm.String"/>
         <Property Name="Discount_percentage" Type="Edm.String"/>
         <Property Name="Rank" Type="Edm.String"/>
-        <NavigationProperty Name="vendtovenr" Type="PanApproval.PAN_vendor_response_APR" ContainsTarget="true"/>
+        <Property Name="Proposed_Vendor_Name" Type="Edm.String"/>
+        <Property Name="Supplier_Origin_State" Type="Edm.String"/>
+        <Property Name="Destination_State_BKTShipDASHto_LocationBKT" Type="Edm.String"/>
+        <Property Name="Vendor_GST_Number" Type="Edm.String"/>
+        <Property Name="Vendor_CE_Score" Type="Edm.String"/>
+        <Property Name="Vendor_CE_Date" Type="Edm.String"/>
+        <Property Name="Vendor_PE_Score" Type="Edm.String"/>
+        <Property Name="Vendor_PE_Date" Type="Edm.String"/>
+        <Property Name="Vendor_Contact_PersonDASH1" Type="Edm.String"/>
+        <Property Name="Vendor_Contact_PersonDASH2" Type="Edm.String"/>
+        <Property Name="Technical_Committee_who_cleared_the_proposal" Type="Edm.String"/>
+        <Property Name="Commercial_Committee_who_cleared_the_proposal" Type="Edm.String"/>
+        <Property Name="Vendor_References_to_be_displayed_in_Order" Type="Edm.String"/>
+        <Property Name="Shortlisted_Vendors_Response_summary" Type="Edm.String"/>
+        <Property Name="Order_Value_BKTIn_Project_CurrencyBKT" Type="Edm.String"/>
+        <Property Name="Order_Value_BKTIn_Bid_CurrencyBKT" Type="Edm.String"/>
+        <Property Name="Vendor_Final_Quotation_Date" Type="Edm.String"/>
+        <Property Name="Vendor_Final_Quotation_Amount" Type="Edm.String"/>
+        <Property Name="Project_CurrencyORBase_Currency" Type="Edm.String"/>
+        <Property Name="Order_CurrencyORBid_currency" Type="Edm.String"/>
+        <Property Name="Incoterms" Type="Edm.String"/>
+        <Property Name="Number_of_Back_to_back_Terms_agreed_with_Vendor_as_per_GPC_OR_GCC" Type="Edm.String"/>
+        <Property Name="Details_of_deviated_or_better_terms_agreed_with_the_Vendor" Type="Edm.String"/>
+        <Property Name="Market_Scenario_and_Demand" Type="Edm.String"/>
+        <Property Name="Companys_Position_and_Market_dynamics_of_this_purchase" Type="Edm.String"/>
+        <Property Name="Should_Be_Cost_estimated" Type="Edm.String"/>
+        <Property Name="Highlights_of_this_proposal_and_Price_Justification_for_this_proposal" Type="Edm.String"/>
+        <Property Name="Price_Escalation_Agreed_if_any" Type="Edm.String"/>
+        <Property Name="Particulars_of_any_Free_Service_OR_Supply_Guarantees_OR_Warrant_yfrom_Vendor" Type="Edm.String"/>
+        <Property Name="Transportation" Type="Edm.String"/>
+        <Property Name="Logistics_Cost" Type="Edm.String"/>
+        <Property Name="Delivery_Schedule" Type="Edm.String"/>
+        <Property Name="Tax_Details" Type="Edm.String"/>
+        <Property Name="Additional_Remarks" Type="Edm.String"/>
+        <Property Name="ABG" Type="Edm.String"/>
+        <Property Name="ABG_Value" Type="Edm.String"/>
+        <Property Name="CPBG" Type="Edm.String"/>
+        <Property Name="CPBG_Value" Type="Edm.String"/>
+        <Property Name="Scope_and_Responsibilities" Type="Edm.String"/>
+        <Property Name="Commercial_Terms" Type="Edm.String"/>
+        <Property Name="Compliance_Terms" Type="Edm.String"/>
+        <Property Name="Others" Type="Edm.String"/>
+        <NavigationProperty Name="vendtovenr" Type="Collection(PanApproval.PAN_vendor_response_APR)" ContainsTarget="true"/>
         <NavigationProperty Name="vendtoptd" Type="Collection(PanApproval.PAN_PAYMENT_TERM_DETAILS_APR)" ContainsTarget="true"/>
         <NavigationProperty Name="vendtopd" Type="Collection(PanApproval.PAN_PRICE_DETAILS_APR)" ContainsTarget="true"/>
         <NavigationProperty Name="vendor_datatotab1" Type="PanApproval.PAN_Details_APR" Partner="tab1tovendor_data"/>
@@ -194,13 +237,12 @@
       </EntityType>
       <EntityType Name="PAN_PAYMENT_TERM_DETAILS_APR">
         <Key>
-          <PropertyRef Name="Proposed_Vendor_Code"/>
-          <PropertyRef Name="PAN_Number"/>
-          <PropertyRef Name="iddd"/>
+          <PropertyRef Name="ptdkey"/>
         </Key>
-        <Property Name="Proposed_Vendor_Code" Type="Edm.String" Nullable="false"/>
-        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
-        <Property Name="iddd" Type="Edm.String" Nullable="false"/>
+        <Property Name="ptdkey" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="Proposed_Vendor_Code" Type="Edm.String"/>
+        <Property Name="PAN_Number" Type="Edm.String"/>
+        <Property Name="iddd" Type="Edm.String"/>
         <Property Name="slNo" Type="Edm.Int32"/>
         <Property Name="Payment_methord" Type="Edm.String" DefaultValue="RTGS payment"/>
         <Property Name="Percentage" Type="Edm.String"/>
@@ -212,13 +254,12 @@
       </EntityType>
       <EntityType Name="PAN_PRICE_DETAILS_APR">
         <Key>
-          <PropertyRef Name="Proposed_Vendor_Code"/>
-          <PropertyRef Name="PAN_Number"/>
-          <PropertyRef Name="Item_Code"/>
+          <PropertyRef Name="pdkey"/>
         </Key>
-        <Property Name="Proposed_Vendor_Code" Type="Edm.String" Nullable="false"/>
-        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
-        <Property Name="Item_Code" Type="Edm.String" Nullable="false"/>
+        <Property Name="pdkey" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="Proposed_Vendor_Code" Type="Edm.String"/>
+        <Property Name="PAN_Number" Type="Edm.String"/>
+        <Property Name="Item_Code" Type="Edm.String"/>
         <Property Name="HSN_OR_SAC_Code" Type="Edm.String"/>
         <Property Name="extendedPrice" Type="Edm.String"/>
         <Property Name="Item_Short_Description" Type="Edm.String"/>
@@ -270,19 +311,12 @@
           <ReferentialConstraint Property="PAN_Number" ReferencedProperty="PAN_Number"/>
         </NavigationProperty>
       </EntityType>
-      <EntityType Name="vendorTaxDetails_APR">
+      <EntityType Name="PAN_Payment_Method_Drop_APR">
         <Key>
-          <PropertyRef Name="Proposed_Vendor_Code"/>
-          <PropertyRef Name="PAN_Number"/>
-          <PropertyRef Name="Item_Code"/>
-          <PropertyRef Name="idd"/>
+          <PropertyRef Name="id"/>
         </Key>
-        <Property Name="Proposed_Vendor_Code" Type="Edm.String" Nullable="false"/>
-        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
-        <Property Name="Item_Code" Type="Edm.String" Nullable="false"/>
-        <Property Name="idd" Type="Edm.Guid" Nullable="false"/>
-        <Property Name="name" Type="Edm.String"/>
-        <Property Name="value" Type="Edm.String"/>
+        <Property Name="id" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="Payment_method" Type="Edm.String"/>
       </EntityType>
       <EntityType Name="PAN_Comments_APR">
         <Key>
@@ -299,6 +333,20 @@
         <Property Name="Comments" Type="Edm.String"/>
         <Property Name="status" Type="Edm.String"/>
         <NavigationProperty Name="comtotab1" Type="PanApproval.PAN_Details_APR" Partner="tab1tocom"/>
+      </EntityType>
+      <EntityType Name="vendorTaxDetails_APR">
+        <Key>
+          <PropertyRef Name="Proposed_Vendor_Code"/>
+          <PropertyRef Name="PAN_Number"/>
+          <PropertyRef Name="Item_Code"/>
+          <PropertyRef Name="idd"/>
+        </Key>
+        <Property Name="Proposed_Vendor_Code" Type="Edm.String" Nullable="false"/>
+        <Property Name="PAN_Number" Type="Edm.String" Nullable="false"/>
+        <Property Name="Item_Code" Type="Edm.String" Nullable="false"/>
+        <Property Name="idd" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="name" Type="Edm.String"/>
+        <Property Name="value" Type="Edm.String"/>
       </EntityType>
       <Function Name="sendforapproval" IsBound="false" IsComposable="false">
         <Parameter Name="data" Type="Edm.String"/>
@@ -337,6 +385,12 @@
         <Parameter Name="projectid" Type="Edm.String"/>
         <ReturnType Type="Edm.String"/>
       </Function>
+      <Annotations Target="PanApproval.PAN_PAYMENT_TERM_DETAILS_APR/ptdkey">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="PanApproval.PAN_PRICE_DETAILS_APR/pdkey">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
       <Annotations Target="PanApproval.PAN_attachments_APR/ID">
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
@@ -370,7 +424,7 @@
       <Annotations Target="PanApproval.PAN_attachments_APR/mediaType">
         <Annotation Term="Core.IsMediaType" Bool="true"/>
       </Annotations>
-      <Annotations Target="PanApproval.vendorTaxDetails_APR/idd">
+      <Annotations Target="PanApproval.PAN_Payment_Method_Drop_APR/id">
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
       <Annotations Target="PanApproval.PAN_Comments_APR/createdAt">
@@ -398,6 +452,9 @@
         <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
       </Annotations>
       <Annotations Target="PanApproval.PAN_Comments_APR/idd">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="PanApproval.vendorTaxDetails_APR/idd">
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
     </Schema>
