@@ -179,9 +179,9 @@
         <Property Name="Commercial_Terms" Type="Edm.String"/>
         <Property Name="Compliance_Terms" Type="Edm.String"/>
         <Property Name="Others" Type="Edm.String"/>
-        <NavigationProperty Name="vendtovenr" Type="Collection(PanApproval.PAN_vendor_response_APR)" ContainsTarget="true"/>
-        <NavigationProperty Name="vendtoptd" Type="Collection(PanApproval.PAN_PAYMENT_TERM_DETAILS_APR)" ContainsTarget="true"/>
-        <NavigationProperty Name="vendtopd" Type="Collection(PanApproval.PAN_PRICE_DETAILS_APR)" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtovenr" Type="Collection(PanApproval.PAN_vendor_response_APR)" Partner="venrtovend" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtoptd" Type="Collection(PanApproval.PAN_PAYMENT_TERM_DETAILS_APR)" Partner="ptdtovend" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtopd" Type="Collection(PanApproval.PAN_PRICE_DETAILS_APR)" Partner="pdtovend" ContainsTarget="true"/>
         <NavigationProperty Name="vendor_datatotab1" Type="PanApproval.PAN_Details_APR" Partner="tab1tovendor_data"/>
       </EntityType>
       <EntityType Name="PAN_vendor_response_APR">
@@ -233,7 +233,7 @@
         <Property Name="Commercial_Terms" Type="Edm.String"/>
         <Property Name="Compliance_Terms" Type="Edm.String"/>
         <Property Name="Others" Type="Edm.String"/>
-        <NavigationProperty Name="venrtovend" Type="PanApproval.PAN_vendor_data_APR"/>
+        <NavigationProperty Name="venrtovend" Type="PanApproval.PAN_vendor_data_APR" Partner="vendtovenr"/>
       </EntityType>
       <EntityType Name="PAN_PAYMENT_TERM_DETAILS_APR">
         <Key>
@@ -250,7 +250,7 @@
         <Property Name="Due_date" Type="Edm.String"/>
         <Property Name="Mandatory_Documents_OR_Submissions" Type="Edm.String"/>
         <Property Name="To_be_certified_in_Company" Type="Edm.String"/>
-        <NavigationProperty Name="ptdtovend" Type="PanApproval.PAN_vendor_data_APR"/>
+        <NavigationProperty Name="ptdtovend" Type="PanApproval.PAN_vendor_data_APR" Partner="vendtoptd"/>
       </EntityType>
       <EntityType Name="PAN_PRICE_DETAILS_APR">
         <Key>
@@ -269,7 +269,7 @@
         <Property Name="Amount" Type="Edm.String"/>
         <Property Name="Indian_Tax_PER" Type="Edm.String"/>
         <Property Name="Quantity_Over_Delivery_Tolerance" Type="Edm.String"/>
-        <NavigationProperty Name="pdtovend" Type="PanApproval.PAN_vendor_data_APR"/>
+        <NavigationProperty Name="pdtovend" Type="PanApproval.PAN_vendor_data_APR" Partner="vendtopd"/>
       </EntityType>
       <EntityType Name="PAN_WORKFLOW_HISTORY_APR">
         <Key>

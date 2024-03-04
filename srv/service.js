@@ -226,6 +226,8 @@ module.exports = cds.service.impl(async function () {
     var final_quotearr = [];
     var thread_results=[];
     var scenarios_payload = " ";
+    var version;
+    var w_type="";
    
     
     
@@ -258,9 +260,11 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1014144301";
     // cur_pro_id = "WS1017070569";
     // cur_pro_id = "WS1012623630" //service
-    // cur_pro_id = "WS1005421389" //usecase4
+    // cur_pro_id = "WS1005421389" //usecase4 error
     // cur_pro_id = "WS1024436148"
     // cur_pro_id = "WS1026706322"
+    // cur_pro_id ="WS1026706322";
+    // cur_pro_id = "WS1026978351"
 
     
      
@@ -358,6 +362,8 @@ module.exports = cds.service.impl(async function () {
             if(obj in project_currency){
             tsk_id = project_currency.pendingAwardApprovalTaskId;
             tsk_doc_id = doc_id;
+            version = project_currency.documentVersion;
+            w_type = project_currency.eventTypeName;
             pro_ind = 1;
           }
         }
@@ -690,7 +696,7 @@ module.exports = cds.service.impl(async function () {
                  if(result.payload[r].name == "Technical Reviewer"){
                    // result.payload[r].users.forEach(element => {
                      for(let f= 0;f<result.payload[r].users.length;f++){
-                     tech_commitee_clearedproposal = tech_commitee_clearedproposal + "," + element.name;
+                     tech_commitee_clearedproposal = tech_commitee_clearedproposal + "," + result.payload[r].users[f].name;
                      tech_commitee_clearedproposal = tech_commitee_clearedproposal.trim();
                    }
                  }
@@ -2102,7 +2108,7 @@ else if(oneround = 1 && type == "RFQ"){
    }) 
 
 }
-}
+
 
 for(let q= 0;q<sc_web_tab2.length;q++){
   for(let r=0;r<web_tab2.length;r++){
@@ -2134,6 +2140,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     }
     // break;
   }
+}
 
 
 
@@ -2153,6 +2160,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   var date2 = [];
  
  if(web_tab_dates.length != 0){
+  // if(version == 1){
 
   var fstdoc1 = web_tab_dates[0].document_id;
     var oneround1 = 0;
@@ -2203,11 +2211,11 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var eventno = "First Published"
           
          }
-         else if(pan_web_event.length == 1){
+         else if(pan_web_event.length == 1 ){
           var idd = "2";
           var eventno = "Last Published(Before RA)"
          }
-          if(pan_web_event.length ==0||pan_web_event.length==1){
+          if(pan_web_event.length ==0||(pan_web_event.length==1 && version == 1)){
           pan_web_event.push({
               idd : `${idd}` ,
               PAN_Number : tsk_doc_id.toString(),
@@ -2232,7 +2240,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               var am = web_tab_dates[z].l1amount;
               am = returnamt(am);
              if(web_tab_dates[z].publish_date == last_rfp_date){
-              if(pan_web_event.length == 1){
+              if(pan_web_event.length == 1 && version == 1){
               pan_web_event.push({
                 idd :"2" ,
                 PAN_Number : tsk_doc_id.toString(),
@@ -2248,7 +2256,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             }
           }
            if(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES" || (oneround1 == 1 && type1 == "RFQ")){
-             if(pan_web_event.length == 1){
+             if(pan_web_event.length == 1 && version == 1){
               pan_web_event.push({
                 idd :"2" ,
                 PAN_Number : tsk_doc_id.toString(),
@@ -2259,7 +2267,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 l1AmountObtained :"0",
                })
              }
-             
+            if(version == 1){
             pan_web_event.push({
               idd :"3" ,
               PAN_Number : tsk_doc_id.toString(),
@@ -2269,11 +2277,12 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               numberOfVendorsParticipated :no_v.toString(),
               l1AmountObtained :am.toString(),
              })
+            }
           }
         
        }
 
-      }
+      // }
 
   // }
 
@@ -2320,7 +2329,62 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   //  }
    
   // }
+      
+    if(version >1){
+      if(w_type == "RFP"){
+
+        for(let z=0;z<web_tab_dates.length;z++){
+          let number = "";
+          if(web_tab_dates[z].document_id == tsk_doc_id){
+          number = web_tab_dates[z].document_id;
+         //  number = number.substring(number.length - 4)
+          var dateString = web_tab_dates[z].publish_date;
+           var datesub = dateString.substring(0, 10)
+           datesub = returndate(datesub);
+          var no_v = web_tab_dates[z].pvendor;
+          var am = web_tab_dates[z].l1amount;
+          am = returnamt(am);
+         
+          pan_web_event.push({
+            idd :"2" ,
+            PAN_Number : tsk_doc_id.toString(),
+            eventNo :  "Last Published(Before RA)",
+            number:`${number}`,
+            date:`${datesub}`,
+            numberOfVendorsParticipated :no_v.toString(),
+            l1AmountObtained :am.toString(),
+           })
+          }
+        }
+
+      }else if(w_type == "auction"){
+        for(let z=0;z<web_tab_dates.length;z++){
+          let number = "";
+          if(web_tab_dates[z].document_id == tsk_doc_id){
+          number = web_tab_dates[z].document_id;
+         //  number = number.substring(number.length - 4)
+          var dateString = web_tab_dates[z].publish_date;
+           var datesub = dateString.substring(0, 10)
+           datesub = returndate(datesub);
+          var no_v = web_tab_dates[z].pvendor;
+          var am = web_tab_dates[z].l1amount;
+          am = returnamt(am);
+
+          pan_web_event.push({
+            idd :"3" ,
+            PAN_Number : tsk_doc_id.toString(),
+            eventNo :  "Reverse Auction(RA)",
+            number:`${number}`,
+            date:`${datesub}`,
+            numberOfVendorsParticipated :no_v.toString(),
+            l1AmountObtained :am.toString(),
+           })
+          }
+        }
+      }
+    }
   }
+}
  
   if( pan_web_event.length == 1){
     for(let k = 2;k<4;k++){
@@ -3476,12 +3540,21 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     //   let body7 = price_details[j];
     //   const response_p = await item.post('/PAN_PRICE_DETAILS_APR',body7);
     // }
+    var qind=0;
     if(price_details.length != 0){
     for(let j = 0;j<price_details.length;j++){
       if(price_details[j].Item_Code != " "){
       let body7 = JSON.parse(JSON.stringify(price_details[j]));
       let pd = await SELECT.from(PAN_PRICE_DETAILS_APR).where`PAN_Number = ${body7.PAN_Number} and Proposed_Vendor_Code = ${body7.Proposed_Vendor_Code} and Item_Code = ${body7.Item_Code}`;
       if(pd.length != 0){
+       
+        for(let p=0;p<pd.length;p++){
+          if(pd[p].Quantity == body7.Quantity){
+           qind =1;
+          }
+        }
+      }
+        if(pd.length != 0 && qind == 1){
         delete body7.PAN_Number;
         delete body7.Proposed_Vendor_Code;
         delete body7.Item_Code;
@@ -3491,10 +3564,12 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           Item_Code:price_details[j].Item_Code
         })).with(body7);
         console.log(putpd);
-
-      }else{
+        }
+      else{
+        if((pd.length == 0) || (pd.length != 0 && qind==0)){
       const response_p = await INSERT.into(PAN_PRICE_DETAILS_APR).entries(body7);
       console.log(response_p);
+        }
       }
     }
     }

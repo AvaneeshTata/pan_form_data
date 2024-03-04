@@ -208,9 +208,9 @@
         <Property Name="Commercial_Terms" Type="Edm.String"/>
         <Property Name="Compliance_Terms" Type="Edm.String"/>
         <Property Name="Others" Type="Edm.String"/>
-        <NavigationProperty Name="vendtovenr" Type="Collection(CatalogService.Fvendor_responseoo)" ContainsTarget="true"/>
-        <NavigationProperty Name="vendtoptd" Type="Collection(CatalogService.PAYMENT_TERM_DETAILS)" ContainsTarget="true"/>
-        <NavigationProperty Name="vendtopd" Type="Collection(CatalogService.PAN_PRICE_DETAILS)" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtovenr" Type="Collection(CatalogService.Fvendor_responseoo)" Partner="venrtovend" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtoptd" Type="Collection(CatalogService.PAYMENT_TERM_DETAILS)" Partner="ptdtovend" ContainsTarget="true"/>
+        <NavigationProperty Name="vendtopd" Type="Collection(CatalogService.PAN_PRICE_DETAILS)" Partner="pdtovend" ContainsTarget="true"/>
         <NavigationProperty Name="vendor_datatotab1" Type="CatalogService.tab1" Partner="tab1tovendor_data"/>
         <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
         <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
@@ -268,7 +268,7 @@
         <Property Name="Commercial_Terms" Type="Edm.String"/>
         <Property Name="Compliance_Terms" Type="Edm.String"/>
         <Property Name="Others" Type="Edm.String"/>
-        <NavigationProperty Name="venrtovend" Type="CatalogService.vendor_data"/>
+        <NavigationProperty Name="venrtovend" Type="CatalogService.vendor_data" Partner="vendtovenr"/>
         <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
         <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
         <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
@@ -291,7 +291,7 @@
         <Property Name="Due_date" Type="Edm.String"/>
         <Property Name="Mandatory_Documents_OR_Submissions" Type="Edm.String"/>
         <Property Name="To_be_certified_in_Company" Type="Edm.String"/>
-        <NavigationProperty Name="ptdtovend" Type="CatalogService.vendor_data"/>
+        <NavigationProperty Name="ptdtovend" Type="CatalogService.vendor_data" Partner="vendtoptd"/>
         <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
         <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
         <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
@@ -316,7 +316,7 @@
         <Property Name="Amount" Type="Edm.String"/>
         <Property Name="Indian_Tax_PER" Type="Edm.String"/>
         <Property Name="Quantity_Over_Delivery_Tolerance" Type="Edm.String"/>
-        <NavigationProperty Name="pdtovend" Type="CatalogService.vendor_data"/>
+        <NavigationProperty Name="pdtovend" Type="CatalogService.vendor_data" Partner="vendtopd"/>
         <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
         <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
         <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>

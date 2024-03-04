@@ -557,19 +557,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtovenr",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -591,19 +578,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtoptd",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -624,19 +598,6 @@
             {
               "ref": [
                 "$self"
-              ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtopd",
-                "PAN_Number"
               ]
             }
           ]
@@ -1882,19 +1843,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtovenr",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -1916,19 +1864,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtoptd",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -1949,19 +1884,6 @@
             {
               "ref": [
                 "$self"
-              ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtopd",
-                "PAN_Number"
               ]
             }
           ]
@@ -3312,19 +3234,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtovenr",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -3346,19 +3255,6 @@
               "ref": [
                 "$self"
               ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtoptd",
-                "PAN_Number"
-              ]
             }
           ]
         },
@@ -3379,19 +3275,6 @@
             {
               "ref": [
                 "$self"
-              ]
-            },
-            "and",
-            {
-              "ref": [
-                "PAN_Number"
-              ]
-            },
-            "=",
-            {
-              "ref": [
-                "vendtopd",
-                "PAN_Number"
               ]
             }
           ]
