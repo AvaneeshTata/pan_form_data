@@ -129,7 +129,7 @@ module.exports = cds.service.impl(async function () {
     var SACCode = "";
     var IndianTaxPER = "";
     var ItemCode= "";
-    var ItemShortDescription = " ";
+    var ItemShortDescription = "";
     var UnitPrice="";
     var  Quantity="";
     var QuantityOverDeliveryTolerance="";
@@ -160,7 +160,7 @@ module.exports = cds.service.impl(async function () {
     var SACCode = "";
     var IndianTaxPER = "";
     var ItemCode= "";
-    var ItemShortDescription = " ";
+    var ItemShortDescription = "";
     var UnitPrice="";
     var  Quantity="";
     var QuantityOverDeliveryTolerance="";   
@@ -211,7 +211,7 @@ module.exports = cds.service.impl(async function () {
     var scenario_data = [];
     var sup_count = 0;
     var cur_pro_id = "";
-    var tolerence = "  ";
+    var tolerence = "";
     var len1 = 0;
     var pro_ind = 0;
     var l3Amount = 0;
@@ -225,7 +225,7 @@ module.exports = cds.service.impl(async function () {
     var workerPromises = [];
     var final_quotearr = [];
     var thread_results=[];
-    var scenarios_payload = " ";
+    var scenarios_payload = "";
     var version;
     var w_type="";
    
@@ -343,8 +343,8 @@ module.exports = cds.service.impl(async function () {
             final_date = diffDays + " days";
               }
           else{
-            proj_currency  = "       ";
-            web_publish_date = "        ";
+            proj_currency  = "";
+            web_publish_date = "";
                   }
 
                   no_of_docs.push({
@@ -690,7 +690,7 @@ module.exports = cds.service.impl(async function () {
  
            }else if(id in result.payload[0]){
              // var d1 = teams;
-               tech_commitee_clearedproposal = "  ";
+               tech_commitee_clearedproposal = "";
                if(result.payload.length != 0){
                for(let r=0;r<result.payload.length;r++){
                  if(result.payload[r].name == "Technical Reviewer"){
@@ -764,7 +764,7 @@ module.exports = cds.service.impl(async function () {
                          if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
                            subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
                         }else{
-                         subject_of_proposal = "  ";
+                         subject_of_proposal = "";
                         }
                        }
      
@@ -918,8 +918,8 @@ module.exports = cds.service.impl(async function () {
           var vendorid = vendorids[k].smvendor_id;
           var pvcode =  vendorids[k].pvcode;
         }else{
-          var vendorid = "       ";
-          var pvcode = "     ";
+          var vendorid = "";
+          var pvcode = "";
         }
         
         // let vendorid = "S65873336";
@@ -1436,7 +1436,7 @@ module.exports = cds.service.impl(async function () {
                                 if(Object.keys(terms[m]).includes(value1)){
                                    SACCode = terms[m].value.simpleValue;
                                 }else{
-                                  SACCode = "  ";
+                                  SACCode = "";
                                 }
                               }
                                 
@@ -1529,7 +1529,7 @@ module.exports = cds.service.impl(async function () {
                                   if(Object.keys(terms[m]).includes(value1)){
                                
                                     delivery_schedule1 = terms[m].value.simpleValue;
-                                    if(delivery_schedule != " "){
+                                    if(delivery_schedule != ""){
                                       delivery_schedule = delivery_schedule + " " + delivery_schedule1;
                                     }
                                     
@@ -1713,8 +1713,8 @@ module.exports = cds.service.impl(async function () {
               "Percentage"                                         : `${Advance}`,
               "Description"                                        : `${progress}`,
               "Due_date"                                           :  `${due_date}`,
-              "Mandatory_Documents_OR_Submissions"                  : "         ",
-              "To_be_certified_in_Company"                          : "           ",
+              "Mandatory_Documents_OR_Submissions"                  : "",
+              "To_be_certified_in_Company"                          : "",
 
           })
               payment_details.push({
@@ -1748,12 +1748,12 @@ module.exports = cds.service.impl(async function () {
                 "Proposed_Vendor_Code"                               :`${pvcode}`,
                 "PAN_Number"                                         :`${doc_id}`,
                 "iddd"                                               : "Percentage Total",
-                "Payment_methord"                                    : "            ",
+                "Payment_methord"                                    : "",
                 "Percentage"                                         : `${percentage1}`,
-                "Description"                                        : "          ",
-                "Due_date"                                           :  "         ",
-                "Mandatory_Documents_OR_Submissions"                  : "             ",
-                "To_be_certified_in_Company"                          : "            "
+                "Description"                                        : "",
+                "Due_date"                                           :  "",
+                "Mandatory_Documents_OR_Submissions"                  : "",
+                "To_be_certified_in_Company"                          : ""
 
             })
 
@@ -1776,33 +1776,33 @@ module.exports = cds.service.impl(async function () {
             Destination_State_BKTShipDASHto_LocationBKT                                  : `${sup_main_add}`,
             Vendor_GST_Number                                                            : `${GstNo}`,
             Vendor_CE_Score                                                              : `${cescore}`,
-            Vendor_CE_Date                                                               : "       ",
-            Vendor_PE_Score                                                              : "     ",
-            Vendor_PE_Date                                                               : "     ",
+            Vendor_CE_Date                                                               : "",
+            Vendor_PE_Score                                                              : "",
+            Vendor_PE_Date                                                               : "",
             Vendor_Contact_PersonDASH1                                                   : `${supplier_contact1}`,
             Vendor_Contact_PersonDASH2                                                   : "" ,
             Technical_Committee_who_cleared_the_proposal                                 : `${tech_commitee_clearedproposal}`,
-            Commercial_Committee_who_cleared_the_proposal                                : "      ",
-            Vendor_References_to_be_displayed_in_Order                                   : "      ",
-            Shortlisted_Vendors_Response_summary                                         : "       ",//title
+            Commercial_Committee_who_cleared_the_proposal                                : "",
+            Vendor_References_to_be_displayed_in_Order                                   : "",
+            Shortlisted_Vendors_Response_summary                                         : "",//title
             Incoterms                                                                    : `${inco_terms}`,
-            Number_of_Back_to_back_Terms_agreed_with_Vendor_as_per_GPC_OR_GCC            : "         ",
-            Details_of_deviated_or_better_terms_agreed_with_the_Vendor                   : "         ",
-            Market_Scenario_and_Demand                                                   : "        ",
-            Companys_Position_and_Market_dynamics_of_this_purchase                       : "        ",
-            Should_Be_Cost_estimated                                                     : "        ",
-            Highlights_of_this_proposal_and_Price_Justification_for_this_proposal        : "        ",
-            Price_Escalation_Agreed_if_any                                               : "        ",
-            Particulars_of_any_Free_Service_OR_Supply_Guarantees_OR_Warrant_yfrom_Vendor : "         ",
-            Transportation                                                               : "         ",
-            Logistics_Cost                                                               : "         ",
+            Number_of_Back_to_back_Terms_agreed_with_Vendor_as_per_GPC_OR_GCC            : "",
+            Details_of_deviated_or_better_terms_agreed_with_the_Vendor                   : "",
+            Market_Scenario_and_Demand                                                   : "",
+            Companys_Position_and_Market_dynamics_of_this_purchase                       : "",
+            Should_Be_Cost_estimated                                                     : "",
+            Highlights_of_this_proposal_and_Price_Justification_for_this_proposal        : "",
+            Price_Escalation_Agreed_if_any                                               : "",
+            Particulars_of_any_Free_Service_OR_Supply_Guarantees_OR_Warrant_yfrom_Vendor : "",
+            Transportation                                                               : "",
+            Logistics_Cost                                                               : "",
             Delivery_Schedule                                                            : `${delivery_schedule}`,
-            Tax_Details                                                                  : "         ",
-            Additional_Remarks                                                           : "          ",
+            Tax_Details                                                                  : "",
+            Additional_Remarks                                                           : "",
             ABG                                                                          : `${abg}`,
-            ABG_Value                                                                    : "         ",
+            ABG_Value                                                                    : "",
             CPBG                                                                         : `${cpbg}`,
-            CPBG_Value                                                                   : "          ",
+            CPBG_Value                                                                   : "",
             Scope_and_Responsibilities                                                   : `${ScopeandResponsibilities}`,
             Commercial_Terms                                                             : `${CommercialTerms}`,
             Compliance_Terms                                                             : `${ComplianceTerms}`,
@@ -1825,13 +1825,13 @@ module.exports = cds.service.impl(async function () {
           Awarded_Vendor                     : "NO",
           Vendor_Name                        :  `${vendorids[k].org_name}`,//disp
           Vendor_Location                    : `${vendorids[k].vendor_loc}`,
-          Technically_Approved               : "       ",
-          Original_quote                     :"              ",//disp
-          Final_Quote                        : "         ", //disp
-          Order_amount_OR_Split_order_amount : "           ",
+          Technically_Approved               : "",
+          Original_quote                     :"",//disp
+          Final_Quote                        : "", //disp
+          Order_amount_OR_Split_order_amount : "",
           // Proposed_Vendor_Code_nav           : "",
-          Discount_Amount                    : "            ",
-          Discount_percentage                : "          ",
+          Discount_Amount                    : "",
+          Discount_percentage                : "",
           Rank                               : "0",
     
          })
@@ -2153,7 +2153,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   //LAST PUBLISHED
 
   // console.log("stage6")
-  var doc_id_fornow = "  ";
+  var doc_id_fornow = "";
 
   //Web event logic
   var dates = [];
@@ -2344,7 +2344,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var no_v = web_tab_dates[z].pvendor;
           var am = web_tab_dates[z].l1amount;
           am = returnamt(am);
-         
+          if(pan_web_event.length == 1){
           pan_web_event.push({
             idd :"2" ,
             PAN_Number : tsk_doc_id.toString(),
@@ -2355,9 +2355,22 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             l1AmountObtained :am.toString(),
            })
           }
+          }
         }
 
-      }else if(w_type == "auction"){
+      }else if(w_type == "Auction"){
+          if(pan_web_event.length == 1){
+            pan_web_event.push({
+              idd :"2" ,
+              PAN_Number : tsk_doc_id.toString(),
+              eventNo :  "Last Published(Before RA)",
+              number:"NA",
+              date:"NA",
+              numberOfVendorsParticipated :"NA",
+              l1AmountObtained :"0",
+             })
+          }
+        
         for(let z=0;z<web_tab_dates.length;z++){
           let number = "";
           if(web_tab_dates[z].document_id == tsk_doc_id){
@@ -2369,7 +2382,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var no_v = web_tab_dates[z].pvendor;
           var am = web_tab_dates[z].l1amount;
           am = returnamt(am);
-
+          if(pan_web_event.length == 2){
           pan_web_event.push({
             idd :"3" ,
             PAN_Number : tsk_doc_id.toString(),
@@ -2379,6 +2392,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             numberOfVendorsParticipated :no_v.toString(),
             l1AmountObtained :am.toString(),
            })
+          }
           }
         }
       }
@@ -2518,7 +2532,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                   Awarded_Vendor                     : "YES",
                   Vendor_Name                        : `${vname}`,//disp
                   Vendor_Location                    : `${vendor_loc}`,
-                  Technically_Approved               : "       ",
+                  Technically_Approved               : "",
                   Original_quote                     :`${original_quote1}`,//disp
                   Final_Quote                        : `${final_quote1}`, //disp
                   Order_amount_OR_Split_order_amount : `${final_quote1}`,
@@ -2571,7 +2585,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                              if(Object.keys(terms3[it]).includes(value2)){
                                 SACCode = terms3[it].value.simpleValue;
                              }else{
-                               SACCode = "  ";
+                               SACCode = "";
                              }
                            }
                              
@@ -2654,7 +2668,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                                if(Object.keys(terms3[it]).includes(value2)){
                             
                                  delivery_schedule1 = terms3[it].value.simpleValue;
-                                 if(delivery_schedule != " "){
+                                 if(delivery_schedule != ""){
                                    delivery_schedule = delivery_schedule + " " + delivery_schedule1;
                                  }
                                  
@@ -2777,7 +2791,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                            if(Object.keys(terms3[it]).includes(value2)){
                               SACCode = terms3[it].value.simpleValue;
                            }else{
-                             SACCode = "  ";
+                             SACCode = "";
                            }
                          }
                            
@@ -2850,7 +2864,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                              if(Object.keys(terms3[it]).includes(value2)){
                           
                                delivery_schedule1 = terms3[it].value.simpleValue;
-                               if(delivery_schedule != " "){
+                               if(delivery_schedule != ""){
                                  delivery_schedule = delivery_schedule + " " + delivery_schedule1;
                                }
                                final_quotear
@@ -3221,7 +3235,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
 
   console.log("stage6")
-  var doc_id_fornow = "  ";
+  var doc_id_fornow = "";
 
 
 
