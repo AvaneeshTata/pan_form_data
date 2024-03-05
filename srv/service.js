@@ -228,6 +228,8 @@ module.exports = cds.service.impl(async function () {
     var scenarios_payload = "";
     var version;
     var w_type="";
+    var version1 =[];
+    var v1amt=0;
    
     
     
@@ -667,7 +669,7 @@ module.exports = cds.service.impl(async function () {
       if(thread_results != []){
        console.log("thread results started")
        thread_results.forEach((result)=>{
-         if(!Array.isArray(result.payload)){
+         if(!Array.isArray(result.payload) && (!(result instanceof Error))  ){
            proj_desc = result.description;
            purchasing_grp = result.businessSystem.purchasingGroup[0].value;
            baselinespend = result.baselineSpend.amount;
@@ -682,13 +684,13 @@ module.exports = cds.service.impl(async function () {
             var supp = result;
             web_sup_count = supp;
            }
-           else if(iden in result.payload[0]  ){
+           else if(iden in result.payload[0] && (!(result instanceof Error)) ){
              sup_count = result.payload[0].selectedSuppliersCount;  
              scenarios_payload = result;
              shrt_lst_count = scenarios_payload;
  
  
-           }else if(id in result.payload[0]){
+           }else if(id in result.payload[0] && (!(result instanceof Error))){
              // var d1 = teams;
                tech_commitee_clearedproposal = "";
                if(result.payload.length != 0){
@@ -705,7 +707,7 @@ module.exports = cds.service.impl(async function () {
    
  
            }
-           else if(item in result.payload[0]){
+           else if(item in result.payload[0] && (!(result instanceof Error))){
              const response_data2 = result;
  
              if (response_data2.payload.length != 0) {
@@ -986,6 +988,7 @@ module.exports = cds.service.impl(async function () {
 
         var supplierdata ="";
         var response_data4="";
+        var error = "Error";
    
        var  thread_results1 = await Promise.all(workerPromises);
        var d = thread_results1;
@@ -1003,9 +1006,12 @@ module.exports = cds.service.impl(async function () {
         // if("Error" in thread_results1[t].payload){
         //   continue;
         // }
-         if(!Array.isArray(thread_results1[t].payload) && typeof thread_results1[t] === 'object' ){
-                supplierdata = thread_results1[t];
-              }else{
+         if( !Array.isArray(thread_results1[t].payload) && (!(thread_results1[t] instanceof Error))  ){
+            // if (!(thread_results1[t] instanceof Error)){
+              supplierdata = thread_results1[t];
+            // }
+                
+              }else if(Array.isArray(thread_results1[t].payload) && (!(thread_results1[t] instanceof Error))){
                   response_data4 = thread_results1[t];
               }
       }
@@ -1694,6 +1700,40 @@ module.exports = cds.service.impl(async function () {
                 
                }
               }
+              // else if(response_data4.payload[k2].bidStatus == "Replaced" && version >1){
+              //   var value3="value";
+              //   var roll = "rollUpTerms";
+              //   var roll1 = "terms"
+              //   var vc=0;
+              //   if( response_data4.payload[k2].item.title == "Pricing" ) {
+              //     if(Object.keys(response_data4.payload[k2].item).includes(roll)){
+              //     if(response_data4.payload[k2].item.rollUpTerms.length !=0){
+              //       if(Object.keys(response_data4.payload[k2].item.rollUpTerms[0]).includes(value3)){
+              //         console.log("version")
+              //          v1amt = response_data4.payload[k2].item.rollUpTerms[0].value.moneyValue.amount;
+              //          vc = vc+1;
+              //          version1.push({
+              //           PAN_Number : doc_id ,
+              //           // Proposed_vendor_code:pvcode ,
+              //           vcount : vc,
+              //           final_quote :v1amt ,
+              //         })
+              //       }
+              //     }
+              //   }else if(Object.keys(response_data4.payload[k2].item).includes(roll1) && response_data4.payload[k2].item.terms.length != 0){
+              //     console.log("terms")
+
+              //   }
+                 
+              //     // v1amt = v1amt.toString();
+
+                 
+              // }
+
+
+             
+
+              // }
                
                }
 
@@ -2216,7 +2256,14 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var idd = "2";
           var eventno = "Last Published(Before RA)"
          }
+
+        //  if(pan_web_event.length ==0 && version >1){
+        //   am = version1[0].final_quote;
+        //   no_v = version1[0].vcount;
+
+        //  }
           if(pan_web_event.length ==0||(pan_web_event.length==1 && version == 1)){
+           
           pan_web_event.push({
               idd : `${idd}` ,
               PAN_Number : tsk_doc_id.toString(),
