@@ -270,6 +270,7 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1026978351"
     // cur_pro_id = "WS1028313509";
     // cur_pro_id = "WS1029893746";
+      // cur_pro_id = "WS1009730221";
 
     
      
@@ -2425,7 +2426,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   //   }
   //  }
    
-  // }
+  }
       
     if(version >1){
       if(w_type == "RFP"){
@@ -2494,7 +2495,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         }
       }
     }
-  }
+  // }
 }
  
   if( pan_web_event.length == 1){
@@ -2670,7 +2671,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                  })
                 
                  vname="";
-                vendor_loc="";
+                vendor_loc=0;
                 original_quote1=0;
                 final_quote1=0;
                 original_quote=0;
@@ -3211,13 +3212,13 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
 
           for(let k =0;k<pan_vendor_response.length;k++){
-            for(let p=0;p<price_details.length;p++){
+            for(let p=0;p<vendordata1.length;p++){
               // for(let f=0;f<final_quotearr.length;f++){
               if(pan_vendor_response[k].PAN_Number == tsk_doc_id  ){
-              if(pan_vendor_response[k].Proposed_Vendor_Code == price_details[p].Proposed_Vendor_Code &&price_details[p].Amount != 0 ){
+              if(pan_vendor_response[k].Proposed_Vendor_Code == vendordata1[p].Proposed_Vendor_Code ){
             
-              pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT =`${price_details[p].Amount}`;
-              pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${price_details[p].Amount}`;
+              pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT =`${vendordata1[p].Vendor_Location}`;
+              pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${vendordata1[p].Vendor_Location}`;
               // pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote1}`;
             }
             
