@@ -2577,7 +2577,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 //  vendor_loc = returnamt(vendor_loc)
                 
                 var loc ="";
-                if(ser_mate == "Material"&& ser_mate == "Both"){
+                if(ser_mate == "Material" || ser_mate == "Both"){
                    loc  = "Total Cost";
                 }else if(ser_mate == "Service"){
                    loc = "Extended Price"
