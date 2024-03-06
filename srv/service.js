@@ -179,13 +179,13 @@ module.exports = cds.service.impl(async function () {
     var awarded_vendor = "NO";
     var erpVendorID = "";
     var vendorname = "";
-    var vendor_loc = "";
+    var vendor_loc = 0;
     var web_sup_count = "";
     var pvendor = 0;
     var l1amount =[];
     var icon_type = "";
     var l1AmountObtained = 0;
-    var final_quote = "";
+    var final_quote = 0;
     var order_currency = "";
     var tech_commitee_clearedproposal = "";
     var delivery_schedule = "";
@@ -244,6 +244,7 @@ module.exports = cds.service.impl(async function () {
    
     var userName = req.data.userName;
     // var userName = "TPLBuyer";
+    // var userName = "nitind@tataprojects.com";
     password = "PasswordAdapter1"
     if(userName == "TPLBuyer"){
        createdby = "harshvardhans-v@tataprojects.com";
@@ -267,6 +268,8 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1026706322"
     // cur_pro_id ="WS1026706322";
     // cur_pro_id = "WS1026978351"
+    // cur_pro_id = "WS1028313509";
+    // cur_pro_id = "WS1029893746";
 
     
      
@@ -385,9 +388,9 @@ module.exports = cds.service.impl(async function () {
 
 
       
-     
+    if(pro_ind == 1){
      if(tsk_ind == 0){
-      if(pro_ind == 1){
+      
       if(no_of_docs.length != 0){
       for(let i1 = 0;i1<no_of_docs.length;i1++){
         // if(number_of_docs.payload[i1].type == 'RFx' && number_of_docs.payload[i1].status != 'Draft'){
@@ -722,7 +725,7 @@ module.exports = cds.service.impl(async function () {
                   }
                    
                  if(doc_id == tsk_doc_id){
-                 if(ser_mate == "Material"){
+                 if(ser_mate == "Material"||ser_mate == "Both"){
                  if (response_data2.payload[j].terms[0].title == "Price"){
                    var terms1 = response_data2.payload[j].terms;
                    // if (terms1.length != 0){
@@ -1119,7 +1122,7 @@ module.exports = cds.service.impl(async function () {
         
        
 
-        if(ser_mate == "Material"){
+        if(ser_mate == "Material"||ser_mate == "Both"){
         var inviid ;
         var alterid;
         var flag3 = 0;
@@ -1287,7 +1290,8 @@ module.exports = cds.service.impl(async function () {
                 }
 
                    if( response_data4.payload[k2].item.title == "Progress"){
-                       progress = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                       progress = response_data4.payload[k2];
+                       progress = progress.item.terms[0].value.simpleValue;
                       progress = progress.toString(); 
                   }
 
@@ -1424,7 +1428,7 @@ module.exports = cds.service.impl(async function () {
 
                   console.log("stage2.1")
              
-                if(ser_mate == "Material"){
+                if(ser_mate == "Material"||ser_mate == "Both"){
                 if(material_items.length != 0){
                   for(let b = 0 ;b<material_items.length;b++){
                     // response_data4.payload.forEach(e => {
@@ -1680,6 +1684,18 @@ module.exports = cds.service.impl(async function () {
                      amount : `${l3Amount}`,
                    })
 
+                   SACCode="";
+                   ItemCode="";
+                   ItemShortDescription="";
+                   UOM="";
+                   Quantity="";
+                   Amount="";
+                   l4Amount="";
+                   extend_price="";
+                   IndianTaxPER="";
+                   tolerence="";
+                 
+
                     l3Amount = 0;
                   
                   }
@@ -1752,7 +1768,7 @@ module.exports = cds.service.impl(async function () {
               "iddd"                                               : "Advance",
               "Payment_methord"                                    : `${payment_type}`,
               "Percentage"                                         : `${Advance}`,
-              "Description"                                        : `${progress}`,
+              "Description"                                        : "",
               "Due_date"                                           :  `${due_date}`,
               "Mandatory_Documents_OR_Submissions"                  : "",
               "To_be_certified_in_Company"                          : "",
@@ -1777,7 +1793,7 @@ module.exports = cds.service.impl(async function () {
                   "iddd"                                               : "Retention",
                   "Payment_methord"                                    : `${payment_type}`,
                   "Percentage"                                         : `${per_pay_ret}`,
-                  "Description"                                        : `${progress}`,
+                  "Description"                                        : "",
                   "Due_date"                                           :  `${due_date}`,
                   "Mandatory_Documents_OR_Submissions"                  : `${retention_documents}`,
                   "To_be_certified_in_Company"                          : `${by1}`
@@ -1798,13 +1814,26 @@ module.exports = cds.service.impl(async function () {
 
             })
 
+
+            payment_type="";
+            Advance="";
+            progress="";
+            due_date="";
+            per_pay_pro="";
+            progress_documents="";
+            by="";
+            per_pay_ret="";
+            retention_documents="";
+            by1="";
+            percentage1="";
+
             final_quotearr.push({
               PAN_Number : doc_id ,
               Proposed_vendor_code:pvcode ,
               final_quote :vfinal_quote ,
             })
-
-
+            vfinal_quote="";
+        
 
           progress_documents = "";
           retention_documents="";
@@ -1851,12 +1880,31 @@ module.exports = cds.service.impl(async function () {
             Order_Value_BKTIn_Project_CurrencyBKT                                        : `${Amount}`,
             Order_Value_BKTIn_Bid_CurrencyBKT                                            : `${bid_currency}`,
             Vendor_Final_Quotation_Date                                                  : `${pay_date}`,
-            Vendor_Final_Quotation_Amount                                                : `${l2Amount}`,
+            Vendor_Final_Quotation_Amount                                                : "0",
             Project_CurrencyORBase_Currency                                              : `${proj_currency}`,
             Order_CurrencyORBid_currency                                                 : `${proj_currency}`,
             
 
          })       
+
+         Amount="";
+         region1="";
+        sup_main_add="";
+        GstNo="";
+        cescore="";
+        supplier_contact1="";
+        progress_documents="";
+        inco_terms="";
+        cpbg="";
+        delivery_schedule="";
+        abg="";
+        ScopeandResponsibilities="";
+        CommercialTerms="";
+        ComplianceTerms="";
+        Others="";
+        pay_date="";
+        bid_currency="";
+        pay_date="";
      
          if(doc_id != tsk_doc_id){
 
@@ -1911,7 +1959,7 @@ module.exports = cds.service.impl(async function () {
  
    
     
-    if(ser_mate == "Material"){
+    if(ser_mate == "Material"||ser_mate == "Both"){
       web_amt = l1AmountObtained
     }
     else if(ser_mate == "Service"){
@@ -1937,7 +1985,7 @@ module.exports = cds.service.impl(async function () {
      award_vendor1 = "NO";
 
 
-    if(ser_mate == "Material"){
+    if(ser_mate == "Material"||ser_mate == "Both"){
     if(web_tab1_amt.length == 1){
       web_tab_amt  = web_tab1_amt[0];
      }
@@ -2036,10 +2084,10 @@ module.exports = cds.service.impl(async function () {
   }
 }
       } else{
-      return "no data for this project";
+      return return_doc;
     }
      }else{
-      return return_doc;
+      return  "no data for this project" ;
      }
     
 
@@ -2245,6 +2293,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         var no_v = web_tab_dates[z].pvendor;
         var am = web_tab_dates[z].l1amount;
         am = returnamt(am);
+        
         if((web_tab_dates[z].publish_date == smallestDate1 && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "NO")||(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") ){
            
          if(pan_web_event.length == 0){
@@ -2496,17 +2545,17 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             if(shrt_lst_count.payload[r].awardStatus == 7 || shrt_lst_count.payload[r].awardStatus == 6){
                   
               for(let j= 0;j<shrt_lst_count.payload[r].rollupTerms.length;j++){
-                if(ser_mate == "Material"){
+                if(ser_mate == "Material"||ser_mate == "Both"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Total Cost"){
                 final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
-                final_quote1 = returnamt(final_quote);
+                // final_quote1 = returnamt(final_quote);
 
                 }
               }
               else if(ser_mate == "Service"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Extended Price"){
                   final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
-                  final_quote1 = returnamt(final_quote);
+                  // final_quote1 = returnamt(final_quote);
                   }
               }
               }
@@ -2524,7 +2573,24 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                  var erp_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.erpVendorID;
                  var sm_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.smVendorID;
                  var items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
-                 vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.city+ " "+ shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.country;
+                //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[0].value.moneyValue.amount;
+                //  vendor_loc = returnamt(vendor_loc)
+                
+                var loc ="";
+                if(ser_mate == "Material"&& ser_mate == "Both"){
+                   loc  = "Total Cost";
+                }else if(ser_mate == "Service"){
+                   loc = "Extended Price"
+                }
+                if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length !=0){
+                for(let l =0;l<shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length;l++){
+                  if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].title == loc){
+                    vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].value.moneyValue.amount;
+                  }
+
+                }
+              }
+                //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.city+ " "+ shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.country;
                   
                 //  if(web_tab2.length != 0){
                 //  for(let r=0;r<web_tab2.length;r++){
@@ -2545,24 +2611,36 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 original_quote1 = returnamt(original_quote);
 
 
+                for(let f=0;f<final_quotearr.length;f++){
+                  if(final_quotearr[f].PAN_Number == tsk_doc_id ){
+                  if(erp_id == final_quotearr[f].Proposed_vendor_code ){
+                    final_quote1 = final_quotearr[f].final_quote
+                    final_quote1 = final_quotearr[f].final_quote
+                 
+                }
+              }
+               
+              }
+
+
 
                   //  discount_amt  = pan_web_event[0].l1AmountObtained - final_quote;
-                if(original_quote != 0){
-                  discount_amt = original_quote - final_quote;
+                if(final_quote1 != 0){
+                  discount_amt = original_quote - final_quote1;
                   // var str = discount_amt.toString();
-                  discount_amt = Math.abs(discount_amt)
+                  // discount_amt = Math.abs(discount_amt)
                   discount_amt =  discount_amt.toFixed(2)
                   discount_amt2 = returnamt(discount_amt);
 
-                  var dis_per = ( ( original_quote - final_quote ) / final_quote) * 100;
-                 dis_per = Math.abs(dis_per);
+                  var dis_per = ( ( original_quote - final_quote1 ) / final_quote1) * 100;
+                //  dis_per = Math.abs(dis_per);
                  dis_per = dis_per.toFixed(2);
                   dis_per = dis_per + " %";
                 }
-                else{
-                  discount_amt = 0;
-                  dis_per = 0;
-                }
+                // else{
+                //   discount_amt = 0;
+                //   dis_per = 0;
+                // }
                 
                 // discount_amt = discount_amt.toLocaleString();
                 
@@ -2579,20 +2657,33 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                   PAN_Number                         : tsk_doc_id.toString(),
                   Awarded_Vendor                     : "YES",
                   Vendor_Name                        : `${vname}`,//disp
-                  Vendor_Location                    : `${vendor_loc}`,
+                  Vendor_Location                    : `${returnamt(vendor_loc)}`,
                   Technically_Approved               : "",
                   Original_quote                     :`${original_quote1}`,//disp
-                  Final_Quote                        : `${final_quote1}`, //disp
-                  Order_amount_OR_Split_order_amount : `${final_quote1}`,
+                  Final_Quote                        : `${returnamt(final_quote1)}`, //disp
+                  Order_amount_OR_Split_order_amount : `${returnamt(final_quote1)}`,
                   // Proposed_Vendor_Code_nav           : " ",
                   Discount_Amount                    : `${discount_amt2}`,
                   Discount_percentage                : `${dis_per}`,
                   Rank                               : "1",
           
                  })
-                 Original_quote=0;
+                
+                 vname="";
+                vendor_loc="";
+                original_quote1=0;
+                final_quote1=0;
+                original_quote=0;
+                // final_quote=0;
+                discount_amt2=0;
+                dis_per=0;
+                discount_amt=0;
+
                  console.log("stage5.4")
               }
+
+
+
 
 
               // supplier_count = `${shrt_lst_count.payload[0].selectedSuppliersCount}`;
@@ -2613,8 +2704,8 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               
               var item_details = [];
                  for(let k =0;k<shrt_lst_count.payload[r].supplierBids.length;k++){
-                  if(ser_mate =="Material"){
-                  if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals"){
+                  if(ser_mate =="Material"||ser_mate =="Both"){
+                  if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals" && shrt_lst_count.payload[r].supplierBids[k].item.title != "services" ){
                     
                     var terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
                      
@@ -2629,7 +2720,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                     if(terms3.length != 0){
                       for(let it=0;it<terms3.length;it++){
                         var value2 = "value";
-                            if(terms3[it].title =="HSNCode"){
+                            if(terms3[it].title =="HSNCode"||terms3[it].title =="SACCode"){
                              if(Object.keys(terms3[it]).includes(value2)){
                                 SACCode = terms3[it].value.simpleValue;
                              }else{
@@ -2638,7 +2729,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                            }
                              
                              
-                             if(terms3[it].title == "Material Code"){
+                             if(terms3[it].fieldId == "MaterialCode"){
                              if(Object.keys(terms3[it]).includes(value2)){
                              ItemCode = terms3[it].value.simpleValue;
                              let match = ItemCode.match(/^\d+/); 
@@ -2805,8 +2896,18 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       // totl_amt : shrt_lst_count.payload[r].supplierBids[k].item.terms[0].value.moneyValue.amount
                       totl_amt : `${l4Amount}`,
                     })
-                  
-
+                     
+                    SACCode="";
+                    ItemCode="";
+                    ItemShortDescription="";
+                    UOM="";
+                    Quantity="";
+                    Amount="";
+                    l4Amount="";
+                    extend_price="";
+                    IndianTaxPER="";
+                    tolerence="";
+                   
 
                   
 
@@ -2994,7 +3095,16 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             
                    })
 
-
+                   SACCode="";
+                   ItemCode="";
+                   ItemShortDescription="";
+                   UOM="";
+                   Quantity="";
+                   Amount="";
+                   l4Amount="";
+                   extend_price="";
+                   IndianTaxPER="";
+                   tolerence="";
 
 
 
@@ -3015,41 +3125,45 @@ for(let q= 0;q<sc_web_tab2.length;q++){
          }
   
 
-         console.log("stage5.5")
-      if(price_details1.length != 0){
-       if(price_details1[0].amount != 0){
-        for(let j=0;j<price_details.length;j++){
-          for(let j1=0;j1<price_details1.length;j1++){
-            if(price_details[j].PAN_Number == tsk_doc_id && price_details1[j1].PAN_Number == tsk_doc_id){
-              if(price_details[j].Proposed_Vendor_Code == price_details1[j1].Proposed_Vendor_Code){
-                if( price_details[j].Item_Short_Description == price_details1[j1].item_name){
-                  var pamount = returnamt(price_details1[j1].amount)
-                  price_details[j].Amount = `${pamount}`;
-                }
-              }  
+    //      console.log("stage5.5")
+    //   if(price_details1.length != 0){
+    //    if(price_details1[0].amount != 0){
+    //     for(let j=0;j<price_details.length;j++){
+    //       for(let j1=0;j1<price_details1.length;j1++){
+    //         if(price_details[j].PAN_Number == tsk_doc_id && price_details1[j1].PAN_Number == tsk_doc_id){
+    //           if(price_details[j].Proposed_Vendor_Code == price_details1[j1].Proposed_Vendor_Code){
+    //             if( price_details[j].Item_Short_Description == price_details1[j1].item_name){
+    //               var pamount = returnamt(price_details1[j1].amount)
+    //               price_details[j].Amount = `${pamount}`;
+    //             }
+    //           }  
               
-            }
-          }
-        }
-      }
-    }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
     console.log("stage5.6")
             
             var save1= 0 ;
             var amt2 = 0;
             var per_value = 0;
-
+            var weind="";
             var web_ind =0;
             for(let w=0;w<pan_web_event.length;w++){
               if(pan_web_event[w].number == tsk_doc_id){
                web_ind = web_ind + 1;
+               weind = pan_web_event[w].eventNo
               // if(pan_web_event[w].eventNo == "Last Published(Before RA)" && l1AmountObtained == 0 || pan_web_event[w].eventNo == "Last Published(Before RA)" && l1AmountObtained == 0 || pan_web_event[w].eventNo == "Last Published(Before RA)" && l1AmountObtained == 0  )
             }
             }
              
-            if(web_ind == 2){
+            if(web_ind == 2 && weind=="Last Published(Before RA)"){
               pan_web_event[1].l1AmountObtained = `${final_quote}`
-            }else if(web_ind == 1){
+            }else if(web_ind == 2 && weind=="Reverse Auction(RA)"){
+              pan_web_event[2].l1AmountObtained = `${final_quote}`
+            }
+            else if(web_ind == 1){
               for(let w=0;w<pan_web_event.length;w++){
                 if(pan_web_event[w].number == tsk_doc_id){
                   pan_web_event[w].l1AmountObtained = `${final_quote}`;
@@ -3058,42 +3172,61 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             }
 
 
-          for(let v=0;v<vendordata1.length;v++){
-            for(let p=0;p<price_details.length;p++){
-              for(let f=0;f<final_quotearr.length;f++){
-              if(vendordata1[v].PAN_Number == tsk_doc_id && price_details[p].PAN_Number && final_quotearr[f].PAN_Number == tsk_doc_id){
-              if(vendordata1[v].Proposed_Vendor_Code == price_details[p].Proposed_Vendor_Code &&price_details[p].Amount != 0  ){
-                vendordata1[v].Vendor_Location = price_details[p].Amount;
-              }
-              if(vendordata1[v].Proposed_Vendor_Code == final_quotearr[f].Proposed_vendor_code ){
-                vendordata1[v].Final_Quote = returnamt(final_quotearr[f].final_quote)
-                vendordata1[v].Order_amount_OR_Split_order_amount = returnamt(final_quotearr[f].final_quote)
-              }
-            }
+        //   for(let v=0;v<vendordata1.length;v++){
+        //     for(let p=0;p<price_details.length;p++){
+              
+        //       if(vendordata1[v].PAN_Number == tsk_doc_id && price_details[p].PAN_Number == tsk_doc_id  ){//
+        //       if(vendordata1[v].Proposed_Vendor_Code == price_details[p].Proposed_Vendor_Code &&price_details[p].Amount != 0  ){
+        //         vendordata1[v].Vendor_Location = price_details[p].Amount;
+        //       }
+        //     }
+        //   }
+        // }
+        //     for(let v=0;v<vendordata1.length;v++){
+        //      for(let f=0;f<final_quotearr.length;f++){
+        //       if(vendordata1[v].PAN_Number == tsk_doc_id &&  final_quotearr[f].PAN_Number == tsk_doc_id ){
+        //       if(vendordata1[v].Proposed_Vendor_Code == final_quotearr[f].Proposed_vendor_code ){
+        //         vendordata1[v].Final_Quote = returnamt(final_quotearr[f].final_quote)
+        //         vendordata1[v].Order_amount_OR_Split_order_amount = returnamt(final_quotearr[f].final_quote)
+             
+        //     }
+        //   }
+           
+        //   }
+        // }
+
+        for(let v=0;v<pan_vendor_response.length;v++){
+          for(let f=0;f<final_quotearr.length;f++){
+           if(pan_vendor_response[v].PAN_Number == tsk_doc_id &&  final_quotearr[f].PAN_Number == tsk_doc_id ){
+           if(pan_vendor_response[v].Proposed_Vendor_Code == final_quotearr[f].Proposed_vendor_code ){
             
-            }
-          }
-        }
+            pan_vendor_response[v].Vendor_Final_Quotation_Amount = returnamt(final_quotearr[f].final_quote)
+          
+         }
+       }
+        
+       }
+     }
+
+
 
           for(let k =0;k<pan_vendor_response.length;k++){
             for(let p=0;p<price_details.length;p++){
-              for(let f=0;f<final_quotearr.length;f++){
-              if(pan_vendor_response[k].PAN_Number == tsk_doc_id && final_quotearr[f].PAN_Number == tsk_doc_id ){
+              // for(let f=0;f<final_quotearr.length;f++){
+              if(pan_vendor_response[k].PAN_Number == tsk_doc_id  ){
               if(pan_vendor_response[k].Proposed_Vendor_Code == price_details[p].Proposed_Vendor_Code &&price_details[p].Amount != 0 ){
             
               pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT =`${price_details[p].Amount}`;
               pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${price_details[p].Amount}`;
-              pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote1}`;
+              // pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote1}`;
             }
-            if(pan_vendor_response[k].Proposed_Vendor_Code == final_quotearr[f].Proposed_vendor_code ){
-              pan_vendor_response[k].Vendor_Final_Quotation_Amount = returnamt(final_quotearr[f].final_quote)
-            }
+            
            }
-          }
+          // }
         }
       }
          
-             if(ser_mate == "Material"){
+             if(ser_mate == "Material"||ser_mate == "Both"){
 
               // SAVINGS CALUCLATIONS WHEN UNSTRUCTURED DATA
               
@@ -3236,7 +3369,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         if(panheader[t].PAN_Number == tsk_doc_id){
           panheader[t].Savings_achieved_btw_initial_and_final_quote = `${discount_amt1}`;
           panheader[t].Savings_against_base_line_spend_of_RFP = `${savings1}`;
-          panheader[t].Final_proposed_Value = `${final_quote1}`;
+          panheader[t].Final_proposed_Value = `${returnamt(final_quote)}`;
           panheader[t].Required_at_Site_Date = `${delivery_date}`;
           
         }
