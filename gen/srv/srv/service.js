@@ -82,6 +82,7 @@ module.exports = cds.service.impl(async function () {
     let event_id;
     let number_of_vendors = 0;
     let plant="";
+    var  v1sup_count=[];
     let finalproposedvalue = "";
     let plant_id = "";
     let plant_name = "";
@@ -102,6 +103,7 @@ module.exports = cds.service.impl(async function () {
     var original_quote1 = 0;
     var moneyValue = 0;
     var vfinal_quote = "";
+    var acc_subdate='';
     
     var proj_desc = "";
     var proj_currency = "";
@@ -114,6 +116,7 @@ module.exports = cds.service.impl(async function () {
     var project_currency = [];
     var projects_docs = [];
     var price_details = [];
+    var item_details = [];
     var price_details1 = [];
     var pan_web_event = [];
     var pan_type = [];
@@ -226,7 +229,7 @@ module.exports = cds.service.impl(async function () {
     var final_quotearr = [];
     var thread_results=[];
     var scenarios_payload = "";
-    var version;
+    var version=0;
     var w_type="";
     var version1 =[];
     var v1amt=0;
@@ -270,6 +273,9 @@ module.exports = cds.service.impl(async function () {
     // cur_pro_id = "WS1026978351"
     // cur_pro_id = "WS1028313509";
     // cur_pro_id = "WS1029893746";
+      // cur_pro_id = "WS1009730221";
+      // cur_pro_id = "WS1032547017"
+      // cur_pro_id = "WS1032525332";
       // cur_pro_id = "WS1009730221";
 
     
@@ -386,8 +392,9 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-
-
+    //  tsk_doc_id = "Doc1032525381";
+    //  version=3;
+    // pro_ind = 1; //dont forget to  comment it only for now d
       
     if(pro_ind == 1){
      if(tsk_ind == 0){
@@ -1288,6 +1295,7 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "Totals" ) {
                     vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
                     vfinal_quote = vfinal_quote.toString();
+                    acc_subdate = response_data4.payload[k2].submissionDate;
                 }
 
                    if( response_data4.payload[k2].item.title == "Progress"){
@@ -1717,40 +1725,51 @@ module.exports = cds.service.impl(async function () {
                 
                }
               }
-              // else if(response_data4.payload[k2].bidStatus == "Replaced" && version >1){
-              //   var value3="value";
-              //   var roll = "rollUpTerms";
-              //   var roll1 = "terms"
-              //   var vc=0;
-              //   if( response_data4.payload[k2].item.title == "Pricing" ) {
-              //     if(Object.keys(response_data4.payload[k2].item).includes(roll)){
-              //     if(response_data4.payload[k2].item.rollUpTerms.length !=0){
-              //       if(Object.keys(response_data4.payload[k2].item.rollUpTerms[0]).includes(value3)){
-              //         console.log("version")
-              //          v1amt = response_data4.payload[k2].item.rollUpTerms[0].value.moneyValue.amount;
-              //          vc = vc+1;
-              //          version1.push({
-              //           PAN_Number : doc_id ,
-              //           // Proposed_vendor_code:pvcode ,
-              //           vcount : vc,
-              //           final_quote :v1amt ,
-              //         })
-              //       }
-              //     }
-              //   }else if(Object.keys(response_data4.payload[k2].item).includes(roll1) && response_data4.payload[k2].item.terms.length != 0){
-              //     console.log("terms")
+              else if(response_data4.payload[k2].bidStatus == "Replaced" && version >1){
+                var value3="value";
+                var roll = "rollUpTerms";
+                var roll1 = "terms"
+                var vc=0;
+                if( response_data4.payload[k2].item.title == "Pricing" ) {
+                  if(Object.keys(response_data4.payload[k2].item).includes(roll)){
+                  if(response_data4.payload[k2].item.rollUpTerms.length !=0){
+                    if(Object.keys(response_data4.payload[k2].item.rollUpTerms[0]).includes(value3)){
+                      console.log("version")
+                      if(response_data4.payload[k2].item.rollUpTerms != []){
+                        for(r=0;r<response_data4.payload[k2].item.rollUpTerms.length;r++){
+                          if(response_data4.payload[k2].item.rollUpTerms[r].title == "Total Cost" ){
+                            v1amt = response_data4.payload[k2].item.rollUpTerms[r].value.moneyValue.amount;
+                          }
+                        }
+                      }
+                      
+                       
+                       v1sup_count.push({vname : response_data4.payload[k2].invitationId})
+                       version1.push({
+                        PAN_Number : doc_id ,
+                        Proposed_vendor_code:pvcode ,
+                        subdate :response_data4.payload[k2].submissionDate,
+                        ivid : response_data4.payload[k2].invitationId,
+                        vcount : vc,
+                        final_quote :v1amt ,
+                      })
+                    }
+                  }
+                }
+                // else if(Object.keys(response_data4.payload[k2].item).includes(roll1) && response_data4.payload[k2].item.terms.length != 0){
+                //   console.log("terms")
 
-              //   }
+                // }
                  
-              //     // v1amt = v1amt.toString();
+                  // v1amt = v1amt.toString();
 
                  
-              // }
+              }
 
 
              
 
-              // }
+              }
                
                }
 
@@ -1832,6 +1851,7 @@ module.exports = cds.service.impl(async function () {
               PAN_Number : doc_id ,
               Proposed_vendor_code:pvcode ,
               final_quote :vfinal_quote ,
+              sub_date : acc_subdate,
             })
             vfinal_quote="";
         
@@ -1907,7 +1927,7 @@ module.exports = cds.service.impl(async function () {
         bid_currency="";
         pay_date="";
      
-         if(doc_id != tsk_doc_id){
+        //  if(doc_id != tsk_doc_id){
 
          vendordata.push({
           Proposed_Vendor_Code               : `${pvcode}`, //disp
@@ -1925,7 +1945,7 @@ module.exports = cds.service.impl(async function () {
           Rank                               : "0",
     
          })
-        }
+        // }
         
       }
      
@@ -2307,11 +2327,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           var eventno = "Last Published(Before RA)"
          }
 
-        //  if(pan_web_event.length ==0 && version >1){
-        //   am = version1[0].final_quote;
-        //   no_v = version1[0].vcount;
-
-        //  }
+         
           if(pan_web_event.length ==0||(pan_web_event.length==1 && version == 1)){
            
           pan_web_event.push({
@@ -2427,7 +2443,41 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   //  }
    
   }
+      // w_type ="RFP";
+
+      if( version >1){
+        const ver1scount = {};
+        const ver1scount1 = v1sup_count.filter(obj => {
+          if (!ver1scount[obj.vname]) {
+            ver1scount[obj.vname] = true;
+            return true;
+          }
+           return false;
+        })
+       
+        let no_v = ver1scount1.length;
+
+        var v1dates=[];
+        for(let v1=0;v1<version1.length;v1++){
+          v1dates.push(version1[v1].subdate)
+
+        }
+        var v1smallestdate = v1dates.reduce((acc, curr) => curr < acc ? curr : acc, v1dates[0]);
+        let am1=0;
+        for(let v=0;v<version1.length;v++){
+          if(version1[v].subdate == v1smallestdate){
+             am1 = version1[v].final_quote;
+           
+          }
+        }
+        if(pan_web_event != []){
+        pan_web_event[0].l1AmountObtained = `${am1}`;
+        pan_web_event[0].numberOfVendorsParticipated = `${no_v}`
       
+        }
+        
+
+       }
     if(version >1){
       if(w_type == "RFP"){
 
@@ -2540,11 +2590,13 @@ for(let q= 0;q<sc_web_tab2.length;q++){
       //   getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
       //   getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
       //    shrt_lst_count = await getcall.tx(req).get('/getcall');
+      var ch=0
          if (shrt_lst_count.payload.length != 0){
           
           for(let r = 0;r<shrt_lst_count.payload.length;r++){
-            if(shrt_lst_count.payload[r].awardStatus == 7 || shrt_lst_count.payload[r].awardStatus == 6){
-                  
+           
+            if((shrt_lst_count.payload[r].awardStatus == 7 ) || shrt_lst_count.payload[r].awardStatus == 6 ){
+                  ch=1;
               for(let j= 0;j<shrt_lst_count.payload[r].rollupTerms.length;j++){
                 if(ser_mate == "Material"||ser_mate == "Both"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Total Cost"){
@@ -2576,6 +2628,9 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                  var items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
                 //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[0].value.moneyValue.amount;
                 //  vendor_loc = returnamt(vendor_loc)
+
+
+
                 
                 var loc ="";
                 if(ser_mate == "Material" || ser_mate == "Both"){
@@ -2601,15 +2656,62 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 //   }
                 //  }
                 // }
-                if(price_details1.length != 0){
-                  for(let r=0;r<price_details1.length;r++){
-                    if(price_details1[r].PAN_Number == tsk_doc_id && price_details1[r].Proposed_Vendor_Code == erp_id ){
-                      original_quote = original_quote + parseFloat(price_details1[r].amount);
-                    }
+                // if(price_details1.length != 0){
+                //   for(let r=0;r<price_details1.length;r++){
+                //     if(price_details1[r].PAN_Number == tsk_doc_id && price_details1[r].Proposed_Vendor_Code == erp_id ){
+                //       original_quote = original_quote + parseFloat(price_details1[r].amount);
+                //     }
+                //   }
+                // }
+
+                // original_quote1 = returnamt(original_quote);
+                var acc_ind =0;
+                var orinv_id = "";
+                var ordates=[];
+                var ordates1=[];
+                if(vendorids1!=[]&& version1!=[]){
+                for(let v=0;v<vendorids1.length;v++){
+                  if(vendorids1[v].smvendor_id == sm_id){
+                    orinv_id = vendorids1[v].vinv_id;
+                  }
+                }
+                for(let vr=0;vr<version1.length;vr++){
+                  if(version1[vr].ivid == orinv_id){
+                   ordates.push(version1[vr].subdate);
+                   acc_ind=1;
                   }
                 }
 
-                original_quote1 = returnamt(original_quote);
+
+                if(acc_ind == 1){
+               var orsmdate =  ordates.reduce((acc, curr) => curr < acc ? curr : acc, ordates[0]);
+                
+               for(let j=0;j<version1.length;j++){
+                if(version1[j].subdate == orsmdate){
+                  original_quote =  version1[j].final_quote;
+                  // original_quote1 = returnamt(original_quote);
+                }
+               }
+              }else if(acc_ind == 0){
+                original_quote = 0;
+                for(let f=0;f<final_quotearr.length;f++){
+                  if(final_quotearr[f].Proposed_vendor_code == erp_id ){
+                    ordates1.push(final_quotearr[f].sub_date);
+                  }
+                 
+
+              }
+              var orsmdate1 =  ordates1.reduce((acc, curr) => curr < acc ? curr : acc, ordates1[0]);
+              for(let f=0;f<final_quotearr.length;f++){
+                if(final_quotearr[f].sub_date == orsmdate1 ){
+                  original_quote = final_quotearr[f].final_quote;
+                }
+
+              }
+              }
+
+              }
+
 
 
                 for(let f=0;f<final_quotearr.length;f++){
@@ -2622,6 +2724,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               }
                
               }
+              
 
 
 
@@ -2638,6 +2741,13 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                  dis_per = dis_per.toFixed(2);
                   dis_per = dis_per + " %";
                 }
+
+
+
+
+
+
+
                 // else{
                 //   discount_amt = 0;
                 //   dis_per = 0;
@@ -2660,7 +2770,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                   Vendor_Name                        : `${vname}`,//disp
                   Vendor_Location                    : `${returnamt(vendor_loc)}`,
                   Technically_Approved               : "",
-                  Original_quote                     :`${original_quote1}`,//disp
+                  Original_quote                     :`${returnamt(original_quote)}`,//disp
                   Final_Quote                        : `${returnamt(final_quote1)}`, //disp
                   Order_amount_OR_Split_order_amount : `${returnamt(final_quote1)}`,
                   // Proposed_Vendor_Code_nav           : " ",
@@ -2703,7 +2813,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
 
               
-              var item_details = [];
+              
                  for(let k =0;k<shrt_lst_count.payload[r].supplierBids.length;k++){
                   if(ser_mate =="Material"||ser_mate =="Both"){
                   if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals" && shrt_lst_count.payload[r].supplierBids[k].item.title != "services" ){
@@ -3261,7 +3371,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
              // SAVINGS CALUCLATIONS WHEN STRUCTURED DATA
  
-              if(pan_web_event.length != 0){
+              if(pan_web_event.length != 0 && item_details !=[]){
                 if(price_details1[0].item_name != " "){
             for(let f=0;f<pan_web_event.length;f++){
             if(pan_web_event[f].number != "NA" && pan_web_event[f].number != tsk_doc_id ){
@@ -3737,38 +3847,47 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     //   const response_p = await item.post('/PAN_PRICE_DETAILS_APR',body7);
     // }
     var qind=0;
+    var body7 
     if(price_details.length != 0){
     for(let j = 0;j<price_details.length;j++){
       if(price_details[j].Item_Code != " "){
-      let body7 = JSON.parse(JSON.stringify(price_details[j]));
+       body7 = JSON.parse(JSON.stringify(price_details[j]));
       let pd = await SELECT.from(PAN_PRICE_DETAILS_APR).where`PAN_Number = ${body7.PAN_Number} and Proposed_Vendor_Code = ${body7.Proposed_Vendor_Code} and Item_Code = ${body7.Item_Code}`;
-      if(pd.length != 0){
+      let del = await DELETE.from(PAN_PRICE_DETAILS_APR).where`PAN_Number = ${body7.PAN_Number} and Proposed_Vendor_Code = ${body7.Proposed_Vendor_Code} and Item_Code = ${body7.Item_Code}`;
+      // if(pd.length != 0){
        
-        for(let p=0;p<pd.length;p++){
-          if(pd[p].Quantity == body7.Quantity){
-           qind =1;
-          }
+      //   for(let p=0;p<pd.length;p++){
+      //     if(pd[p].Quantity == body7.Quantity){
+      //      qind =1;
+      //     }
+      //   }
+      // }
+      //   if(pd.length != 0 && qind == 1){
+      //   delete body7.PAN_Number;
+      //   delete body7.Proposed_Vendor_Code;
+      //   delete body7.Item_Code;
+      //   let putpd= await  UPDATE(PAN_PRICE_DETAILS_APR,({
+      //     PAN_Number:price_details[j].PAN_Number,
+      //     Proposed_Vendor_Code:price_details[j].Proposed_Vendor_Code,
+      //     Item_Code:price_details[j].Item_Code
+      //   })).with(body7);
+        // console.log(putpd);
         }
       }
-        if(pd.length != 0 && qind == 1){
-        delete body7.PAN_Number;
-        delete body7.Proposed_Vendor_Code;
-        delete body7.Item_Code;
-        let putpd= await  UPDATE(PAN_PRICE_DETAILS_APR,({
-          PAN_Number:price_details[j].PAN_Number,
-          Proposed_Vendor_Code:price_details[j].Proposed_Vendor_Code,
-          Item_Code:price_details[j].Item_Code
-        })).with(body7);
-        console.log(putpd);
-        }
-      else{
-        if((pd.length == 0) || (pd.length != 0 && qind==0)){
-      const response_p = await INSERT.into(PAN_PRICE_DETAILS_APR).entries(body7);
-      console.log(response_p);
-        }
-      }
+      // else{
+        // if( qind==0){
+          let pd = await SELECT.from(PAN_PRICE_DETAILS_APR);
+          for(let j = 0;j<price_details.length;j++){
+            body7 = JSON.parse(JSON.stringify(price_details[j]));
+            // if(price_details[j].PAN_Number == body7.PAN_Number && price_details[j].Proposed_Vendor_Code == body7.Proposed_Vendor_Code &&  price_details[j].Item_Code == body7.Item_Code){
+              const response_p = await INSERT.into(PAN_PRICE_DETAILS_APR).entries(body7);
+              console.log(response_p);
+            // }
+     
+        // }
+      // }
     }
-    }
+    // }
   }
     // const resp9 = await INSERT.into(PAN_PRICE_DETAILS_APR).entries(price_details)
     console.log("pricedetails");
