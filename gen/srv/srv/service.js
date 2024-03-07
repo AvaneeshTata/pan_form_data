@@ -651,16 +651,6 @@ module.exports = cds.service.impl(async function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
   }
       // tech_commitee_clearedproposal      
 
@@ -1934,7 +1924,7 @@ module.exports = cds.service.impl(async function () {
           PAN_Number                         : `${doc_id}`,
           Awarded_Vendor                     : "NO",
           Vendor_Name                        :  `${vendorids[k].org_name}`,//disp
-          Vendor_Location                    : `${vendorids[k].vendor_loc}`,
+          Vendor_Location                    : "",
           Technically_Approved               : "",
           Original_quote                     :"",//disp
           Final_Quote                        : "", //disp
@@ -2447,17 +2437,20 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
       if( version >1){
         const ver1scount = {};
-        const ver1scount1 = v1sup_count.filter(obj => {
+        if(v1sup_count !=[]){
+        var ver1scount1 = v1sup_count.filter(obj => {
           if (!ver1scount[obj.vname]) {
             ver1scount[obj.vname] = true;
             return true;
           }
            return false;
         })
+      }
        
         let no_v = ver1scount1.length;
 
         var v1dates=[];
+        if(version1 !=[]){
         for(let v1=0;v1<version1.length;v1++){
           v1dates.push(version1[v1].subdate)
 
@@ -2470,6 +2463,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
            
           }
         }
+      }
         if(pan_web_event != []){
         pan_web_event[0].l1AmountObtained = `${am1}`;
         pan_web_event[0].numberOfVendorsParticipated = `${no_v}`
@@ -3509,7 +3503,22 @@ for(let q= 0;q<sc_web_tab2.length;q++){
           vendordata3.push(vendordata[m])
          }
       }
-      
+       
+
+      if(vendordata3 !=[]&&final_quotearr!=[]){
+      for(let k=0;k<vendordata3.length;k++){
+        if(vendordata3[k].Awarded_Vendor=="NO"){
+          for(let k1=0;k1<final_quotearr.length;k1++){
+            if(final_quotearr[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code){
+              vendordata3[k].Original_quote = returnamt(final_quotearr[k1].final_quote);
+            }
+          }
+        }
+      }
+    }
+
+
+
       for(let k = 0;k<pan_web_event.length;k++){
         if(pan_web_event[k].l1AmountObtained !=0){
           pan_web_event[k].l1AmountObtained = returnamt(pan_web_event[k].l1AmountObtained);
