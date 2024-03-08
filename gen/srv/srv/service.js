@@ -277,6 +277,7 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1032547017"
       // cur_pro_id = "WS1032525332";
       // cur_pro_id = "WS1009730221";
+      // cur_pro_id = "WS1029893746";
 
     
      
@@ -2450,13 +2451,14 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         let no_v = ver1scount1.length;
 
         var v1dates=[];
+        let am1=0;
         if(version1 !=[]){
         for(let v1=0;v1<version1.length;v1++){
           v1dates.push(version1[v1].subdate)
 
         }
         var v1smallestdate = v1dates.reduce((acc, curr) => curr < acc ? curr : acc, v1dates[0]);
-        let am1=0;
+        
         for(let v=0;v<version1.length;v++){
           if(version1[v].subdate == v1smallestdate){
              am1 = version1[v].final_quote;
