@@ -54,6 +54,7 @@ module.exports = cds.service.impl(async function () {
     // let re = await SELECT.from(PAN_Details_APR);
     // let re1 = await SELECT.from(PAN_WEB_EVENT_APR);
     // await DELETE.from(PAN_Details);
+    try{
     let array = [];
     let vendordata = [];
     let panheader = [];
@@ -89,7 +90,7 @@ module.exports = cds.service.impl(async function () {
     let GstNo = "";
     let sup_main_add ="";
     let cescore ="";
-    let region1;
+    let region1 = " ";
     var  Freight = ""
     var  discount_amt = 0;
     var discount_amt1 = 0
@@ -111,6 +112,7 @@ module.exports = cds.service.impl(async function () {
     var web_publish_date1="";
     var final_date;
     var doc_status;
+    var dis_per=0;
     var plant_details = [];
     var shrt_lst_count = [];
     var project_currency = [];
@@ -133,6 +135,7 @@ module.exports = cds.service.impl(async function () {
     var IndianTaxPER = "";
     var ItemCode= "";
     var ItemShortDescription = "";
+    var  ainv_id = " ";
     var UnitPrice="";
     var  Quantity="";
     var QuantityOverDeliveryTolerance="";
@@ -233,6 +236,10 @@ module.exports = cds.service.impl(async function () {
     var w_type="";
     var version1 =[];
     var v1amt=0;
+    var vname = "";
+    var erp_id = "";
+    var sm_id = "";
+    var items = "";
    
     
     
@@ -278,6 +285,8 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1032525332";
       // cur_pro_id = "WS1009730221";
       // cur_pro_id = "WS1029893746";
+      // cur_pro_id = "WS1026781862";//18 suppliers
+      // cur_pro_id = "WS1036334661"; //original issue
 
     
      
@@ -838,7 +847,7 @@ module.exports = cds.service.impl(async function () {
             // if(web_sup_count.payload[l].supplierBidStatus == "Participated"){
               var bid = "hasBid";
               // if(bid in web_sup_count.payload[l] ){
-                // if(web_sup_count.payload[l].hasBid == true){
+              //   if(web_sup_count.payload[l].hasBid == true){
               pvendor = pvendor + 1;
               supplier.push({
                     supplier_name:web_sup_count.payload[l].invitationId,
@@ -921,6 +930,7 @@ module.exports = cds.service.impl(async function () {
         if(vendorids.length != 0){
           var vendorid = vendorids[k].smvendor_id;
           var pvcode =  vendorids[k].pvcode;
+          var smid = vendorids[k].smvendor_id;
         }else{
           var vendorid = "";
           var pvcode = "";
@@ -1046,16 +1056,42 @@ module.exports = cds.service.impl(async function () {
 
               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Supplier Main Address"){
                 sup_main_add = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
+                var streetName="";
+                var  houseID = " ";
+                var city="";
+                var postalCode="";
+                var region="";
+                var country="";
                 const parsedData = JSON.parse(sup_main_add);
-                const streetName = parsedData.default.streetName || '';
-                const houseID = parsedData.default.houseID || '';
-                const city = parsedData.default.cityName || '';
-                const postalCode = parsedData.default.streetPostalCode || '';
-                const region = parsedData.default.regionCode.Name || '';
-                region1 = region;
-                const country = parsedData.default.countryCode.Name || '';
+                if("streetName" in parsedData.default ){
+                 streetName = parsedData.default.streetName || '';
+                }
+                if("houseID" in parsedData.default ){
+                  houseID = parsedData.default.houseID || '';
+                }
+                 if("cityName" in parsedData.default ){
+                  city = parsedData.default.cityName || '';
+                 }
+                if("streetPostalCode" in parsedData.default ){
+                  postalCode = parsedData.default.streetPostalCode || '';
+                }
+                if("regionCode" in parsedData.default ){
+                  if("Name" in parsedData.default.regionCode ){
+                    region = parsedData.default.regionCode.Name || '';
+                    region1 = region;
+                  }
+                }
+               
+                if("countryCode" in parsedData.default){
+                  if("Name" in parsedData.default.countryCode ){
+                    country = parsedData.default.countryCode.Name || '';
+                   }
+                }
+                 
                 
-                const formattedAddress = `${streetName}, ${houseID}, ${city}, ${region}, ${postalCode}, ${country}`;
+                
+                
+                var formattedAddress = `${streetName}, ${houseID}, ${city}, ${postalCode}, ${country}`;
                 let resultArray = formattedAddress.split(',').map(item => item.trim()).filter(Boolean);
                  sup_main_add = resultArray.join(', ');
                 
@@ -1136,8 +1172,8 @@ module.exports = cds.service.impl(async function () {
              terms2 = response_data4.payload[v].item.terms;
 
           
-              venador_names.push({
-                vname :response_data4.payload[v].invitationId,doc_id});
+              // venador_names.push({
+              //   vname :response_data4.payload[v].invitationId,doc_id});
             // if(!(inviid)){
             //   inviid=response_data4.payload[v].incitationId;
             //   alterid = response_data4.payload[v].alternativeId;
@@ -1270,8 +1306,10 @@ module.exports = cds.service.impl(async function () {
           
 
             for(let k2 = 0;k2<response_data4.payload.length;k2++){
+              venador_names.push({
+                vname :response_data4.payload[k2].invitationId,doc_id});
                 if(response_data4.payload[k2].bidStatus == "Accepted"){
-                  let a = response_data4.payload[k2].invitationId;
+                   ainv_id = response_data4.payload[k2].invitationId;
                   let b = response_data4.payload[k2].item.itemId;
                   var pay_date = response_data4.payload[k2].submissionDate;
                   pay_date = pay_date.substring(0, 10);
@@ -1285,7 +1323,7 @@ module.exports = cds.service.impl(async function () {
                   }
                   if( response_data4.payload[k2].item.title == "Totals" ) {
                     vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
-                    vfinal_quote = vfinal_quote.toString();
+                    // vfinal_quote = vfinal_quote.toString();
                     acc_subdate = response_data4.payload[k2].submissionDate;
                 }
 
@@ -1716,7 +1754,7 @@ module.exports = cds.service.impl(async function () {
                 
                }
               }
-              else if(response_data4.payload[k2].bidStatus == "Replaced" && version >1){
+              else if(response_data4.payload[k2].bidStatus == "Replaced"){
                 var value3="value";
                 var roll = "rollUpTerms";
                 var roll1 = "terms"
@@ -1843,8 +1881,12 @@ module.exports = cds.service.impl(async function () {
               Proposed_vendor_code:pvcode ,
               final_quote :vfinal_quote ,
               sub_date : acc_subdate,
+              inv_id : ainv_id,
+              sm_id : smid,
             })
+            
             vfinal_quote="";
+            ainv_id=" ";
         
 
           progress_documents = "";
@@ -1944,8 +1986,8 @@ module.exports = cds.service.impl(async function () {
     } 
 
 
-    const supcount = {};
-        const supcount1 = venador_names.filter(obj => {
+    var supcount = {};
+        var supcount1 = venador_names.filter(obj => {
           if (!supcount[obj.vname]) {
               supcount[obj.vname] = true;
             return true;
@@ -1957,6 +1999,9 @@ module.exports = cds.service.impl(async function () {
           scount : supcount1.length,
           doc_id : doc_id,
         })
+        venador_names=[];
+        supcount1=[];
+
     console.log("stage4")
 
     if(l1amount.length == 1){
@@ -2297,12 +2342,18 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   
       for(let z=0;z<web_tab_dates.length;z++){
         let number = "";
+        var no_v=0;
         number = web_tab_dates[z].document_id;
        //  number = number.substring(number.length - 4)
         var dateString = web_tab_dates[z].publish_date;
          var datesub = dateString.substring(0, 10)
          datesub = returndate(datesub);
-        var no_v = web_tab_dates[z].pvendor;
+         for(let s=0;s<sc_web_tab2.length;s++){
+          if(sc_web_tab2[s].doc_id == number){
+            no_v = sc_web_tab2[s].scount;
+          }
+         }
+        
         var am = web_tab_dates[z].l1amount;
         am = returnamt(am);
         
@@ -2336,12 +2387,17 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             last_rfp_date =  date2.reduce((acc, curr) => curr > acc ? curr : acc, date2[0]);
             for(let z=0;z<web_tab_dates.length;z++){
               let number = "";
+              var no_v=0;
               number = web_tab_dates[z].document_id;
              //  number = number.substring(number.length - 4)
               var dateString = web_tab_dates[z].publish_date;
                var datesub = dateString.substring(0, 10)
                datesub = returndate(datesub);
-              var no_v = web_tab_dates[z].pvendor;
+               for(let s=0;s<sc_web_tab2.length;s++){
+                if(sc_web_tab2[s].doc_id == number){
+                  no_v = sc_web_tab2[s].scount;
+                }
+               }
               var am = web_tab_dates[z].l1amount;
               am = returnamt(am);
              if(web_tab_dates[z].publish_date == last_rfp_date){
@@ -2360,7 +2416,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
             }
           }
-           if(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES" || (oneround1 == 1 && type1 == "RFQ")){
+           if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES") && (oneround1 == 1 && type1 == "RFQ")){
              if(pan_web_event.length == 1 && version == 1){
               pan_web_event.push({
                 idd :"2" ,
@@ -2448,7 +2504,12 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         })
       }
        
-        let no_v = ver1scount1.length;
+        let no_v = 0;
+        for(let k=0;k<sc_web_tab2.length;k++){
+          if(sc_web_tab2[k].doc_id == tsk_doc_id){
+            no_v = sc_web_tab2[k].scount;
+          }
+        }
 
         var v1dates=[];
         let am1=0;
@@ -2479,13 +2540,20 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
         for(let z=0;z<web_tab_dates.length;z++){
           let number = "";
+          var no_v=0;
           if(web_tab_dates[z].document_id == tsk_doc_id){
           number = web_tab_dates[z].document_id;
          //  number = number.substring(number.length - 4)
           var dateString = web_tab_dates[z].publish_date;
            var datesub = dateString.substring(0, 10)
            datesub = returndate(datesub);
-          var no_v = web_tab_dates[z].pvendor;
+           for(let s=0;s<sc_web_tab2.length;s++){
+            if(sc_web_tab2[s].doc_id == number){
+              no_v = sc_web_tab2[s].scount;
+            }
+           }
+           
+          // var no_v = web_tab_dates[z].pvendor;
           var am = web_tab_dates[z].l1amount;
           am = returnamt(am);
           if(pan_web_event.length == 1){
@@ -2517,13 +2585,19 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         
         for(let z=0;z<web_tab_dates.length;z++){
           let number = "";
+          var no_v=0;
           if(web_tab_dates[z].document_id == tsk_doc_id){
           number = web_tab_dates[z].document_id;
          //  number = number.substring(number.length - 4)
           var dateString = web_tab_dates[z].publish_date;
            var datesub = dateString.substring(0, 10)
            datesub = returndate(datesub);
-          var no_v = web_tab_dates[z].pvendor;
+           for(let s=0;s<sc_web_tab2.length;s++){
+            if(sc_web_tab2[s].doc_id == number){
+              no_v = sc_web_tab2[s].scount;
+            }
+           }
+          // var no_v = web_tab_dates[z].pvendor;
           var am = web_tab_dates[z].l1amount;
           am = returnamt(am);
           if(pan_web_event.length == 2){
@@ -2618,10 +2692,19 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 //    }
                 //  }
 
-                 var vname = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.name;
-                 var erp_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.erpVendorID;
-                 var sm_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.smVendorID;
-                 var items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
+                  vname = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.name;
+                  erp_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.erpVendorID;
+                  sm_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.smVendorID;
+                  items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
+                  if(erp_id == null){
+                    erp_id = "";
+                  }
+                  if(vname==null){
+                    vname="";
+                  }
+                  if(sm_id == null){
+                    sm_id = "";
+                  }
                 //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[0].value.moneyValue.amount;
                 //  vendor_loc = returnamt(vendor_loc)
 
@@ -2665,25 +2748,28 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 var orinv_id = "";
                 var ordates=[];
                 var ordates1=[];
-                if(vendorids1!=[]&& version1!=[]){
+                if( vendorids1!=[]){
                 for(let v=0;v<vendorids1.length;v++){
-                  if(vendorids1[v].smvendor_id == sm_id){
+                  if(vendorids1[v].smvendor_id == sm_id && vendorids1[v].doc_id == tsk_doc_id ){
                     orinv_id = vendorids1[v].vinv_id;
+                    console.log(orinv_id );
                   }
                 }
+              }
+              if(version1!=[]){
                 for(let vr=0;vr<version1.length;vr++){
-                  if(version1[vr].ivid == orinv_id){
+                  if(version1[vr].ivid == orinv_id &&version1[vr].PAN_Number == tsk_doc_id){
                    ordates.push(version1[vr].subdate);
                    acc_ind=1;
                   }
                 }
+              }
 
-
-                if(acc_ind == 1){
+                if(acc_ind == 1 && version1!=[]){
                var orsmdate =  ordates.reduce((acc, curr) => curr < acc ? curr : acc, ordates[0]);
                 
                for(let j=0;j<version1.length;j++){
-                if(version1[j].subdate == orsmdate){
+                if(version1[j].subdate == orsmdate && version1[j].PAN_Number == tsk_doc_id){
                   original_quote =  version1[j].final_quote;
                   // original_quote1 = returnamt(original_quote);
                 }
@@ -2691,7 +2777,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               }else if(acc_ind == 0){
                 original_quote = 0;
                 for(let f=0;f<final_quotearr.length;f++){
-                  if(final_quotearr[f].Proposed_vendor_code == erp_id ){
+                  if(final_quotearr[f].sm_id == sm_id && final_quotearr[f].PAN_Number == tsk_doc_id ){
                     ordates1.push(final_quotearr[f].sub_date);
                   }
                  
@@ -2699,20 +2785,20 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               }
               var orsmdate1 =  ordates1.reduce((acc, curr) => curr < acc ? curr : acc, ordates1[0]);
               for(let f=0;f<final_quotearr.length;f++){
-                if(final_quotearr[f].sub_date == orsmdate1 ){
+                if(final_quotearr[f].sub_date == orsmdate1 && final_quotearr[f].PAN_Number == tsk_doc_id){
                   original_quote = final_quotearr[f].final_quote;
                 }
 
               }
               }
 
-              }
+              
 
 
 
                 for(let f=0;f<final_quotearr.length;f++){
                   if(final_quotearr[f].PAN_Number == tsk_doc_id ){
-                  if(erp_id == final_quotearr[f].Proposed_vendor_code ){
+                  if( final_quotearr[f].sm_id == sm_id  ){
                     final_quote1 = final_quotearr[f].final_quote
                     final_quote1 = final_quotearr[f].final_quote
                  
@@ -2732,7 +2818,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                   discount_amt =  discount_amt.toFixed(2)
                   discount_amt2 = returnamt(discount_amt);
 
-                  var dis_per = ( ( original_quote - final_quote1 ) / final_quote1) * 100;
+                   dis_per = ( ( original_quote - final_quote1 ) / final_quote1) * 100;
                 //  dis_per = Math.abs(dis_per);
                  dis_per = dis_per.toFixed(2);
                   dis_per = dis_per + " %";
@@ -3509,13 +3595,18 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
       if(vendordata3 !=[]&&final_quotearr!=[]){
       for(let k=0;k<vendordata3.length;k++){
-        if(vendordata3[k].Awarded_Vendor=="NO"){
+        if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
           for(let k1=0;k1<final_quotearr.length;k1++){
             if(final_quotearr[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code){
               vendordata3[k].Original_quote = returnamt(final_quotearr[k1].final_quote);
             }
           }
         }
+      }
+    }
+    for(let j=0;j<vendordata3.length;j++){
+      if(vendordata3[j].Original_quote=="NaN"){
+        vendordata3[j].Original_quote="0";
       }
     }
 
@@ -3942,6 +4033,15 @@ for(let q= 0;q<sc_web_tab2.length;q++){
  
   // }
     return tsk_doc_id;
+}catch(e){
+  if("message" in e){
+    console.log(e.message);
+    return e.message;
+  }else{
+    return e;
+  }
+  
+}
   });
 
   });
