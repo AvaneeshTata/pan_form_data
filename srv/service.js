@@ -77,6 +77,8 @@ module.exports = cds.service.impl(async function () {
     var awarded_vendors = [];
     let supplier_count;
     let supplier1 = [];
+    var na_ind=0;
+    var na_date=[];
     let payment_details = [];
     let pan_vendor_response = [];
     let vendortaxdetails = [];
@@ -90,9 +92,12 @@ module.exports = cds.service.impl(async function () {
     let GstNo = "";
     let sup_main_add ="";
     let cescore ="";
+    var pcode="";
+    var na_smdate="";
     let region1 = " ";
     var  Freight = ""
     var  discount_amt = 0;
+    var inc="";
     var discount_amt1 = 0
     var erp_ind = "";
     var return_doc ="";
@@ -108,7 +113,7 @@ module.exports = cds.service.impl(async function () {
     
     var proj_desc = "";
     var proj_currency = "";
-    var web_publish_date;
+    var web_publish_date="";
     var web_publish_date1="";
     var final_date;
     var doc_status;
@@ -174,7 +179,7 @@ module.exports = cds.service.impl(async function () {
     var Subject_of_ProposalOROrder = "";
     var subject_of_proposal = "";
     var delivery_date ="";
-    var create_date;
+    var create_date="";
     var create_date1 = "";
     var first_name = "";
     var last_name = "";
@@ -240,6 +245,7 @@ module.exports = cds.service.impl(async function () {
     var erp_id = "";
     var sm_id = "";
     var items = "";
+    var web_logic=[];
    
     
     
@@ -286,7 +292,9 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1009730221";
       // cur_pro_id = "WS1029893746";
       // cur_pro_id = "WS1026781862";//18 suppliers
+      // cur_pro_id="WS1038454212";
       // cur_pro_id = "WS1036334661"; //original issue
+      // cur_pro_id="WS1038657481";
 
     
      
@@ -345,19 +353,28 @@ module.exports = cds.service.impl(async function () {
           project_currency = await getcall.tx(req).get('/getcall');
           var d = project_currency;
           if(project_currency != ""){
+            if("currency" in project_currency){
             proj_currency = `${project_currency.currency}`;
-            web_publish_date = project_currency.openDate;
-            const dateObj = new Date(web_publish_date);
-            web_pub_date = project_currency.openDate;
-            web_publish_date = dateObj.toISOString().split('T')[0];
-            web_publish_date1 =  returndate(web_publish_date);
+            }
+            if("openDate" in project_currency ){
+              web_publish_date = project_currency.openDate;
+              const dateObj = new Date(web_publish_date);
+              web_pub_date = project_currency.openDate;
+              web_publish_date = dateObj.toISOString().split('T')[0];
+              web_publish_date1 =  returndate(web_publish_date);
+            }
+            if("createDate" in project_currency ){
             create_date = project_currency.createDate;
             const dateObj1 = new Date(create_date);
             create_date = dateObj1.toISOString().split('T')[0];
             create_date1 = returndate(create_date)
-           
-            var formatdate = new Date(web_publish_date);
-            var formatdate1 = new Date(create_date);
+            }
+            if(web_publish_date !=""&& create_date!="" ){
+              var formatdate = new Date(web_publish_date);
+              var formatdate1 = new Date(create_date);
+            }
+            
+            
   
             var diffTime = Math.abs(formatdate - formatdate1);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -384,8 +401,8 @@ module.exports = cds.service.impl(async function () {
             if(obj in project_currency){
             tsk_id = project_currency.pendingAwardApprovalTaskId;
             tsk_doc_id = doc_id;
-            version = project_currency.documentVersion;
-            w_type = project_currency.eventTypeName;
+            // version = project_currency.documentVersion;
+            // w_type = project_currency.eventTypeName;
             pro_ind = 1;
           }
         }
@@ -402,7 +419,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1032525381";
+    //  tsk_doc_id = "Doc1038690674";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -681,11 +698,25 @@ module.exports = cds.service.impl(async function () {
        console.log("thread results started")
        thread_results.forEach((result)=>{
          if(!Array.isArray(result.payload) && (!(result instanceof Error))  ){
-           proj_desc = result.description;
-           purchasing_grp = result.businessSystem.purchasingGroup[0].value;
-           baselinespend = result.baselineSpend.amount;
-           // baselinespend = baselinespend.toLocaleString('en-IN');
-           baselinespend1 = returnamt(baselinespend);
+          if("description" in result ){
+            proj_desc = result.description;
+          }
+          if("businessSystem" in result ){
+            if("purchasingGroup" in result.businessSystem && result.businessSystem.purchasingGroup.length !=0){
+              if( "value" in result.businessSystem.purchasingGroup[0]){
+                purchasing_grp = result.businessSystem.purchasingGroup[0].value;
+              }
+            }  
+          }
+           
+          if("baselineSpend" in result){
+            if("amount" in result.baselineSpend ){
+              baselinespend = result.baselineSpend.amount;
+              // baselinespend = baselinespend.toLocaleString('en-IN');
+              baselinespend1 = returnamt(baselinespend);
+            }
+          }
+           
          } else {
            var iden = "eventId";
            var id = "id";
@@ -696,23 +727,36 @@ module.exports = cds.service.impl(async function () {
             web_sup_count = supp;
            }
            else if(iden in result.payload[0] && (!(result instanceof Error)) ){
-             sup_count = result.payload[0].selectedSuppliersCount;  
-             scenarios_payload = result;
-             shrt_lst_count = scenarios_payload;
+            if(result.payload.length !=0){
+              scenarios_payload = result;
+              shrt_lst_count = scenarios_payload;
  
+              if("selectedSuppliersCount" in result.payload[0] ){
+                sup_count = result.payload[0].selectedSuppliersCount;
+              }
+            }
+               
+             
  
            }else if(id in result.payload[0] && (!(result instanceof Error))){
              // var d1 = teams;
                tech_commitee_clearedproposal = "";
                if(result.payload.length != 0){
                for(let r=0;r<result.payload.length;r++){
+                if("name" in result.payload[r]){
                  if(result.payload[r].name == "Technical Reviewer"){
                    // result.payload[r].users.forEach(element => {
+                    if("users" in result.payload[r] && result.payload[r].users.length != 0 ){
                      for(let f= 0;f<result.payload[r].users.length;f++){
-                     tech_commitee_clearedproposal = tech_commitee_clearedproposal + "," + result.payload[r].users[f].name;
-                     tech_commitee_clearedproposal = tech_commitee_clearedproposal.trim();
+                      if("name" in result.payload[r].users[f]){
+                        tech_commitee_clearedproposal = tech_commitee_clearedproposal + "," + result.payload[r].users[f].name;
+                        tech_commitee_clearedproposal = tech_commitee_clearedproposal.trim();
+                      }
+                     
                    }
+                  }
                  }
+                }
                }
              }
    
@@ -729,53 +773,98 @@ module.exports = cds.service.impl(async function () {
                  if(response_data2.payload[j].terms.length != 0){
      
                   if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
-                   ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
+                    if("terms" in response_data2.payload[j]){
+                      if(response_data2.payload[j].terms.length !=0 &&"value" in response_data2.payload[j].terms[0]){
+                        ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
+                      }
+                     
+                    }
+                    
                   }
                    
                  if(doc_id == tsk_doc_id){
                  if(ser_mate == "Material"||ser_mate == "Both"){
+                  if("terms" in response_data2.payload[j] ){
+                    if(response_data2.payload[j].terms.length != 0){
                  if (response_data2.payload[j].terms[0].title == "Price"){
                    var terms1 = response_data2.payload[j].terms;
                    // if (terms1.length != 0){
                    for(let s=0;s<terms1.length;s++){
                      if(terms1[s].title == "Requisition ID" ){
-                     RequisitionID = terms1[s].value.simpleValue;
+                      if("value" in terms1[s] ){
+                        if("simpleValue" in terms1[s].value ){
+                          RequisitionID = terms1[s].value.simpleValue;
+                        }
+                        
+                      }
+                     
                      }
                      if(terms1[s].title == "Plant"){
-                       plant = terms1[s].value.simpleValue;
-                       plant_id = plant.split(' ')[0];
-                       plant_name = plant.split(' ').slice(1).join(' ');
+                      if("value" in terms1[s] ){
+                        if("simpleValue" in terms1[s].value ){
+                        plant = terms1[s].value.simpleValue;
+                        plant_id = plant.split(' ')[0];
+                        plant_name = plant.split(' ').slice(1).join(' ');
+                      }
+                      }
+                      
                      }
                    }
                  }
+                }
+              }
                  }
                  else if(ser_mate == "Service"){
+                  if("terms" in response_data2.payload[j] ){
+                    if(response_data2.payload[j].terms.length !=0){
                    if (response_data2.payload[j].terms[0].title == "Extended Price"){
+                    
                      var terms1 = response_data2.payload[j].terms;
                      // if (terms1.length != 0){
                      for(let s=0;s<terms1.length;s++){
                        if(terms1[s].title == "Requisition ID" ){
-                       RequisitionID = terms1[s].value.simpleValue;
+                        if("value" in terms1[s] ){
+                          if("simpleValue" in terms1[s].value ){
+                            RequisitionID = terms1[s].value.simpleValue;
+                          }
+                        
+                        }
                        }
                        if(terms1[s].title == "Plant"){
-                         plant = terms1[s].value.simpleValue;
-                         plant_id = plant.split(' ')[0];
-                         plant_name = plant.split(' ').slice(1).join(' ');
+                        if("value" in terms1[s]){
+                          if("simpleValue" in terms1[s].value ){
+                            plant = terms1[s].value.simpleValue;
+                            plant_id = plant.split(' ')[0];
+                            plant_name = plant.split(' ').slice(1).join(' ');
+                          }
+                         
+                        }
+                         
                        }
                      }
+                    }
+                  }
                    }
                  }
                  
                  if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
                    // order_currency = response_data2.payload[j].currency.name;
-                   itemid = response_data2.payload[j].itemId;
-                   order_currency = response_data2.payload[j].currency.name;
+                  //  itemid = response_data2.payload[j].itemId;
+                   if("currency" in response_data2.payload[j]){
+                    if("name" in response_data2.payload[j].currency){
+                      order_currency = response_data2.payload[j].currency.name;
+                    }
+                   }
+                   if("terms" in response_data2.payload[j]){
                    if(response_data2.payload[j].terms.length != 0){
                    for(let s=0;s<response_data2.payload[j].terms.length;s++){
                        if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
                          var value = "value";
                          if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
-                           subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
+                          if("simpleValue" in response_data2.payload[j].terms[s].value ){
+                            subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
+                          }
+                           
                         }else{
                          subject_of_proposal = "";
                         }
@@ -783,6 +872,7 @@ module.exports = cds.service.impl(async function () {
      
                    }
                  }
+                }
                    // if
      
                  }
@@ -842,6 +932,7 @@ module.exports = cds.service.impl(async function () {
         //   return error;
         //  }
         //  let p = web_sup_count;
+        if("payload" in web_sup_count){
          if(web_sup_count.payload.length != 0){
           for(let l = 0;l<web_sup_count.payload.length;l++){
             // if(web_sup_count.payload[l].supplierBidStatus == "Participated"){
@@ -864,7 +955,8 @@ module.exports = cds.service.impl(async function () {
               })
               vendorids1.push({
                 doc_id : doc_id,
-                pvcode : web_sup_count.payload[l].organization.erpVendorID,
+                // pvcode : web_sup_count.payload[l].organization.erpVendorID,
+                pvcode:web_sup_count.payload[l].organization.smVendorID,
                 smvendor_id : web_sup_count.payload[l].organization.smVendorID,
                 org_name :web_sup_count.payload[l].organization.name,
                 // vendor_loc:web_sup_count.payload[l].organization.address.lines[0] +"  "+
@@ -879,7 +971,7 @@ module.exports = cds.service.impl(async function () {
           else{
             pvendor = 0;
           }
-
+        }
        
 
           
@@ -929,7 +1021,8 @@ module.exports = cds.service.impl(async function () {
         number_of_vendors = number_of_vendors + 1;
         if(vendorids.length != 0){
           var vendorid = vendorids[k].smvendor_id;
-          var pvcode =  vendorids[k].pvcode;
+          // var pvcode =  vendorids[k].pvcode;
+          var pvcode = vendorids[k].smvendor_id;
           var smid = vendorids[k].smvendor_id;
         }else{
           var vendorid = "";
@@ -1044,8 +1137,9 @@ module.exports = cds.service.impl(async function () {
         //   }
         let d2 = supplierdata;
         if (supplierdata != ''){
-          
+          if("_embedded" in supplierdata && "questionAnswerList" in supplierdata._embedded){
           for(let h = 0;h<supplierdata._embedded.questionAnswerList.length;h++){
+            if("questionAnswer" in supplierdata._embedded.questionAnswerList[h] && "questionLabel" in supplierdata._embedded.questionAnswerList[h].questionAnswer){
               if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "GST Number"){
                 GstNo = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
 
@@ -1113,14 +1207,14 @@ module.exports = cds.service.impl(async function () {
              if(supplierdata._embedded.questionAnswerList[h].questionAnswer.questionLabel == "Contact Phone"){
               contact_phone = supplierdata._embedded.questionAnswerList[h].questionAnswer.answer;
              }
-              
+            } 
              
           }
 
           supplier_contact1 =   first_name + " " + last_name ;
           // + " " +email + " " +mobile_phone+" "+"ph2 :"+contact_phone;
         }
-      // }
+      }
 
       supplierdata ='';
       
@@ -1157,128 +1251,128 @@ module.exports = cds.service.impl(async function () {
         
        
 
-        if(ser_mate == "Material"||ser_mate == "Both"){
-        var inviid ;
-        var alterid;
-        var flag3 = 0;
-        if(response_data4 != []){
-        if(response_data4.payload.length != 0){
-        for(let v = 0;v<response_data4.payload.length;v++){
-          // var vcount = vcount + 
-          if ((Array.isArray(response_data4.payload[v].item.terms))&&(response_data4.payload[v].item.terms.length != 0)) {
-          if(response_data4.payload[v].item.terms[0].title == "Price"){
-             subdate = response_data4.payload[v].submissionDate;
-            var inv_id = 
-             terms2 = response_data4.payload[v].item.terms;
+      //   if(ser_mate == "Material"||ser_mate == "Both"){
+      //   var inviid ;
+      //   var alterid;
+      //   var flag3 = 0;
+      //   if(response_data4 != []){
+      //   if(response_data4.payload.length != 0){
+      //   for(let v = 0;v<response_data4.payload.length;v++){
+      //     // var vcount = vcount + 
+      //     if ((Array.isArray(response_data4.payload[v].item.terms))&&(response_data4.payload[v].item.terms.length != 0)) {
+      //     if(response_data4.payload[v].item.terms[0].title == "Price"){
+      //        subdate = response_data4.payload[v].submissionDate;
+      //       var inv_id = 
+      //        terms2 = response_data4.payload[v].item.terms;
 
           
-              // venador_names.push({
-              //   vname :response_data4.payload[v].invitationId,doc_id});
-            // if(!(inviid)){
-            //   inviid=response_data4.payload[v].incitationId;
-            //   alterid = response_data4.payload[v].alternativeId;
-            // }
-            // if((inviid==response_data4.payload[v].incitationId)&&(alterid==response_data4.payload[v].alternativeId)){
-              if(flag3 == 0){
-                flag3 = 1;
-              if(terms2.length != 0){
-                for(let t =0;t<terms2.length;t++){
-                  if(terms2[t].title == "Total Cost"){
-                   lamount = lamount + terms2[t].value.moneyValue.amount;
+      //         // venador_names.push({
+      //         //   vname :response_data4.payload[v].invitationId,doc_id});
+      //       // if(!(inviid)){
+      //       //   inviid=response_data4.payload[v].incitationId;
+      //       //   alterid = response_data4.payload[v].alternativeId;
+      //       // }
+      //       // if((inviid==response_data4.payload[v].incitationId)&&(alterid==response_data4.payload[v].alternativeId)){
+      //         if(flag3 == 0){
+      //           flag3 = 1;
+      //         if(terms2.length != 0){
+      //           for(let t =0;t<terms2.length;t++){
+      //             if(terms2[t].title == "Total Cost"){
+      //              lamount = lamount + terms2[t].value.moneyValue.amount;
      
-                   var unit = terms2[t].value.supplierValue.currency;
+      //              var unit = terms2[t].value.supplierValue.currency;
                  
-                  }
-                }
-             }
+      //             }
+      //           }
+      //        }
            
 
-            }
-            else if((alterid ==response_data4.payload[v].alternativeId)){
-              // l1Amount = 0;
-              if(terms2.length != 0){
-                for(let t =0;t<terms2.length;t++){
-                  if(terms2[t].title == "Total Cost"){
-                   lamount = lamount + terms2[t].value.moneyValue.amount;
+      //       }
+      //       else if((alterid ==response_data4.payload[v].alternativeId)){
+      //         // l1Amount = 0;
+      //         if(terms2.length != 0){
+      //           for(let t =0;t<terms2.length;t++){
+      //             if(terms2[t].title == "Total Cost"){
+      //              lamount = lamount + terms2[t].value.moneyValue.amount;
      
-                   var unit = terms2[t].value.supplierValue.currency;
+      //              var unit = terms2[t].value.supplierValue.currency;
                  
-                  }
-                }
-             }
+      //             }
+      //           }
+      //        }
             
-            }
-            web_tab2.push({
-              submissionDate : subdate,
-              amount : lamount,
-              doc_id : doc_id,
-              unit : unit,
-              smid : supplier[k].smvendor_id,
-              // smid : vendorids[k].smvendor_id,
-              type : icon_type,
-            })
-            web_tab1_amt.push(lamount);
-            flag3 = 0;
-            lamount = 0;
+      //       }
+      //       web_tab2.push({
+      //         submissionDate : subdate,
+      //         amount : lamount,
+      //         doc_id : doc_id,
+      //         unit : unit,
+      //         smid : supplier[k].smvendor_id,
+      //         // smid : vendorids[k].smvendor_id,
+      //         type : icon_type,
+      //       })
+      //       web_tab1_amt.push(lamount);
+      //       flag3 = 0;
+      //       lamount = 0;
          
-            alterid = response_data4.payload[v].alternativeId;
+      //       alterid = response_data4.payload[v].alternativeId;
         
-          }
+      //     }
        
-            terms2=[];
-          }
-        }
-      }
-      }
-      console.log("stage1.1");
-      }
+      //       terms2=[];
+      //     }
+      //   }
+      // }
+      // }
+      // console.log("stage1.1");
+      // }
 
       
      
-      else if(ser_mate == "Service"){
-        if(response_data4.payload.length != 0){
+      // else if(ser_mate == "Service"){
+      //   if(response_data4.payload.length != 0){
 
-       for(let i = 0;i<response_data4.payload.length;i++){
-        if(response_data4.payload[i].item.title == "Pricing"){
-          for(let k1 = 0;k1<response_data4.payload[i].item.rollUpTerms.length;k1++){
-            if(response_data4.payload[i].item.rollUpTerms[k1].title == "Extended Price"){
-              var subdate = response_data4.payload[i].submissionDate;
-              var invite_id = response_data4.payload[i].invitationId;
+      //  for(let i = 0;i<response_data4.payload.length;i++){
+      //   if(response_data4.payload[i].item.title == "Pricing"){
+      //     for(let k1 = 0;k1<response_data4.payload[i].item.rollUpTerms.length;k1++){
+      //       if(response_data4.payload[i].item.rollUpTerms[k1].title == "Extended Price"){
+      //         var subdate = response_data4.payload[i].submissionDate;
+      //         var invite_id = response_data4.payload[i].invitationId;
 
-              venador_names.push({
-                vname :response_data4.payload[i].invitationId,doc_id});
+      //         venador_names.push({
+      //           vname :response_data4.payload[i].invitationId,doc_id});
 
-              var value2 = "value";
-              if(Object.keys(response_data4.payload[i].item.rollUpTerms[k1]).includes(value2)){
-                ex_price = response_data4.payload[i].item.rollUpTerms[k1].value.moneyValue.amount;
+      //         var value2 = "value";
+      //         if(Object.keys(response_data4.payload[i].item.rollUpTerms[k1]).includes(value2)){
+      //           ex_price = response_data4.payload[i].item.rollUpTerms[k1].value.moneyValue.amount;
                 
                
-              }
-              if(invite_id == supplier[k].supplier_name&&ex_price != 0){
-                ex_price1.push(ex_price);
-                  web_tab2.push({
-                    submissionDate : subdate,
-                    amount : ex_price,
-                    doc_id : doc_id,
-                    unit : unit,
-                    smid : supplier[k].smvendor_id,
-                    // smid : vendorids[k].smvendor_id,
-                    type : icon_type,
-                  })
-                  ex_price =0;
+      //         }
+      //         if(invite_id == supplier[k].supplier_name&&ex_price != 0){
+      //           ex_price1.push(ex_price);
+      //             web_tab2.push({
+      //               submissionDate : subdate,
+      //               amount : ex_price,
+      //               doc_id : doc_id,
+      //               unit : unit,
+      //               smid : supplier[k].smvendor_id,
+      //               // smid : vendorids[k].smvendor_id,
+      //               type : icon_type,
+      //             })
+      //             ex_price =0;
 
-            }
+      //       }
             
-            }
-          }
-        }
+      //       }
+      //     }
+      //   }
 
-       }
+      //  }
          
        
-      }
+      // }
        
-      }
+      // }
       
 
         
@@ -1306,50 +1400,83 @@ module.exports = cds.service.impl(async function () {
           
 
             for(let k2 = 0;k2<response_data4.payload.length;k2++){
-              venador_names.push({
-                vname :response_data4.payload[k2].invitationId,doc_id});
+              if("invitationId" in response_data4.payload[k2]){
+                venador_names.push({
+                  vname :response_data4.payload[k2].invitationId,doc_id});
+              }
+               if("bidStatus" in response_data4.payload[k2] ){
                 if(response_data4.payload[k2].bidStatus == "Accepted"){
+                  if("invitationId" in response_data4.payload[k2]){
                    ainv_id = response_data4.payload[k2].invitationId;
-                  let b = response_data4.payload[k2].item.itemId;
+                  }
+                  // let b = response_data4.payload[k2].item.itemId;
+                  if("submissionDate" in response_data4.payload[k2]){
                   var pay_date = response_data4.payload[k2].submissionDate;
                   pay_date = pay_date.substring(0, 10);
 
                   pay_date = returndate(pay_date);
-
+                  }
                    
                   if( response_data4.payload[k2].item.title == "Payment Method" ) {
+                    if("terms" in response_data4.payload[k2].item && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                       payment_type = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                     payment_type = payment_type.toString();
+                      payment_type = payment_type.toString();
+                   }
                   }
+                    }
+                     
                   if( response_data4.payload[k2].item.title == "Totals" ) {
-                    vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
-                    // vfinal_quote = vfinal_quote.toString();
-                    acc_subdate = response_data4.payload[k2].submissionDate;
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                      if("value" in response_data4.payload[k2].item.terms[0] ){
+                        vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
+                        // vfinal_quote = vfinal_quote.toString();
+                        acc_subdate = response_data4.payload[k2].submissionDate;
+                        }
+                    }
+                    
                 }
 
                    if( response_data4.payload[k2].item.title == "Progress"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                        progress = response_data4.payload[k2];
                        progress = progress.item.terms[0].value.simpleValue;
                       progress = progress.toString(); 
+                    }
+                  }
                   }
 
                   if( response_data4.payload[k2].item.title == "Percentage Payment for Progress"){
-                  
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     per_pay_pro = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_pro = per_pay_pro.toString() + "%";
+                    }
+                  }
                   }
 
                   if(response_data4.payload[k2].item.title == "Percentage Payment for Retention"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     per_pay_ret = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_ret = per_pay_ret.toString() + "%";
+                    }
+                  }
                   }
 
                   if( response_data4.payload[k2].item.title == "Advance"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     Advance = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     Advance = Advance.toString();
+                    }
+                  }
                   }
 
                    if( response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
                       var res = response_data4.payload[k2].item.terms[0].value;
                     
@@ -1360,10 +1487,14 @@ module.exports = cds.service.impl(async function () {
                       } else {
                        progress_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
+                    }
+                  }
                  
                   }
 
                   if(response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
                       var res1 = response_data4.payload[k2].item.terms[0].value;
                      
@@ -1376,44 +1507,71 @@ module.exports = cds.service.impl(async function () {
                       } else {
                         retention_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
+                    }
+                  }
                     
                   }
 
 
                    if( response_data4.payload[k2].item.title == "To be certified in Company by for Progress"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                       by = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                    }
+                  }
                    
-
                   }
                    
                   if( response_data4.payload[k2].item.title == "To be certified in Company by for Retention"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     by1 = response_data4.payload[k2].item.terms[0].value.simpleValue;
-              
+                    }
+                  }
                    }
 
                    if( response_data4.payload[k2].item.title == "Retention Due Date"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     due_date = response_data4.payload[k2].item.terms[0].value.dateValue;
                     due_date = due_date.substring(0, 10);
                     due_date = returndate(due_date);
+                    }
+                  }
                    
 
                 }
 
                    if(response_data4.payload[k2].item.title == "Retention" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                      retention = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     retention = retention.toString();
+                    }
+                  }
                   }
                    if(response_data4.payload[k2].item.title == "Percentage Total" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                     var percentage = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                      percentage1 = percentage.toString();
+                    }
+                  }
               }
 
                    //Terms and conditions to be compared with
-                   if(ser_mate == "Meterial"){
-                     if(response_data4.payload[k2].item.title == "IncoTerms" ){
+                   if(ser_mate == "Material" || ser_mate == "Both"){
+                    inc = response_data4.payload[k2].item.title;
+                    inc = inc.substring(0,9);
+                    
+                     if(inc == "IncoTerms" ){
+                      if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                      if("value" in response_data4.payload[k2].item.terms[0] ){
                        inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                         inco_terms = inco_terms.toString();
+                      }
                      }
+                    }
                   }
 
                     if(ser_mate == "Service"){
@@ -1421,48 +1579,78 @@ module.exports = cds.service.impl(async function () {
                     //     inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                     //      inco_terms = inco_terms.toString();
                     // }
-                    if( response_data4.payload[k2].item.title == "IncoTerms (Service)" ){
+                    inc = response_data4.payload[k2].item.title;
+                    inc = inc.substring(0,9);
+                    
+                     if(inc == "IncoTerms" ){
+                      if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                      if("value" in response_data4.payload[k2].item.terms[0] ){
                       inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       inco_terms = inco_terms.toString();
+                      }
+                    }
                     }
                 }
 
                   if(response_data4.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                      abg = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     abg = abg.toString();
                     abg = abg + " %"
                     }
+                  }
+                    }
                   if(   response_data4.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                        cpbg= response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                       cpbg = cpbg.toString();
                       cpbg = cpbg + " %"
                     }
+                  }
+                    }
 
                  //other terms and conditions
                   if(   response_data4.payload[k2].item.title == "Scope and Responsibilities" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                        ScopeandResponsibilities = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       ScopeandResponsibilities = ScopeandResponsibilities.toString();
+                    }
+                  }
                       }
                   if(   response_data4.payload[k2].item.title == "Commercial Terms" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                        CommercialTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                     
+                    }
+                  }
                       } 
                  if(   response_data4.payload[k2].item.title == "Compliance Terms" ) {
+                  if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                  if("value" in response_data4.payload[k2].item.terms[0] ){
                        ComplianceTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                     
-                      } 
+                  }
+                  }
+                  } 
                   if(   response_data4.payload[k2].item.title == "Others" ) {
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
                        Others = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                      
+                    } 
+                  }
                 } 
                 
                 //price details
                 if(response_data4.payload[k2].item.title == "Totals"){
+                  if("itemsWithBid" in response_data4.payload[k2] && response_data4.payload[k2].itemsWithBid.length !=0 ){
                   for(let v = 0;v<response_data4.payload[k2].itemsWithBid.length;v++ ){
                     material_items.push({
                       itemid : response_data4.payload[k2].itemsWithBid[v],
                     }) 
                   }
+                }
 
                   console.log("stage2.1")
              
@@ -1474,8 +1662,15 @@ module.exports = cds.service.impl(async function () {
                         // var invt_id = response_data4.payload[a].invitationId;
                       // if(e.itemId == material_items[b].itemid && e.internalId == sname){
                         if( response_data4.payload[a].itemId == material_items[b].itemid){
-                          if(response_data4.payload[a].bidStatus == "Accepted"){
-                          ItemShortDescription = response_data4.payload[a].item.title;
+                          if("bidStatus" in response_data4.payload[k2]){
+                          if(response_data4.payload[k2].bidStatus == "Accepted"){
+                            if("item" in response_data4.payload[a]){
+                              if("title" in response_data4.payload[a].item){
+                                ItemShortDescription = response_data4.payload[a].item.title;
+                              }
+                            }
+                          
+                          if("terms" in response_data4.payload[a].item && response_data4.payload[a].item.terms.length != 0 ){
                         let terms = response_data4.payload[a].item.terms;
                           if(terms.length != 0){
                              var value1 = "value";
@@ -1678,6 +1873,8 @@ module.exports = cds.service.impl(async function () {
                               }
                             }
                           }
+                          }
+                        }
                       }
                     }
 
@@ -1767,20 +1964,30 @@ module.exports = cds.service.impl(async function () {
                       if(response_data4.payload[k2].item.rollUpTerms != []){
                         for(r=0;r<response_data4.payload[k2].item.rollUpTerms.length;r++){
                           if(response_data4.payload[k2].item.rollUpTerms[r].title == "Total Cost" ){
-                            v1amt = response_data4.payload[k2].item.rollUpTerms[r].value.moneyValue.amount;
+                            if("value" in response_data4.payload[k2].item.rollUpTerms[r]){
+                              if("moneyValue" in response_data4.payload[k2].item.rollUpTerms[r].value){
+                                if("amount" in response_data4.payload[k2].item.rollUpTerms[r].value.moneyValue){
+                                  v1amt = response_data4.payload[k2].item.rollUpTerms[r].value.moneyValue.amount;
+                                }
+                              }
+                            }
+                            
                           }
                         }
                       }
                       
                        
-                       v1sup_count.push({vname : response_data4.payload[k2].invitationId})
+                      //  v1sup_count.push({vname : response_data4.payload[k2].invitationId})
                        version1.push({
                         PAN_Number : doc_id ,
                         Proposed_vendor_code:pvcode ,
-                        subdate :response_data4.payload[k2].submissionDate,
-                        ivid : response_data4.payload[k2].invitationId,
-                        vcount : vc,
                         final_quote :v1amt ,
+                        sub_date :response_data4.payload[k2].submissionDate,
+                        inv_id : response_data4.payload[k2].invitationId,
+                        vcount : vc,
+                        sm_id:smid,
+                        type :icon_type,
+                        
                       })
                     }
                   }
@@ -1799,6 +2006,7 @@ module.exports = cds.service.impl(async function () {
              
 
               }
+            }
                
                }
 
@@ -1882,7 +2090,10 @@ module.exports = cds.service.impl(async function () {
               final_quote :vfinal_quote ,
               sub_date : acc_subdate,
               inv_id : ainv_id,
+              vcount:vc,
               sm_id : smid,
+              type:icon_type,
+              
             })
             
             vfinal_quote="";
@@ -2153,39 +2364,77 @@ module.exports = cds.service.impl(async function () {
     var date = [];
     var date1 = [];
 
+
+    web_logic = [
+      ...version1,
+      ...final_quotearr
+    ]
+
+    var fstdoc="";
+
     // if(web_tab1.length != 0){
-     if(web_tab2.length != 0){
-
-      var fstdoc = web_tab2[0].doc_id;
+     if(web_logic.length != 0){
+     
+      for(let i=0;i<web_logic.length;i++){
+        if(web_logic[i].type != "RFQ"){
+          fstdoc = web_logic[i].PAN_Number;
+          break;
+        }
+        
+      }
+       
        var oneround = 0;
+       var oneround1=0;
+       var type1 = "";
        var type = "";
+       var typew="";
 
-     for(let d=0;d<web_tab2.length;d++){
-      date.push(web_tab2[d].submissionDate)
-      if(web_tab2[d].type != "RFQ"){
-        date1.push(web_tab2[d].submissionDate)
+     for(let d=0;d<web_logic.length;d++){
+
+      if(web_logic[d].sub_date !=""){
+        typew=web_logic[d].type;
+      date.push(web_logic[d].sub_date)
       }
-       if(oneround == 0){
-        if(fstdoc !=web_tab2[d].doc_id){
+      if(web_logic[d].type != "RFQ"  ){
+        if(web_logic[d].sub_date !=""){
+          date1.push(web_logic[d].sub_date)
+        }
+        
+      }
+       if(oneround1 == 0 && typew=="RFP" ){
+        if(fstdoc !=web_logic[d].PAN_Number){
           oneround = 1;
-          type = web_tab2[d].type;
+          type = web_logic[d].type;
       }
+      }
+      if(web_logic[d].type == "RFQ"){
+        oneround = 1;
+        type1=web_logic[d].type;
       }
      }
    
- //FIRST PUBLISHED    
-var smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
+ //FIRST PUBLISHED 
+ var greatestDate="";
+ var smallestdate=""
+
+ if(version1.length !=0){
+   smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
+   greatestDate = date.reduce((acc, curr) => curr > acc ? curr : acc, date[0]);
+ }
+else if(version1.length ==0){
+   smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
+}
 // console.log(smallestdate);
 
 for(let q= 0;q<sc_web_tab2.length;q++){
-for(let r=0;r<web_tab2.length;r++){
-  if((web_tab2[r].submissionDate == smallestdate)&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
-    var dateString = web_tab2[r].submissionDate;
+for(let r=0;r<web_logic.length;r++){
+  if((web_logic[r].sub_date == smallestdate)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
+    var dateString = web_logic[r].sub_date;
     var datesub = dateString.substring(0, 10)
     datesub = returndate(datesub);
     var no_v = sc_web_tab2[q].scount;
-    var am = web_tab2[r].amount;
-    am = returnamt(am);
+    var am = web_logic[r].final_quote;
+    // am = returnamt(am);
     number = sc_web_tab2[q].doc_id;
     // number = number.substring(number.length - 4)
     if(pan_web_event.length == 0){
@@ -2203,6 +2452,33 @@ for(let r=0;r<web_tab2.length;r++){
     }
 
   }
+
+  else if((web_logic[r].sub_date == greatestDate)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
+    if(version1!=[] && oneround == 0 ){
+    var dateString = web_logic[r].sub_date;
+    var datesub = dateString.substring(0, 10)
+    datesub = returndate(datesub);
+    var no_v = sc_web_tab2[q].scount;
+    var am = web_logic[r].final_quote;
+    // am = returnamt(am);
+    number = sc_web_tab2[q].doc_id;
+    // number = number.substring(number.length - 4)
+    if(pan_web_event.length == 1){
+      // if(web_tab_dates.length !=1){
+    pan_web_event.push({
+      idd : "2" ,
+      PAN_Number :tsk_doc_id.toString(),
+      eventNo : "Last Published(Before RA)",
+      number:`${number}`,
+      date:`${datesub}`,
+      numberOfVendorsParticipated :no_v.toString(),
+      l1AmountObtained :am.toString(),
+     }) 
+    // }
+    }
+  }
+
+  }
   // break;
   }
   // break;
@@ -2210,17 +2486,17 @@ for(let r=0;r<web_tab2.length;r++){
 
   //SECOND PUBLISHED
 
-if(oneround = 1 && type == "RFP"){
+if(oneround == 1 && type == "RFP"){
 var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0]);
  for(let q= 0;q<sc_web_tab2.length;q++){
-  for(let r=0;r<web_tab2.length;r++){
-    if((web_tab2[r].submissionDate == round2_date)&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
-      var dateString = web_tab2[r].submissionDate;
+  for(let r=0;r<web_logic.length;r++){
+    if((web_logic[r].sub_date == round2_date)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
+      var dateString = web_logic[r].sub_date;
       var datesub = dateString.substring(0, 10)
       datesub = returndate(datesub);
       var no_v = sc_web_tab2[q].scount;
-      var am = web_tab2[r].amount;
-      am = returnamt(am);
+      var am = web_logic[r].final_quote;
+      // am = returnamt(am);
       number = sc_web_tab2[q].doc_id;
       // number = number.substring(number.length - 4)
       if(pan_web_event.length == 1){
@@ -2242,31 +2518,44 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
   }
 }
 
-else if(oneround = 1 && type == "RFQ"){
-  pan_web_event.push({
-    idd : "2" ,
-    PAN_Number :tsk_doc_id.toString(),
-    eventNo : "Last Published(Before RA)",
-    number:"NA",
-    date:"NA",
-    numberOfVendorsParticipated :"NA",
-    l1AmountObtained :"0",
-   }) 
+// else if(oneround = 1 && type == "RFQ"){
+//   pan_web_event.push({
+//     idd : "2" ,
+//     PAN_Number :tsk_doc_id.toString(),
+//     eventNo : "Last Published(Before RA)",
+//     number:"NA",
+//     date:"NA",
+//     numberOfVendorsParticipated :"NA",
+//     l1AmountObtained :"0",
+//    }) 
 
-}
+// }
 
-
+ if(oneround == 1 && type == "RFQ" || oneround == 1 && type1 == "RFQ" )
 for(let q= 0;q<sc_web_tab2.length;q++){
-  for(let r=0;r<web_tab2.length;r++){
-    if((web_tab2[r].type == "RFQ")&&(web_tab2[r].doc_id == sc_web_tab2[q].doc_id)){
-      var dateString = web_tab2[r].submissionDate;
+  for(let r=0;r<web_logic.length;r++){
+    if((web_logic[r].type == "RFQ")&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id) ){
+      if(web_logic[r].sub_date==greatestDate){
+      var dateString = web_logic[r].sub_date;
       var datesub = dateString.substring(0, 10)
       datesub = returndate(datesub);
       var no_v = sc_web_tab2[q].scount;
-      var am = web_tab2[r].amount;
-      am = returnamt(am);
+      var am = web_logic[r].final_quote;
+      // am = returnamt(am);
       number = sc_web_tab2[q].doc_id;
       // number = number.substring(number.length - 4)
+     if(pan_web_event.length == 1){
+      pan_web_event.push({
+        idd : "2" ,
+        PAN_Number :tsk_doc_id.toString(),
+        eventNo : "Last Published(Before RA)",
+        number:"NA",
+        date:"NA",
+        numberOfVendorsParticipated :"NA",
+        l1AmountObtained :"NA",
+       })
+     }
+
       if(pan_web_event.length == 2){
         // if(web_tab_dates.length !=1){
       pan_web_event.push({
@@ -2280,7 +2569,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
        }) 
       // }
       }
-  
+    }
     }
     // break;
     }
@@ -2305,318 +2594,318 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   var dates = [];
   var date2 = [];
  
- if(web_tab_dates.length != 0){
-  // if(version == 1){
+//  if(web_tab_dates.length != 0){
+//   // if(version == 1){
 
-  var fstdoc1 = web_tab_dates[0].document_id;
-    var oneround1 = 0;
-    var type1 = "";
+//   var fstdoc1 = web_tab_dates[0].document_id;
+//     var oneround1 = 0;
+//     var type1 = "";
 
-  for(let z=0;z<web_tab_dates.length;z++){
-   dates.push(web_tab_dates[z].publish_date)
-   if(web_tab_dates[z].icon_type != "RFQ"){
-    date2.push(web_tab_dates[z].publish_date)
-  }
-    if(oneround1 == 0){
-    if(fstdoc1 !=web_tab_dates[z].document_id){
-      oneround1 = 1;
-      type1 = web_tab_dates[z].icon_type;
-  }
-  }
+//   for(let z=0;z<web_tab_dates.length;z++){
+//    dates.push(web_tab_dates[z].publish_date)
+//    if(web_tab_dates[z].icon_type != "RFQ"){
+//     date2.push(web_tab_dates[z].publish_date)
+//   }
+//     if(oneround1 == 0){
+//     if(fstdoc1 !=web_tab_dates[z].document_id){
+//       oneround1 = 1;
+//       type1 = web_tab_dates[z].icon_type;
+//   }
+//   }
 
-   if(web_tab_dates[z].status == "YES"){
-    //  doc_id_fornow = web_tab_dates[z].document_id;
-    doc_id_fornow = tsk_doc_id
-   }
-  }
-  var dates1 = dates.map(dateString => new Date(dateString));
+//    if(web_tab_dates[z].status == "YES"){
+//     //  doc_id_fornow = web_tab_dates[z].document_id;
+//     doc_id_fornow = tsk_doc_id
+//    }
+//   }
+//   var dates1 = dates.map(dateString => new Date(dateString));
  
-   console.log("stage5.2")
-  // if(web_tab1.length != 0){
-    if(web_tab2.length == 0){
-    const smallestDate1 = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
-    const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
+//    console.log("stage5.2")
+//   // if(web_tab1.length != 0){
+//     if(web_logic.length == 0){
+//     const smallestDate1 = dates.reduce((acc, curr) => curr < acc ? curr : acc, dates[0]);
+//     const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
 
    
     
   
-      for(let z=0;z<web_tab_dates.length;z++){
-        let number = "";
-        var no_v=0;
-        number = web_tab_dates[z].document_id;
-       //  number = number.substring(number.length - 4)
-        var dateString = web_tab_dates[z].publish_date;
-         var datesub = dateString.substring(0, 10)
-         datesub = returndate(datesub);
-         for(let s=0;s<sc_web_tab2.length;s++){
-          if(sc_web_tab2[s].doc_id == number){
-            no_v = sc_web_tab2[s].scount;
-          }
-         }
+//       for(let z=0;z<web_tab_dates.length;z++){
+//         let number = "";
+//         var no_v=0;
+//         number = web_tab_dates[z].document_id;
+//        //  number = number.substring(number.length - 4)
+//         var dateString = web_tab_dates[z].publish_date;
+//          var datesub = dateString.substring(0, 10)
+//          datesub = returndate(datesub);
+//          for(let s=0;s<sc_web_tab2.length;s++){
+//           if(sc_web_tab2[s].doc_id == number){
+//             no_v = sc_web_tab2[s].scount;
+//           }
+//          }
         
-        var am = web_tab_dates[z].l1amount;
-        am = returnamt(am);
+//         var am = web_tab_dates[z].l1amount;
+//         am = returnamt(am);
         
-        if((web_tab_dates[z].publish_date == smallestDate1 && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "NO")||(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") ){
+//         if((web_tab_dates[z].publish_date == smallestDate1 && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "NO")||(web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") ){
            
-         if(pan_web_event.length == 0){
-          var idd = "1";
-          var eventno = "First Published"
+//          if(pan_web_event.length == 0){
+//           var idd = "1";
+//           var eventno = "First Published"
           
-         }
-         else if(pan_web_event.length == 1 ){
-          var idd = "2";
-          var eventno = "Last Published(Before RA)"
-         }
+//          }
+//          else if(pan_web_event.length == 1 ){
+//           var idd = "2";
+//           var eventno = "Last Published(Before RA)"
+//          }
 
          
-          if(pan_web_event.length ==0||(pan_web_event.length==1 && version == 1)){
+//           if(pan_web_event.length ==0||(pan_web_event.length==1 )){
            
-          pan_web_event.push({
-              idd : `${idd}` ,
-              PAN_Number : tsk_doc_id.toString(),
-              eventNo : eventno,
-              number:`${number}`,
-              date:`${datesub}`,
-              numberOfVendorsParticipated :no_v.toString(),
-              l1AmountObtained :am.toString(),
-             })
-            }
-          }
-           if(oneround1 == 1 && type1 == "RFP"){
-            last_rfp_date =  date2.reduce((acc, curr) => curr > acc ? curr : acc, date2[0]);
-            for(let z=0;z<web_tab_dates.length;z++){
-              let number = "";
-              var no_v=0;
-              number = web_tab_dates[z].document_id;
-             //  number = number.substring(number.length - 4)
-              var dateString = web_tab_dates[z].publish_date;
-               var datesub = dateString.substring(0, 10)
-               datesub = returndate(datesub);
-               for(let s=0;s<sc_web_tab2.length;s++){
-                if(sc_web_tab2[s].doc_id == number){
-                  no_v = sc_web_tab2[s].scount;
-                }
-               }
-              var am = web_tab_dates[z].l1amount;
-              am = returnamt(am);
-             if(web_tab_dates[z].publish_date == last_rfp_date){
-              if(pan_web_event.length == 1 && version == 1){
-              pan_web_event.push({
-                idd :"2" ,
-                PAN_Number : tsk_doc_id.toString(),
-                eventNo : "Last Published(Before RA)",
-                number:`${number}`,
-                date:`${datesub}`,
-                numberOfVendorsParticipated :`${no_v}`,
-                l1AmountObtained :`${am}`,
-               })
-              }
-              }
+//           pan_web_event.push({
+//               idd : `${idd}` ,
+//               PAN_Number : tsk_doc_id.toString(),
+//               eventNo : eventno,
+//               number:`${number}`,
+//               date:`${datesub}`,
+//               numberOfVendorsParticipated :no_v.toString(),
+//               l1AmountObtained :am.toString(),
+//              })
+//             }
+//           }
+//            if(oneround1 == 1 && type1 == "RFP"){
+//             last_rfp_date =  date2.reduce((acc, curr) => curr > acc ? curr : acc, date2[0]);
+//             for(let z=0;z<web_tab_dates.length;z++){
+//               let number = "";
+//               var no_v=0;
+//               number = web_tab_dates[z].document_id;
+//              //  number = number.substring(number.length - 4)
+//               var dateString = web_tab_dates[z].publish_date;
+//                var datesub = dateString.substring(0, 10)
+//                datesub = returndate(datesub);
+//                for(let s=0;s<sc_web_tab2.length;s++){
+//                 if(sc_web_tab2[s].doc_id == number){
+//                   no_v = sc_web_tab2[s].scount;
+//                 }
+//                }
+//               var am = web_tab_dates[z].l1amount;
+//               am = returnamt(am);
+//              if(web_tab_dates[z].publish_date == last_rfp_date){
+//               if(pan_web_event.length == 1 ){
+//               pan_web_event.push({
+//                 idd :"2" ,
+//                 PAN_Number : tsk_doc_id.toString(),
+//                 eventNo : "Last Published(Before RA)",
+//                 number:`${number}`,
+//                 date:`${datesub}`,
+//                 numberOfVendorsParticipated :`${no_v}`,
+//                 l1AmountObtained :`${am}`,
+//                })
+//               }
+//               }
 
-            }
-          }
-           if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES") && (oneround1 == 1 && type1 == "RFQ")){
-             if(pan_web_event.length == 1 && version == 1){
-              pan_web_event.push({
-                idd :"2" ,
-                PAN_Number : tsk_doc_id.toString(),
-                eventNo : "Last Published(Before RA)",
-                number:"NA",
-                date:"NA",
-                numberOfVendorsParticipated :"NA",
-                l1AmountObtained :"0",
-               })
-             }
-            if(version == 1){
-            pan_web_event.push({
-              idd :"3" ,
-              PAN_Number : tsk_doc_id.toString(),
-              eventNo : "Reverse Auction(RA)",
-              number:`${number}`,
-              date:`${datesub}`,
-              numberOfVendorsParticipated :no_v.toString(),
-              l1AmountObtained :am.toString(),
-             })
-            }
-          }
+//             }
+//           }
+//            if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES") && (oneround1 == 1 && type1 == "RFQ")){
+//              if(pan_web_event.length == 1){
+//               pan_web_event.push({
+//                 idd :"2" ,
+//                 PAN_Number : tsk_doc_id.toString(),
+//                 eventNo : "Last Published(Before RA)",
+//                 number:"NA",
+//                 date:"NA",
+//                 numberOfVendorsParticipated :"NA",
+//                 l1AmountObtained :"0",
+//                })
+//              }
+//             // if(version == 1){
+//             pan_web_event.push({
+//               idd :"3" ,
+//               PAN_Number : tsk_doc_id.toString(),
+//               eventNo : "Reverse Auction(RA)",
+//               number:`${number}`,
+//               date:`${datesub}`,
+//               numberOfVendorsParticipated :no_v.toString(),
+//               l1AmountObtained :am.toString(),
+//              })
+//             // }
+//           }
         
-       }
+//        }
 
-      // }
+//       // }
 
-  // }
+//   // }
 
 
 
-  // if(web_tab1.length != 0 && web_tab2.length != 0){
-  // const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
-  // var final_web_tab = [];
+//   // if(web_tab1.length != 0 && web_tab2.length != 0){
+//   // const greatestDate = dates.reduce((acc, curr) => curr > acc ? curr : acc, dates[0]); 
+//   // var final_web_tab = [];
 
-  // for(let z=0;z<web_tab_dates.length;z++){
-  //   let number = "";
-  //   number = web_tab_dates[z].document_id;
-  //  //  number = number.substring(number.length - 4)
-  //   var dateString = web_tab_dates[z].publish_date;
-  //    var datesub = dateString.substring(0, 10)
-  //    datesub = returndate(datesub);
-  //   var no_v = web_tab_dates[z].pvendor;
-  //   var am = web_tab_dates[z].l1amount;
-  //   am = returnamt(am);
-  //   if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
-  //     if(pan_web_event.length == 0 || pan_web_event.length == 2){
-  //       if(pan_web_event.length == 0){
-  //         var idd = "1";
-  //         var  eventno = "First Published";
-  //         var web_ind = 1;
-  //       }
-  //       else if(pan_web_event.length == 2){
-  //         var idd = "3";
-  //         var eventno = "Reverse Auction(RA)";
-  //         var web_ind = 0;
-  //       }
+//   // for(let z=0;z<web_tab_dates.length;z++){
+//   //   let number = "";
+//   //   number = web_tab_dates[z].document_id;
+//   //  //  number = number.substring(number.length - 4)
+//   //   var dateString = web_tab_dates[z].publish_date;
+//   //    var datesub = dateString.substring(0, 10)
+//   //    datesub = returndate(datesub);
+//   //   var no_v = web_tab_dates[z].pvendor;
+//   //   var am = web_tab_dates[z].l1amount;
+//   //   am = returnamt(am);
+//   //   if((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFQ" && web_tab_dates[z].status == "YES")||((web_tab_dates[z].publish_date == greatestDate && web_tab_dates[z].icon_type == "RFP" && web_tab_dates[z].status == "YES") )){
+//   //     if(pan_web_event.length == 0 || pan_web_event.length == 2){
+//   //       if(pan_web_event.length == 0){
+//   //         var idd = "1";
+//   //         var  eventno = "First Published";
+//   //         var web_ind = 1;
+//   //       }
+//   //       else if(pan_web_event.length == 2){
+//   //         var idd = "3";
+//   //         var eventno = "Reverse Auction(RA)";
+//   //         var web_ind = 0;
+//   //       }
 
-  //     pan_web_event.push({
-  //         idd : `${idd}` ,
-  //         PAN_Number : tsk_doc_id.toString(),
-  //         eventNo : eventno,
-  //         number:`${number}`,
-  //         date:`${datesub}`,
-  //         numberOfVendorsParticipated :no_v.toString(),
-  //         l1AmountObtained :am.toString(),
-  //        })
-  //     }
-  //   }
-  //  }
+//   //     pan_web_event.push({
+//   //         idd : `${idd}` ,
+//   //         PAN_Number : tsk_doc_id.toString(),
+//   //         eventNo : eventno,
+//   //         number:`${number}`,
+//   //         date:`${datesub}`,
+//   //         numberOfVendorsParticipated :no_v.toString(),
+//   //         l1AmountObtained :am.toString(),
+//   //        })
+//   //     }
+//   //   }
+//   //  }
    
-  }
-      // w_type ="RFP";
+//   }
+//       // w_type ="RFP";
 
-      if( version >1){
-        const ver1scount = {};
-        if(v1sup_count !=[]){
-        var ver1scount1 = v1sup_count.filter(obj => {
-          if (!ver1scount[obj.vname]) {
-            ver1scount[obj.vname] = true;
-            return true;
-          }
-           return false;
-        })
-      }
+//       // if( version >1){
+//       //   const ver1scount = {};
+//       //   if(v1sup_count !=[]){
+//       //   var ver1scount1 = v1sup_count.filter(obj => {
+//       //     if (!ver1scount[obj.vname]) {
+//       //       ver1scount[obj.vname] = true;
+//       //       return true;
+//       //     }
+//       //      return false;
+//       //   })
+//       // }
        
-        let no_v = 0;
-        for(let k=0;k<sc_web_tab2.length;k++){
-          if(sc_web_tab2[k].doc_id == tsk_doc_id){
-            no_v = sc_web_tab2[k].scount;
-          }
-        }
+//       //   let no_v = 0;
+//       //   for(let k=0;k<sc_web_tab2.length;k++){
+//       //     if(sc_web_tab2[k].doc_id == tsk_doc_id){
+//       //       no_v = sc_web_tab2[k].scount;
+//       //     }
+//       //   }
 
-        var v1dates=[];
-        let am1=0;
-        if(version1 !=[]){
-        for(let v1=0;v1<version1.length;v1++){
-          v1dates.push(version1[v1].subdate)
+//       //   var v1dates=[];
+//       //   let am1=0;
+//       //   if(version1 !=[]){
+//       //   for(let v1=0;v1<version1.length;v1++){
+//       //     v1dates.push(version1[v1].subdate)
 
-        }
-        var v1smallestdate = v1dates.reduce((acc, curr) => curr < acc ? curr : acc, v1dates[0]);
+//       //   }
+//       //   var v1smallestdate = v1dates.reduce((acc, curr) => curr < acc ? curr : acc, v1dates[0]);
         
-        for(let v=0;v<version1.length;v++){
-          if(version1[v].subdate == v1smallestdate){
-             am1 = version1[v].final_quote;
+//       //   for(let v=0;v<version1.length;v++){
+//       //     if(version1[v].subdate == v1smallestdate){
+//       //        am1 = version1[v].final_quote;
            
-          }
-        }
-      }
-        if(pan_web_event != []){
-        pan_web_event[0].l1AmountObtained = `${am1}`;
-        pan_web_event[0].numberOfVendorsParticipated = `${no_v}`
+//       //     }
+//       //   }
+//       // }
+//       //   if(pan_web_event != []){
+//       //   pan_web_event[0].l1AmountObtained = `${am1}`;
+//       //   pan_web_event[0].numberOfVendorsParticipated = `${no_v}`
       
-        }
+//       //   }
         
 
-       }
-    if(version >1){
-      if(w_type == "RFP"){
+//       //  }
+//     // if(version >1){
+//     //   if(w_type == "RFP"){
 
-        for(let z=0;z<web_tab_dates.length;z++){
-          let number = "";
-          var no_v=0;
-          if(web_tab_dates[z].document_id == tsk_doc_id){
-          number = web_tab_dates[z].document_id;
-         //  number = number.substring(number.length - 4)
-          var dateString = web_tab_dates[z].publish_date;
-           var datesub = dateString.substring(0, 10)
-           datesub = returndate(datesub);
-           for(let s=0;s<sc_web_tab2.length;s++){
-            if(sc_web_tab2[s].doc_id == number){
-              no_v = sc_web_tab2[s].scount;
-            }
-           }
+//     //     for(let z=0;z<web_tab_dates.length;z++){
+//     //       let number = "";
+//     //       var no_v=0;
+//     //       if(web_tab_dates[z].document_id == tsk_doc_id){
+//     //       number = web_tab_dates[z].document_id;
+//     //      //  number = number.substring(number.length - 4)
+//     //       var dateString = web_tab_dates[z].publish_date;
+//     //        var datesub = dateString.substring(0, 10)
+//     //        datesub = returndate(datesub);
+//     //        for(let s=0;s<sc_web_tab2.length;s++){
+//     //         if(sc_web_tab2[s].doc_id == number){
+//     //           no_v = sc_web_tab2[s].scount;
+//     //         }
+//     //        }
            
-          // var no_v = web_tab_dates[z].pvendor;
-          var am = web_tab_dates[z].l1amount;
-          am = returnamt(am);
-          if(pan_web_event.length == 1){
-          pan_web_event.push({
-            idd :"2" ,
-            PAN_Number : tsk_doc_id.toString(),
-            eventNo :  "Last Published(Before RA)",
-            number:`${number}`,
-            date:`${datesub}`,
-            numberOfVendorsParticipated :no_v.toString(),
-            l1AmountObtained :am.toString(),
-           })
-          }
-          }
-        }
+//     //       // var no_v = web_tab_dates[z].pvendor;
+//     //       var am = web_tab_dates[z].l1amount;
+//     //       am = returnamt(am);
+//     //       if(pan_web_event.length == 1){
+//     //       pan_web_event.push({
+//     //         idd :"2" ,
+//     //         PAN_Number : tsk_doc_id.toString(),
+//     //         eventNo :  "Last Published(Before RA)",
+//     //         number:`${number}`,
+//     //         date:`${datesub}`,
+//     //         numberOfVendorsParticipated :no_v.toString(),
+//     //         l1AmountObtained :am.toString(),
+//     //        })
+//     //       }
+//     //       }
+//     //     }
 
-      }else if(w_type == "Auction"){
-          if(pan_web_event.length == 1){
-            pan_web_event.push({
-              idd :"2" ,
-              PAN_Number : tsk_doc_id.toString(),
-              eventNo :  "Last Published(Before RA)",
-              number:"NA",
-              date:"NA",
-              numberOfVendorsParticipated :"NA",
-              l1AmountObtained :"0",
-             })
-          }
+//     //   }else if(w_type == "Auction"){
+//     //       if(pan_web_event.length == 1){
+//     //         pan_web_event.push({
+//     //           idd :"2" ,
+//     //           PAN_Number : tsk_doc_id.toString(),
+//     //           eventNo :  "Last Published(Before RA)",
+//     //           number:"NA",
+//     //           date:"NA",
+//     //           numberOfVendorsParticipated :"NA",
+//     //           l1AmountObtained :"0",
+//     //          })
+//     //       }
         
-        for(let z=0;z<web_tab_dates.length;z++){
-          let number = "";
-          var no_v=0;
-          if(web_tab_dates[z].document_id == tsk_doc_id){
-          number = web_tab_dates[z].document_id;
-         //  number = number.substring(number.length - 4)
-          var dateString = web_tab_dates[z].publish_date;
-           var datesub = dateString.substring(0, 10)
-           datesub = returndate(datesub);
-           for(let s=0;s<sc_web_tab2.length;s++){
-            if(sc_web_tab2[s].doc_id == number){
-              no_v = sc_web_tab2[s].scount;
-            }
-           }
-          // var no_v = web_tab_dates[z].pvendor;
-          var am = web_tab_dates[z].l1amount;
-          am = returnamt(am);
-          if(pan_web_event.length == 2){
-          pan_web_event.push({
-            idd :"3" ,
-            PAN_Number : tsk_doc_id.toString(),
-            eventNo :  "Reverse Auction(RA)",
-            number:`${number}`,
-            date:`${datesub}`,
-            numberOfVendorsParticipated :no_v.toString(),
-            l1AmountObtained :am.toString(),
-           })
-          }
-          }
-        }
-      }
-    }
-  // }
-}
+//     //     for(let z=0;z<web_tab_dates.length;z++){
+//     //       let number = "";
+//     //       var no_v=0;
+//     //       if(web_tab_dates[z].document_id == tsk_doc_id){
+//     //       number = web_tab_dates[z].document_id;
+//     //      //  number = number.substring(number.length - 4)
+//     //       var dateString = web_tab_dates[z].publish_date;
+//     //        var datesub = dateString.substring(0, 10)
+//     //        datesub = returndate(datesub);
+//     //        for(let s=0;s<sc_web_tab2.length;s++){
+//     //         if(sc_web_tab2[s].doc_id == number){
+//     //           no_v = sc_web_tab2[s].scount;
+//     //         }
+//     //        }
+//     //       // var no_v = web_tab_dates[z].pvendor;
+//     //       var am = web_tab_dates[z].l1amount;
+//     //       am = returnamt(am);
+//     //       if(pan_web_event.length == 2){
+//     //       pan_web_event.push({
+//     //         idd :"3" ,
+//     //         PAN_Number : tsk_doc_id.toString(),
+//     //         eventNo :  "Reverse Auction(RA)",
+//     //         number:`${number}`,
+//     //         date:`${datesub}`,
+//     //         numberOfVendorsParticipated :no_v.toString(),
+//     //         l1AmountObtained :am.toString(),
+//     //        })
+//     //       }
+//     //       }
+//     //     }
+//     //   }
+//     // }
+//   // }
+// }
  
   if( pan_web_event.length == 1){
     for(let k = 2;k<4;k++){
@@ -2667,213 +2956,254 @@ for(let q= 0;q<sc_web_tab2.length;q++){
            
             if((shrt_lst_count.payload[r].awardStatus == 7 ) || shrt_lst_count.payload[r].awardStatus == 6 ){
                   ch=1;
+               if("rollupTerms" in shrt_lst_count.payload[r] && shrt_lst_count.payload[r].rollupTerms.length != 0 ){   
               for(let j= 0;j<shrt_lst_count.payload[r].rollupTerms.length;j++){
                 if(ser_mate == "Material"||ser_mate == "Both"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Total Cost"){
-                final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
+                  if("value" in shrt_lst_count.payload[r].rollupTerms[j] ){
+                    if("supplierValue" in shrt_lst_count.payload[r].rollupTerms[j].value ){
+                      if("amount" in shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue ){
+                        final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
+                      }
+                    }
+                  }
+               
                 // final_quote1 = returnamt(final_quote);
 
                 }
               }
               else if(ser_mate == "Service"){
                 if(shrt_lst_count.payload[r].rollupTerms[j].title == "Extended Price"){
-                  final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
-                  // final_quote1 = returnamt(final_quote);
+
+                 if("value" in shrt_lst_count.payload[r].rollupTerms[j] ){
+                    if("supplierValue" in shrt_lst_count.payload[r].rollupTerms[j].value ){
+                      if("amount" in shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue ){
+                        final_quote = shrt_lst_count.payload[r].rollupTerms[j].value.supplierValue.amount;
+                      }
+                    }
+                  }
                   }
               }
               }
+            }
               
-              for(let q=0;q<shrt_lst_count.payload[r].scenarioSummary.participantSummaryList.length;q++){
+              if("scenarioSummary" in shrt_lst_count.payload[r]){
+                if("participantSummaryList" in shrt_lst_count.payload[r].scenarioSummary && shrt_lst_count.payload[r].scenarioSummary.participantSummaryList.length != 0){
 
-                var  rollupterms = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList;
-                //  for(let i = 0 ;i<rollupterms.length;i++){
-                //    if(rollupterms[i].title == "Total Cost"){
-                //      var vtotal_cost = rollupterms[i].value.moneyValue.amount;
-                //    }
-                //  }
+                  for(let q=0;q<shrt_lst_count.payload[r].scenarioSummary.participantSummaryList.length;q++){
 
-                  vname = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.name;
-                  erp_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.erpVendorID;
-                  sm_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.smVendorID;
-                  items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
-                  if(erp_id == null){
-                    erp_id = "";
+                    // var  rollupterms = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList;
+                    //  for(let i = 0 ;i<rollupterms.length;i++){
+                    //    if(rollupterms[i].title == "Total Cost"){
+                    //      var vtotal_cost = rollupterms[i].value.moneyValue.amount;
+                    //    }
+                    //  }
+                      if("supplier" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q]){
+                        if("name" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier ){
+                          vname = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.name;
+                        }
+                       
+                        // erp_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.erpVendorID;
+                        if("smVendorID" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier ){
+                        sm_id = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.smVendorID;
+                        }
+                        // items= shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].numberOfSelectedItems;
+                      }
+                      
+                      // if(erp_id == null){
+                      //   erp_id = "";
+                      // }
+                      if(vname==null){
+                        vname="";
+                      }
+                      if(sm_id == null){
+                        sm_id = "";
+                      }
+                    //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[0].value.moneyValue.amount;
+                    //  vendor_loc = returnamt(vendor_loc)
+    
+    
+    
+                    
+                    var loc ="";
+                    if(ser_mate == "Material" || ser_mate == "Both"){
+                       loc  = "Total Cost";
+                    }else if(ser_mate == "Service"){
+                       loc = "Extended Price"
+                    }
+
+                    if("rollupTermList" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q]){
+                      if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length !=0){
+                        for(let l =0;l<shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length;l++){
+                          if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].title == loc){
+                            if("value" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l]){
+                              if("moneyValue" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].value){
+                                if("amount" in shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].value.moneyValue ){
+                                  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].value.moneyValue.amount;
+
+                                }
+                              }
+                            }
+                            
+                          }
+        
+                        }
+                      }
+                    }
+                   
+                    //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.city+ " "+ shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.country;
+                      
+                    //  if(web_tab2.length != 0){
+                    //  for(let r=0;r<web_tab2.length;r++){
+                    //   if(web_tab2[r].doc_id == tsk_doc_id && web_tab2[r].smid == sm_id){
+                    //      original_quote =  web_tab2[r].amount;
+                    //      original_quote1 = returnamt(original_quote);
+                    //   }
+                    //  }
+                    // }
+                    // if(price_details1.length != 0){
+                    //   for(let r=0;r<price_details1.length;r++){
+                    //     if(price_details1[r].PAN_Number == tsk_doc_id && price_details1[r].Proposed_Vendor_Code == erp_id ){
+                    //       original_quote = original_quote + parseFloat(price_details1[r].amount);
+                    //     }
+                    //   }
+                    // }
+    
+                    // original_quote1 = returnamt(original_quote);
+                    var acc_ind =0;
+                    var orinv_id = "";
+                    var ordates=[];
+                    var ordates1=[];
+                    if( vendorids1!=[]){
+                    for(let v=0;v<vendorids1.length;v++){
+                      if(vendorids1[v].smvendor_id == sm_id && vendorids1[v].doc_id == tsk_doc_id ){
+                        orinv_id = vendorids1[v].vinv_id;
+                        console.log(orinv_id );
+                      }
+                    }
                   }
-                  if(vname==null){
-                    vname="";
+                  if(version1!=[]){
+                    for(let vr=0;vr<version1.length;vr++){
+                      if(version1[vr].inv_id == orinv_id &&version1[vr].PAN_Number == tsk_doc_id){
+                       ordates.push(version1[vr].sub_date);
+                       acc_ind=1;
+                      }
+                    }
                   }
-                  if(sm_id == null){
-                    sm_id = "";
+    
+                    if(acc_ind == 1 && version1!=[]){
+                   var orsmdate =  ordates.reduce((acc, curr) => curr < acc ? curr : acc, ordates[0]);
+                    
+                   for(let j=0;j<version1.length;j++){
+                    if(version1[j].sub_date == orsmdate && version1[j].PAN_Number == tsk_doc_id){
+                      original_quote =  version1[j].final_quote;
+                      // original_quote1 = returnamt(original_quote);
+                    }
+                   }
+                  }else if(acc_ind == 0){
+                    original_quote = 0;
+                    for(let f=0;f<final_quotearr.length;f++){
+                      if(final_quotearr[f].sm_id == sm_id && final_quotearr[f].PAN_Number == tsk_doc_id ){
+                        ordates1.push(final_quotearr[f].sub_date);
+                      }
+                     
+    
                   }
-                //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[0].value.moneyValue.amount;
-                //  vendor_loc = returnamt(vendor_loc)
-
-
-
-                
-                var loc ="";
-                if(ser_mate == "Material" || ser_mate == "Both"){
-                   loc  = "Total Cost";
-                }else if(ser_mate == "Service"){
-                   loc = "Extended Price"
-                }
-                if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length !=0){
-                for(let l =0;l<shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList.length;l++){
-                  if(shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].title == loc){
-                    vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].rollupTermList[l].value.moneyValue.amount;
+                  var orsmdate1 =  ordates1.reduce((acc, curr) => curr < acc ? curr : acc, ordates1[0]);
+                  for(let f=0;f<final_quotearr.length;f++){
+                    if(final_quotearr[f].sub_date == orsmdate1 && final_quotearr[f].PAN_Number == tsk_doc_id){
+                      original_quote = final_quotearr[f].final_quote;
+                    }
+    
                   }
-
-                }
-              }
-                //  vendor_loc = shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.city+ " "+ shrt_lst_count.payload[r].scenarioSummary.participantSummaryList[q].supplier.address.country;
+                  }
+    
                   
-                //  if(web_tab2.length != 0){
-                //  for(let r=0;r<web_tab2.length;r++){
-                //   if(web_tab2[r].doc_id == tsk_doc_id && web_tab2[r].smid == sm_id){
-                //      original_quote =  web_tab2[r].amount;
-                //      original_quote1 = returnamt(original_quote);
-                //   }
-                //  }
-                // }
-                // if(price_details1.length != 0){
-                //   for(let r=0;r<price_details1.length;r++){
-                //     if(price_details1[r].PAN_Number == tsk_doc_id && price_details1[r].Proposed_Vendor_Code == erp_id ){
-                //       original_quote = original_quote + parseFloat(price_details1[r].amount);
-                //     }
-                //   }
-                // }
-
-                // original_quote1 = returnamt(original_quote);
-                var acc_ind =0;
-                var orinv_id = "";
-                var ordates=[];
-                var ordates1=[];
-                if( vendorids1!=[]){
-                for(let v=0;v<vendorids1.length;v++){
-                  if(vendorids1[v].smvendor_id == sm_id && vendorids1[v].doc_id == tsk_doc_id ){
-                    orinv_id = vendorids1[v].vinv_id;
-                    console.log(orinv_id );
+    
+    
+    
+                    for(let f=0;f<final_quotearr.length;f++){
+                      if(final_quotearr[f].PAN_Number == tsk_doc_id ){
+                      if( final_quotearr[f].sm_id == sm_id  ){
+                        final_quote1 = final_quotearr[f].final_quote
+                        final_quote1 = final_quotearr[f].final_quote
+                     
+                    }
                   }
-                }
-              }
-              if(version1!=[]){
-                for(let vr=0;vr<version1.length;vr++){
-                  if(version1[vr].ivid == orinv_id &&version1[vr].PAN_Number == tsk_doc_id){
-                   ordates.push(version1[vr].subdate);
-                   acc_ind=1;
+                   
                   }
-                }
-              }
-
-                if(acc_ind == 1 && version1!=[]){
-               var orsmdate =  ordates.reduce((acc, curr) => curr < acc ? curr : acc, ordates[0]);
-                
-               for(let j=0;j<version1.length;j++){
-                if(version1[j].subdate == orsmdate && version1[j].PAN_Number == tsk_doc_id){
-                  original_quote =  version1[j].final_quote;
-                  // original_quote1 = returnamt(original_quote);
-                }
-               }
-              }else if(acc_ind == 0){
-                original_quote = 0;
-                for(let f=0;f<final_quotearr.length;f++){
-                  if(final_quotearr[f].sm_id == sm_id && final_quotearr[f].PAN_Number == tsk_doc_id ){
-                    ordates1.push(final_quotearr[f].sub_date);
-                  }
-                 
-
-              }
-              var orsmdate1 =  ordates1.reduce((acc, curr) => curr < acc ? curr : acc, ordates1[0]);
-              for(let f=0;f<final_quotearr.length;f++){
-                if(final_quotearr[f].sub_date == orsmdate1 && final_quotearr[f].PAN_Number == tsk_doc_id){
-                  original_quote = final_quotearr[f].final_quote;
-                }
-
-              }
-              }
-
+                  
+    
+    
+    
+                      //  discount_amt  = pan_web_event[0].l1AmountObtained - final_quote;
+                    if(final_quote1 != 0){
+                      discount_amt = original_quote - final_quote1;
+                      // var str = discount_amt.toString();
+                      // discount_amt = Math.abs(discount_amt)
+                      discount_amt =  discount_amt.toFixed(2)
+                      discount_amt2 = returnamt(discount_amt);
+    
+                       dis_per = ( ( original_quote - final_quote1 ) / final_quote1) * 100;
+                    //  dis_per = Math.abs(dis_per);
+                     dis_per = dis_per.toFixed(2);
+                      dis_per = dis_per + " %";
+                    }
+    
+    
+    
+    
+    
+    
+    
+                    // else{
+                    //   discount_amt = 0;
+                    //   dis_per = 0;
+                    // }
+                    
+                    // discount_amt = discount_amt.toLocaleString();
+                    
+                    // savings = savings.toFixed(2);
+     
+                   
+                   // var dis_per = ( pan_web_event[0].l1AmountObtained / final_quote) * 100;
+                     
+    
+                      //VENDORS WHO ALL ARE AWARDED
+    
+                     vendordata1.push({
+                      Proposed_Vendor_Code               : `${sm_id}`, //disp
+                      PAN_Number                         : `${tsk_doc_id}`,
+                      Awarded_Vendor                     : "YES",
+                      Vendor_Name                        : `${vname}`,//disp
+                      Vendor_Location                    : `${returnamt(vendor_loc)}`,
+                      Technically_Approved               : "",
+                      Original_quote                     :`${returnamt(original_quote)}`,//disp
+                      Final_Quote                        : `${returnamt(final_quote1)}`, //disp
+                      Order_amount_OR_Split_order_amount : `${returnamt(vendor_loc)}`,
+                      // Proposed_Vendor_Code_nav           : " ",
+                      Discount_Amount                    : `${discount_amt2}`,
+                      Discount_percentage                : `${dis_per}`,
+                      Rank                               : "1",
               
+                     })
+                    
+                     vname="";
+                    vendor_loc=0;
+                    original_quote1=0;
+                    final_quote1=0;
+                    original_quote=0;
+                    // final_quote=0;
+                    discount_amt2=0;
+                    dis_per=0;
+                    discount_amt=0;
+    
+                     console.log("stage5.4")
+                  }
 
-
-
-                for(let f=0;f<final_quotearr.length;f++){
-                  if(final_quotearr[f].PAN_Number == tsk_doc_id ){
-                  if( final_quotearr[f].sm_id == sm_id  ){
-                    final_quote1 = final_quotearr[f].final_quote
-                    final_quote1 = final_quotearr[f].final_quote
-                 
                 }
-              }
-               
               }
               
-
-
-
-                  //  discount_amt  = pan_web_event[0].l1AmountObtained - final_quote;
-                if(final_quote1 != 0){
-                  discount_amt = original_quote - final_quote1;
-                  // var str = discount_amt.toString();
-                  // discount_amt = Math.abs(discount_amt)
-                  discount_amt =  discount_amt.toFixed(2)
-                  discount_amt2 = returnamt(discount_amt);
-
-                   dis_per = ( ( original_quote - final_quote1 ) / final_quote1) * 100;
-                //  dis_per = Math.abs(dis_per);
-                 dis_per = dis_per.toFixed(2);
-                  dis_per = dis_per + " %";
-                }
-
-
-
-
-
-
-
-                // else{
-                //   discount_amt = 0;
-                //   dis_per = 0;
-                // }
-                
-                // discount_amt = discount_amt.toLocaleString();
-                
-                // savings = savings.toFixed(2);
- 
-               
-               // var dis_per = ( pan_web_event[0].l1AmountObtained / final_quote) * 100;
-                 
-
-                  //VENDORS WHO ALL ARE AWARDED
-
-                 vendordata1.push({
-                  Proposed_Vendor_Code               : erp_id.toString(), //disp
-                  PAN_Number                         : tsk_doc_id.toString(),
-                  Awarded_Vendor                     : "YES",
-                  Vendor_Name                        : `${vname}`,//disp
-                  Vendor_Location                    : `${returnamt(vendor_loc)}`,
-                  Technically_Approved               : "",
-                  Original_quote                     :`${returnamt(original_quote)}`,//disp
-                  Final_Quote                        : `${returnamt(final_quote1)}`, //disp
-                  Order_amount_OR_Split_order_amount : `${returnamt(final_quote1)}`,
-                  // Proposed_Vendor_Code_nav           : " ",
-                  Discount_Amount                    : `${discount_amt2}`,
-                  Discount_percentage                : `${dis_per}`,
-                  Rank                               : "1",
-          
-                 })
-                
-                 vname="";
-                vendor_loc=0;
-                original_quote1=0;
-                final_quote1=0;
-                original_quote=0;
-                // final_quote=0;
-                discount_amt2=0;
-                dis_per=0;
-                discount_amt=0;
-
-                 console.log("stage5.4")
-              }
 
 
 
@@ -2899,8 +3229,11 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                  for(let k =0;k<shrt_lst_count.payload[r].supplierBids.length;k++){
                   if(ser_mate =="Material"||ser_mate =="Both"){
                   if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals" && shrt_lst_count.payload[r].supplierBids[k].item.title != "services" ){
+                    var terms3 =[];
+                    if("terms" in shrt_lst_count.payload[r].supplierBids[k].item){
+                      terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
+                    }
                     
-                    var terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
                      
                     var pvcode1 = "";
                     for(let v=0;v<vendorids1.length;v++){
@@ -3108,8 +3441,11 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                 }
                  else if(ser_mate =="Service"){
                   if(shrt_lst_count.payload[r].supplierBids[k].item.title != "Totals" && shrt_lst_count.payload[r].supplierBids[k].item.itemType == 5){
+                    var terms3=[];
+                    if("terms" in shrt_lst_count.payload[r].supplierBids[k].item){
+                      terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
+                    }
                      
-                    var terms3 = shrt_lst_count.payload[r].supplierBids[k].item.terms;
 
                     item_details.push({
                       item_name : shrt_lst_count.payload[r].supplierBids[k].item.title,
@@ -3419,83 +3755,83 @@ for(let q= 0;q<sc_web_tab2.length;q++){
         }
       }
          
-             if(ser_mate == "Material"||ser_mate == "Both"){
+        //      if(ser_mate == "Material"||ser_mate == "Both"){
 
-              // SAVINGS CALUCLATIONS WHEN UNSTRUCTURED DATA
+        //       // SAVINGS CALUCLATIONS WHEN UNSTRUCTURED DATA
               
-              // if(pan_web_event.length !=0){
+        //       // if(pan_web_event.length !=0){
                 
-              //   if(price_details1[0].item_name == " "){
-              //     for(let f=0;f<pan_web_event.length;f++){
-              //       if(pan_web_event[f].number != "NA" pan_web_event[f].number != tsk_doc_id){
-              //       for(let j= 0 ;j<item_details.length;j++){
-              //         if(item_details[j].allocation_type == 1){
-              //            per_value = item_details[j].allocate_per;
-              //            amt2 = (item_details[j].totl_amt/100)*per_value;
-              //           save1 = save1 + amt2;
-              //              amt2 = 0;
-              //         }
-              //       }
-              //     }
-              //   save1 =  save1.toFixed(2)
-              //   // save1 = returnamt(save1);
-              //   // pan_web_event[f].l1AmountObtained = `${save1}`;
-               // // if(pan_web_event[f].number != tsk_doc_id){
-              //  //   pan_web_event[f].l1AmountObtained = `${save1}`;
-              //  // }
-              //   save1 = 0;
+        //       //   if(price_details1[0].item_name == " "){
+        //       //     for(let f=0;f<pan_web_event.length;f++){
+        //       //       if(pan_web_event[f].number != "NA" pan_web_event[f].number != tsk_doc_id){
+        //       //       for(let j= 0 ;j<item_details.length;j++){
+        //       //         if(item_details[j].allocation_type == 1){
+        //       //            per_value = item_details[j].allocate_per;
+        //       //            amt2 = (item_details[j].totl_amt/100)*per_value;
+        //       //           save1 = save1 + amt2;
+        //       //              amt2 = 0;
+        //       //         }
+        //       //       }
+        //       //     }
+        //       //   save1 =  save1.toFixed(2)
+        //       //   // save1 = returnamt(save1);
+        //       //   // pan_web_event[f].l1AmountObtained = `${save1}`;
+        //        // // if(pan_web_event[f].number != tsk_doc_id){
+        //       //  //   pan_web_event[f].l1AmountObtained = `${save1}`;
+        //       //  // }
+        //       //   save1 = 0;
 
-              //   }
+        //       //   }
                 
-              //   }
-              // }
+        //       //   }
+        //       // }
             
 
-             // SAVINGS CALUCLATIONS WHEN STRUCTURED DATA
+        //      // SAVINGS CALUCLATIONS WHEN STRUCTURED DATA
  
-              if(pan_web_event.length != 0 && item_details !=[]){
-                if(price_details1[0].item_name != " "){
-            for(let f=0;f<pan_web_event.length;f++){
-            if(pan_web_event[f].number != "NA" && pan_web_event[f].number != tsk_doc_id ){
-           for(let j= 0 ;j<item_details.length;j++){
-            for(let k = 0;k<price_details1.length;k++){
-              if(price_details1[k].PAN_Number == pan_web_event[f].number && item_details[j].inv_id == price_details1[k].inv_id  && item_details[j].item_name == price_details1[k].item_name){
+        //       if(pan_web_event.length != 0 && item_details !=[]){
+        //         if(price_details1[0].item_name != " "){
+        //     for(let f=0;f<pan_web_event.length;f++){
+        //     if(pan_web_event[f].number != "NA" && pan_web_event[f].number != tsk_doc_id ){
+        //    for(let j= 0 ;j<item_details.length;j++){
+        //     for(let k = 0;k<price_details1.length;k++){
+        //       if(price_details1[k].PAN_Number == pan_web_event[f].number && item_details[j].inv_id == price_details1[k].inv_id  && item_details[j].item_name == price_details1[k].item_name){
 
-                if(item_details[j].allocation_type == 1){
-                   per_value = item_details[j].allocate_per;
-                  if(pan_web_event[f].eventNo == "First Published"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 3)){
-                      amt2 = (price_details1[k].amount/100)*per_value;
-                    //  amt2 =  amt2.toFixed(2)
-                  }
+        //         if(item_details[j].allocation_type == 1){
+        //            per_value = item_details[j].allocate_per;
+        //           if(pan_web_event[f].eventNo == "First Published"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 3)){
+        //               amt2 = (price_details1[k].amount/100)*per_value;
+        //             //  amt2 =  amt2.toFixed(2)
+        //           }
                   
                    
-                  else if(pan_web_event[f].eventNo == "Reverse Auction(RA)"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 2)){
-                    // var amt2 = (item_details[j].totl_amt/100)*per_value;
-                     amt2 = (price_details1[k].amount/100)*per_value;
-                    // amt2 =  amt2.toFixed(2)
-                  }
+        //           else if(pan_web_event[f].eventNo == "Reverse Auction(RA)"||(pan_web_event[f].eventNo == "Last Published(Before RA)" && pan_web_event.length == 2)){
+        //             // var amt2 = (item_details[j].totl_amt/100)*per_value;
+        //              amt2 = (price_details1[k].amount/100)*per_value;
+        //             // amt2 =  amt2.toFixed(2)
+        //           }
                   
                  
-                 save1 = save1 + amt2;
-                 amt2 = 0;
-                }
-                //  var save = price_details1[k].amount - item_details[j].totl_amt;
-                //  save = Math.abs(save);
+        //          save1 = save1 + amt2;
+        //          amt2 = 0;
+        //         }
+        //         //  var save = price_details1[k].amount - item_details[j].totl_amt;
+        //         //  save = Math.abs(save);
                  
-              }
-              // save = 0;
+        //       }
+        //       // save = 0;
 
-            }
-           }
-           save1 =  save1.toFixed(2);
-          //  save1 = returnamt(save1);
-           pan_web_event[f].l1AmountObtained = `${save1}`;
-           save1 = 0;
-          }
-          }
-        }
-        }
-        }
+        //     }
+        //    }
+        //    save1 =  save1.toFixed(2);
+        //   //  save1 = returnamt(save1);
+        //    pan_web_event[f].l1AmountObtained = `${save1}`;
+        //    save1 = 0;
+        //   }
+        //   }
+        // }
+        // }
+        // }
         // else if(ser_mate == "Service"){
         //   if(pan_web_event.length !=0){
         //   for(let f=0;f<pan_web_event.length;f++){
@@ -3592,18 +3928,61 @@ for(let q= 0;q<sc_web_tab2.length;q++){
          }
       }
        
-
       if(vendordata3 !=[]&&final_quotearr!=[]){
-      for(let k=0;k<vendordata3.length;k++){
-        if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
-          for(let k1=0;k1<final_quotearr.length;k1++){
-            if(final_quotearr[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code){
-              vendordata3[k].Original_quote = returnamt(final_quotearr[k1].final_quote);
+        for(let k=0;k<vendordata3.length;k++){
+          if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
+            na_date=[]
+            na_ind=0;
+            for(let k1=0;k1<version1.length;k1++){
+              if(version1[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code && version1[k1].PAN_Number == tsk_doc_id){
+                pcod= vendordata3[k].Proposed_Vendor_Code;
+                // vendordata3[k].Original_quote = returnamt(version1[k1].final_quote);
+                na_date.push(version1[k1].sub_date)
+                na_ind=1;
+              }
             }
+            
+            if(na_ind ==1){
+              na_smdate = na_date.reduce((acc, curr) => curr < acc ? curr : acc, na_date[0]);
+              na_date=[];       
+              if(vendordata3 !=[]&&final_quotearr!=[]){
+               for(let k=0;k<vendordata3.length;k++){
+                 if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
+                  
+                   for(let k1=0;k1<version1.length;k1++){
+                     if(version1[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code && version1[k1].PAN_Number == tsk_doc_id){
+                     if(version1[k1].sub_date == na_smdate ){
+                       vendordata3[k].Original_quote = returnamt(version1[k1].final_quote);
+                     }
+                       
+                       
+                     }
+                   }
+                 }
+               }
+             }
+       
+           }
+       
+             else if(na_ind==0){
+             if(vendordata3 !=[]&&final_quotearr!=[]){
+             for(let k=0;k<vendordata3.length;k++){
+               if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
+                 for(let k1=0;k1<final_quotearr.length;k1++){
+                   if(final_quotearr[k1].Proposed_vendor_code == vendordata3[k].Proposed_Vendor_Code){
+                     vendordata3[k].Original_quote = returnamt(final_quotearr[k1].final_quote);
+                   }
+                 }
+               }
+             }
+           }
+         }
+        
+
           }
         }
       }
-    }
+     
     for(let j=0;j<vendordata3.length;j++){
       if(vendordata3[j].Original_quote=="NaN"){
         vendordata3[j].Original_quote="0";
@@ -3613,7 +3992,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
 
       for(let k = 0;k<pan_web_event.length;k++){
-        if(pan_web_event[k].l1AmountObtained !=0){
+        if(pan_web_event[k].number !="NA"){
           pan_web_event[k].l1AmountObtained = returnamt(pan_web_event[k].l1AmountObtained);
         }
       }
