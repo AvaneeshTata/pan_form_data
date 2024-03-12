@@ -20,7 +20,7 @@ module.exports = cds.service.impl(async function () {
         attachments,tab1,tab2,tab3,vendor_data,Fvendor_responseoo,PAYMENT_TERM_DETAILS,WORKFLOW_HISTORY,PAN_PRICE_DETAILS,PAN_proj,PAN_Comments ,
         PAN_Details_APR,PAN_WEB_EVENT_APR,PAN_TYPE_APR,PAN_vendor_data_APR,PAN_vendor_response_APR,PAN_PAYMENT_TERM_DETAILS_APR,PAN_PRICE_DETAILS_APR,PAN_WORKFLOW_HISTORY_APR,PAN_attachments_APR,PAN_proj_APR,PAN_Comments_APR,vendorTaxDetails_APR
     } = this.entities;
-  const plant_data = await cds.connect.to('plant');
+  // const plant_data = await cds.connect.to('plant');
   const getcall = await cds.connect.to('getcall');
 
   // var temp = '';
@@ -299,6 +299,8 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1038420644"; //comp
       // cur_pro_id = "WS1038885782";
       // cur_pro_id = "WS1038437050";
+      // cur_pro_id = "WS1038885710";
+      // cur_pro_id="WS1039638442";
 
     
      
@@ -2477,11 +2479,11 @@ module.exports = cds.service.impl(async function () {
  var greatestDate="";
  var smallestdate=""
 
- if(version1.length !=0){
+ if(version1.length !=0 || no_of_docs.length >1){
    smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
    greatestDate = date.reduce((acc, curr) => curr > acc ? curr : acc, date[0]);
  }
-else if(version1.length ==0){
+else if(version1.length ==0 && no_of_docs.length == 1){
    smallestdate = date.reduce((acc, curr) => curr < acc ? curr : acc, date[0]);
 }
 // console.log(smallestdate);
