@@ -108,7 +108,7 @@ module.exports = cds.service.impl(async function () {
     var final_quote1 = 0;
     var original_quote1 = 0;
     var moneyValue = 0;
-    var vfinal_quote = "";
+    var vfinal_quote =0;
     var acc_subdate='';
     
     var proj_desc = "";
@@ -260,6 +260,7 @@ module.exports = cds.service.impl(async function () {
    
     var userName = req.data.userName;
     // var userName = "TPLBuyer";
+    // var userName = "rakeshdattatrayshelars@tataprojects.com"
     // var userName = "nitind@tataprojects.com";
     password = "PasswordAdapter1"
     if(userName == "TPLBuyer"){
@@ -295,6 +296,9 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id="WS1038454212";
       // cur_pro_id = "WS1036334661"; //original issue
       // cur_pro_id="WS1038657481";
+      // cur_pro_id = "WS1038420644"; //comp
+      // cur_pro_id = "WS1038885782";
+      // cur_pro_id = "WS1038437050";
 
     
      
@@ -419,7 +423,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1038690674";
+    //  tsk_doc_id = "Doc1038921627";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -1420,8 +1424,11 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "Payment Method" ) {
                     if("terms" in response_data4.payload[k2].item && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                      payment_type = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                      payment_type = payment_type.toString();
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                        payment_type = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                        payment_type = payment_type.toString();
+                      }
+                     
                    }
                   }
                     }
@@ -1429,9 +1436,14 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "Totals" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                       if("value" in response_data4.payload[k2].item.terms[0] ){
-                        vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
-                        // vfinal_quote = vfinal_quote.toString();
-                        acc_subdate = response_data4.payload[k2].submissionDate;
+                        if("supplierValue" in response_data4.payload[k2].item.terms[0].value ){
+                          if("amount" in response_data4.payload[k2].item.terms[0].value.supplierValue ){
+                            vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
+                            // vfinal_quote = vfinal_quote.toString();
+                            acc_subdate = response_data4.payload[k2].submissionDate;
+                          }
+                        }
+                     
                         }
                     }
                     
@@ -1441,8 +1453,11 @@ module.exports = cds.service.impl(async function () {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
                        progress = response_data4.payload[k2];
-                       progress = progress.item.terms[0].value.simpleValue;
-                      progress = progress.toString(); 
+                       if("simpleValue" in progress.item.terms[0].value ){
+                        progress = progress.item.terms[0].value.simpleValue;
+                        progress = progress.toString();
+                       }
+                        
                     }
                   }
                   }
@@ -1450,8 +1465,11 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "Percentage Payment for Progress"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                    per_pay_pro = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
-                    per_pay_pro = per_pay_pro.toString() + "%";
+                      if("bigDecimalValue" in response_data4.payload[k2].item.terms[0].value){
+                        per_pay_pro = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
+                        per_pay_pro = per_pay_pro.toString() + "%";
+                      }
+                   
                     }
                   }
                   }
@@ -1459,8 +1477,10 @@ module.exports = cds.service.impl(async function () {
                   if(response_data4.payload[k2].item.title == "Percentage Payment for Retention"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                      if("bigDecimalValue" in response_data4.payload[k2].item.terms[0].value){
                     per_pay_ret = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                     per_pay_ret = per_pay_ret.toString() + "%";
+                      }
                     }
                   }
                   }
@@ -1468,8 +1488,11 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "Advance"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                    Advance = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                    Advance = Advance.toString();
+                      if("simpleValue" in  response_data4.payload[k2].item.terms[0].value){
+                        Advance = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                        Advance = Advance.toString();
+                      }
+                    
                     }
                   }
                   }
@@ -1477,6 +1500,7 @@ module.exports = cds.service.impl(async function () {
                    if( response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Progress" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                    if("simpleValues" in response_data4.payload[k2].item.terms[0].value ){
                     if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
                       var res = response_data4.payload[k2].item.terms[0].value;
                     
@@ -1484,7 +1508,8 @@ module.exports = cds.service.impl(async function () {
                         progress_documents = res.simpleValues[es] +" ,"+ progress_documents;
                       }
                         progress_documents = progress_documents.trim();
-                      } else {
+                      }
+                     } else if("simpleValue" in response_data4.payload[k2].item.terms[0].value ) {
                        progress_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
                     }
@@ -1495,6 +1520,7 @@ module.exports = cds.service.impl(async function () {
                   if(response_data4.payload[k2].item.title == "Mandatory Documents /Submissions for Retention" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                   if("simpleValues" in response_data4.payload[k2].item.terms[0].value ){
                     if (Array.isArray(response_data4.payload[k2].item.terms[0].value.simpleValues)) {
                       var res1 = response_data4.payload[k2].item.terms[0].value;
                      
@@ -1504,7 +1530,8 @@ module.exports = cds.service.impl(async function () {
                       }
                       
                       retention_documents = retention_documents.trim();
-                      } else {
+                      } 
+                    }else if("simpleValue" in response_data4.payload[k2].item.terms[0].value) {
                         retention_documents = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       }
                     }
@@ -1516,7 +1543,10 @@ module.exports = cds.service.impl(async function () {
                    if( response_data4.payload[k2].item.title == "To be certified in Company by for Progress"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                      by = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                        by = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      }
+                      
                     }
                   }
                    
@@ -1525,7 +1555,10 @@ module.exports = cds.service.impl(async function () {
                   if( response_data4.payload[k2].item.title == "To be certified in Company by for Retention"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                    by1 = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      if("simplrValue" in response_data4.payload[k2].item.terms[0].value){
+                        by1 = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      }
+                   
                     }
                   }
                    }
@@ -1533,9 +1566,12 @@ module.exports = cds.service.impl(async function () {
                    if( response_data4.payload[k2].item.title == "Retention Due Date"){
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                    due_date = response_data4.payload[k2].item.terms[0].value.dateValue;
-                    due_date = due_date.substring(0, 10);
-                    due_date = returndate(due_date);
+                      if("dateValue" in response_data4.payload[k2].item.terms[0] ){
+                        due_date = response_data4.payload[k2].item.terms[0].value.dateValue;
+                        due_date = due_date.substring(0, 10);
+                        due_date = returndate(due_date);
+                      }
+                    
                     }
                   }
                    
@@ -1545,16 +1581,22 @@ module.exports = cds.service.impl(async function () {
                    if(response_data4.payload[k2].item.title == "Retention" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                     retention = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                    retention = retention.toString();
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value ){
+                        retention = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                        retention = retention.toString();
+                      }
+                    
                     }
                   }
                   }
                    if(response_data4.payload[k2].item.title == "Percentage Total" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                    var percentage = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
-                     percentage1 = percentage.toString();
+                     if("bigDecimalValue" in response_data4.payload[k2].item.terms[0].value ){
+                      var percentage = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
+                      percentage1 = percentage.toString();
+                     } 
+                   
                     }
                   }
               }
@@ -1567,8 +1609,11 @@ module.exports = cds.service.impl(async function () {
                      if(inc == "IncoTerms" ){
                       if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                       if("value" in response_data4.payload[k2].item.terms[0] ){
-                       inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
-                        inco_terms = inco_terms.toString();
+                        if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                          inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                          inco_terms = inco_terms.toString();
+                        }
+                       
                       }
                      }
                     }
@@ -1585,8 +1630,10 @@ module.exports = cds.service.impl(async function () {
                      if(inc == "IncoTerms" ){
                       if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                       if("value" in response_data4.payload[k2].item.terms[0] ){
+                        if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
                       inco_terms = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       inco_terms = inco_terms.toString();
+                        }
                       }
                     }
                     }
@@ -1595,18 +1642,22 @@ module.exports = cds.service.impl(async function () {
                   if(response_data4.payload[k2].item.title == "ABG (Advance Bank Guarantee)" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                     abg = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
-                    abg = abg.toString();
-                    abg = abg + " %"
+                      if("bigDecimalValue" in response_data4.payload[k2].item.terms[0].value){
+                        abg = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
+                        abg = abg.toString();
+                        abg = abg + " %"
                     }
+                  }
                   }
                     }
                   if(   response_data4.payload[k2].item.title == "CPBG (Contract Performance Bank Guarantee)" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                      if("bigDecimalValue" in response_data4.payload[k2].item.terms[0].value){
                        cpbg= response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
                       cpbg = cpbg.toString();
                       cpbg = cpbg + " %"
+                      }
                     }
                   }
                     }
@@ -1615,29 +1666,38 @@ module.exports = cds.service.impl(async function () {
                   if(   response_data4.payload[k2].item.title == "Scope and Responsibilities" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
                        ScopeandResponsibilities = response_data4.payload[k2].item.terms[0].value.simpleValue;
                       ScopeandResponsibilities = ScopeandResponsibilities.toString();
+                      }
                     }
                   }
-                      }
+                 }
                   if(   response_data4.payload[k2].item.title == "Commercial Terms" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
                        CommercialTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      }
                     }
                   }
-                      } 
-                 if(   response_data4.payload[k2].item.title == "Compliance Terms" ) {
+                  } 
+                 if(response_data4.payload[k2].item.title == "Compliance Terms" ) {
                   if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                   if("value" in response_data4.payload[k2].item.terms[0] ){
+                    if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
                        ComplianceTerms = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                    }
                   }
                   }
                   } 
                   if(   response_data4.payload[k2].item.title == "Others" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                     if("value" in response_data4.payload[k2].item.terms[0] ){
-                       Others = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                        Others = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                      }
+                       
                     } 
                   }
                 } 
@@ -2110,7 +2170,7 @@ module.exports = cds.service.impl(async function () {
             Supplier_Origin_State                                                        : `${region1}`,
             Destination_State_BKTShipDASHto_LocationBKT                                  : `${sup_main_add}`,
             Vendor_GST_Number                                                            : `${GstNo}`,
-            Vendor_CE_Score                                                              : `${cescore}`,
+            Vendor_CE_Score                                                              : "",
             Vendor_CE_Date                                                               : "",
             Vendor_PE_Score                                                              : "",
             Vendor_PE_Date                                                               : "",
