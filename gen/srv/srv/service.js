@@ -54,7 +54,7 @@ module.exports = cds.service.impl(async function () {
     // let re = await SELECT.from(PAN_Details_APR);
     // let re1 = await SELECT.from(PAN_WEB_EVENT_APR);
     // await DELETE.from(PAN_Details);
-    try{
+    // try{
     let array = [];
     let vendordata = [];
     let panheader = [];
@@ -101,6 +101,7 @@ module.exports = cds.service.impl(async function () {
     var discount_amt1 = 0
     var erp_ind = "";
     var return_doc ="";
+    var total_terms=[];
     var password = "";
     var original_quote = 0;
     
@@ -700,7 +701,7 @@ module.exports = cds.service.impl(async function () {
       //  web_sup_count = thread_results1[0];
        thread_results = await Promise.all(workerPromises);
       
-      if(thread_results != []){
+      if(thread_results.length != 0){
        console.log("thread results started")
        thread_results.forEach((result)=>{
          if(!Array.isArray(result.payload) && (!(result instanceof Error))  ){
@@ -1103,7 +1104,7 @@ module.exports = cds.service.impl(async function () {
    
        var  thread_results1 = await Promise.all(workerPromises);
        var d = thread_results1;
-       if(thread_results1 !=[]){
+       if(thread_results1.length !=0){
       //   thread_results1.forEach((res)=>{
       //     if(!Array.isArray(res.payload)){
       //       supplierdata = res;
@@ -1437,16 +1438,22 @@ module.exports = cds.service.impl(async function () {
                      
                   if( response_data4.payload[k2].item.title == "Totals" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
-                      if("value" in response_data4.payload[k2].item.terms[0] ){
-                        if("supplierValue" in response_data4.payload[k2].item.terms[0].value ){
-                          if("amount" in response_data4.payload[k2].item.terms[0].value.supplierValue ){
-                            vfinal_quote = response_data4.payload[k2].item.terms[0].value.supplierValue.amount;
-                            // vfinal_quote = vfinal_quote.toString();
-                            acc_subdate = response_data4.payload[k2].submissionDate;
+                      total_terms = response_data4.payload[k2].item.terms;
+                      for(let k=0;k<total_terms.length;k++){
+                        if(total_terms[k].title == "Total Cost"){
+                        if("value" in total_terms[k] ){
+                          if("supplierValue" in total_terms[k].value ){
+                            if("amount" in total_terms[k].value.supplierValue ){
+                              vfinal_quote = total_terms[k].value.supplierValue.amount;
+                              // vfinal_quote = vfinal_quote.toString();
+                              acc_subdate = response_data4.payload[k2].submissionDate;
+                            }
+                          }
+                       
                           }
                         }
-                     
-                        }
+                      }
+                      
                     }
                     
                 }
@@ -2023,7 +2030,7 @@ module.exports = cds.service.impl(async function () {
                   if(response_data4.payload[k2].item.rollUpTerms.length !=0){
                     if(Object.keys(response_data4.payload[k2].item.rollUpTerms[0]).includes(value3)){
                       console.log("version")
-                      if(response_data4.payload[k2].item.rollUpTerms != []){
+                      if(response_data4.payload[k2].item.rollUpTerms.length != 0){
                         for(r=0;r<response_data4.payload[k2].item.rollUpTerms.length;r++){
                           if(response_data4.payload[k2].item.rollUpTerms[r].title == "Total Cost" ){
                             if("value" in response_data4.payload[k2].item.rollUpTerms[r]){
@@ -2158,8 +2165,9 @@ module.exports = cds.service.impl(async function () {
               
             })
             
-            vfinal_quote="";
-            ainv_id=" ";
+            vfinal_quote=0;
+            ainv_id="";
+            acc_subdate="";
         
 
           progress_documents = "";
@@ -2490,6 +2498,7 @@ else if(version1.length ==0 && no_of_docs.length == 1){
 
 for(let q= 0;q<sc_web_tab2.length;q++){
 for(let r=0;r<web_logic.length;r++){
+  if(web_logic[r].sub_date != ""){
   if((web_logic[r].sub_date == smallestdate)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
     var dateString = web_logic[r].sub_date;
     var datesub = dateString.substring(0, 10)
@@ -2498,6 +2507,7 @@ for(let r=0;r<web_logic.length;r++){
     var am = web_logic[r].final_quote;
     // am = returnamt(am);
     number = sc_web_tab2[q].doc_id;
+
     // number = number.substring(number.length - 4)
     if(pan_web_event.length == 0){
       // if(web_tab_dates.length !=1){
@@ -2516,7 +2526,7 @@ for(let r=0;r<web_logic.length;r++){
   }
 
   else if((web_logic[r].sub_date == greatestDate)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
-    if(version1!=[] && oneround == 0 ){
+    if(version1.length !=[] && oneround == 0 ){
     var dateString = web_logic[r].sub_date;
     var datesub = dateString.substring(0, 10)
     datesub = returndate(datesub);
@@ -2541,6 +2551,7 @@ for(let r=0;r<web_logic.length;r++){
   }
 
   }
+}
   // break;
   }
   // break;
@@ -2552,6 +2563,7 @@ if(oneround == 1 && type == "RFP"){
 var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0]);
  for(let q= 0;q<sc_web_tab2.length;q++){
   for(let r=0;r<web_logic.length;r++){
+    if(web_logic[r].sub_date != ""){
     if((web_logic[r].sub_date == round2_date)&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id)){
       var dateString = web_logic[r].sub_date;
       var datesub = dateString.substring(0, 10)
@@ -2574,6 +2586,7 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
       }
   
     }
+  }
     // break;
     }
     // break;
@@ -2596,6 +2609,7 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
  if(oneround == 1 && type == "RFQ" || oneround == 1 && type1 == "RFQ" )
 for(let q= 0;q<sc_web_tab2.length;q++){
   for(let r=0;r<web_logic.length;r++){
+    if(web_logic[r].sub_date != ""){
     if((web_logic[r].type == "RFQ")&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id) ){
       if(web_logic[r].sub_date==greatestDate){
       var dateString = web_logic[r].sub_date;
@@ -2633,6 +2647,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
       }
     }
     }
+  }
     // break;
     }
     // break;
@@ -3136,7 +3151,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                     var orinv_id = "";
                     var ordates=[];
                     var ordates1=[];
-                    if( vendorids1!=[]){
+                    if( vendorids1.length !=0){
                     for(let v=0;v<vendorids1.length;v++){
                       if(vendorids1[v].smvendor_id == sm_id && vendorids1[v].doc_id == tsk_doc_id ){
                         orinv_id = vendorids1[v].vinv_id;
@@ -3144,7 +3159,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       }
                     }
                   }
-                  if(version1!=[]){
+                  if(version1.length !=0){
                     for(let vr=0;vr<version1.length;vr++){
                       if(version1[vr].inv_id == orinv_id &&version1[vr].PAN_Number == tsk_doc_id){
                        ordates.push(version1[vr].sub_date);
@@ -3153,7 +3168,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                     }
                   }
     
-                    if(acc_ind == 1 && version1!=[]){
+                    if(acc_ind == 1 && version1.length !=0){
                    var orsmdate =  ordates.reduce((acc, curr) => curr < acc ? curr : acc, ordates[0]);
                     
                    for(let j=0;j<version1.length;j++){
@@ -3175,6 +3190,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                   for(let f=0;f<final_quotearr.length;f++){
                     if(final_quotearr[f].sub_date == orsmdate1 && final_quotearr[f].PAN_Number == tsk_doc_id){
                       original_quote = final_quotearr[f].final_quote;
+                      break;
                     }
     
                   }
@@ -3990,7 +4006,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
          }
       }
        
-      if(vendordata3 !=[]&&final_quotearr!=[]){
+      if(vendordata3.length !=0 && final_quotearr.length != 0){
         for(let k=0;k<vendordata3.length;k++){
           if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
             na_date=[]
@@ -4007,7 +4023,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
             if(na_ind ==1){
               na_smdate = na_date.reduce((acc, curr) => curr < acc ? curr : acc, na_date[0]);
               na_date=[];       
-              if(vendordata3 !=[]&&final_quotearr!=[]){
+              if(vendordata3.length != 0 &&final_quotearr.length != 0){
                for(let k=0;k<vendordata3.length;k++){
                  if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
                   
@@ -4027,7 +4043,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
            }
        
              else if(na_ind==0){
-             if(vendordata3 !=[]&&final_quotearr!=[]){
+             if(vendordata3.length !=0 &&final_quotearr.length !=0){
              for(let k=0;k<vendordata3.length;k++){
                if(vendordata3[k].Awarded_Vendor=="NO" && vendordata3[k].PAN_Number == tsk_doc_id){
                  for(let k1=0;k1<final_quotearr.length;k1++){
@@ -4474,15 +4490,15 @@ for(let q= 0;q<sc_web_tab2.length;q++){
  
   // }
     return tsk_doc_id;
-}catch(e){
-  if("message" in e){
-    console.log(e.message);
-    return e.message;
-  }else{
-    return e;
-  }
+// }catch(e){
+//   if("message" in e){
+//     console.log(e.message);
+//     return e.message;
+//   }else{
+//     return e;
+//   }
   
-}
+// }
   });
 
   });
