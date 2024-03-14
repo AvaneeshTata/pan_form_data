@@ -111,6 +111,7 @@ module.exports = cds.service.impl(async function () {
     var moneyValue = 0;
     var vfinal_quote =0;
     var acc_subdate='';
+    var tec_rank=[];
     
     var proj_desc = "";
     var proj_currency = "";
@@ -247,6 +248,9 @@ module.exports = cds.service.impl(async function () {
     var sm_id = "";
     var items = "";
     var web_logic=[];
+    var tec_app = 0;
+    var tech_acc='';
+    var tech_app='';
    
     
     
@@ -296,12 +300,14 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1026781862";//18 suppliers
       // cur_pro_id="WS1038454212";
       // cur_pro_id = "WS1036334661"; //original issue
-      // cur_pro_id="WS1038657481";
+      // cur_pro_id="WS1038657481"; //serv comp
       // cur_pro_id = "WS1038420644"; //comp
       // cur_pro_id = "WS1038885782";
       // cur_pro_id = "WS1038437050";
       // cur_pro_id = "WS1038885710";
       // cur_pro_id="WS1039638442";
+      // cur_pro_id="WS1040861899";
+      // cur_pro_id="WS1041531151"
 
     
      
@@ -426,7 +432,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1038921627";
+    //  tsk_doc_id = "Doc1038690674";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -1435,12 +1441,41 @@ module.exports = cds.service.impl(async function () {
                    }
                   }
                     }
+
+                    if( response_data4.payload[k2].item.title == "Technical Review Rank" ) {
+                      if("terms" in response_data4.payload[k2].item && response_data4.payload[k2].item.terms.length !=0){
+                      if("value" in response_data4.payload[k2].item.terms[0] ){
+                        if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                          tech_app = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                          
+                        }
+                       
+                     }
+                    }
+                      }
+
+                      if( response_data4.payload[k2].item.title == "Technical Review Acceptance" ) {
+                        if("terms" in response_data4.payload[k2].item && response_data4.payload[k2].item.terms.length !=0){
+                        if("value" in response_data4.payload[k2].item.terms[0] ){
+                          if("simpleValue" in response_data4.payload[k2].item.terms[0].value){
+                            tech_acc = response_data4.payload[k2].item.terms[0].value.simpleValue;
+                            if(tech_acc == "false"){
+                              tech_acc = "No";
+                            }else if(tech_acc == "true"){
+                              tech_acc = "Yes";
+                            }
+                            
+                          }
+                         
+                       }
+                      }
+                        }
                      
                   if( response_data4.payload[k2].item.title == "Totals" ) {
                     if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
                       total_terms = response_data4.payload[k2].item.terms;
                       for(let k=0;k<total_terms.length;k++){
-                        if(total_terms[k].title == "Total Cost"){
+                        if(total_terms[k].fieldId == "TOTALCOST" || total_terms[k].title == "Total Cost" ){
                         if("value" in total_terms[k] ){
                           if("supplierValue" in total_terms[k].value ){
                             if("amount" in total_terms[k].value.supplierValue ){
@@ -1455,7 +1490,7 @@ module.exports = cds.service.impl(async function () {
                       }
                       
                     }
-                    
+                    // acc_subdate = response_data4.payload[k2].submissionDate;
                 }
 
                    if( response_data4.payload[k2].item.title == "Progress"){
@@ -2026,6 +2061,7 @@ module.exports = cds.service.impl(async function () {
                 var roll1 = "terms"
                 var vc=0;
                 if( response_data4.payload[k2].item.title == "Pricing" ) {
+                  // if()
                   if(Object.keys(response_data4.payload[k2].item).includes(roll)){
                   if(response_data4.payload[k2].item.rollUpTerms.length !=0){
                     if(Object.keys(response_data4.payload[k2].item.rollUpTerms[0]).includes(value3)){
@@ -2164,7 +2200,16 @@ module.exports = cds.service.impl(async function () {
               type:icon_type,
               
             })
+
+            tec_rank.push({
+              PAN_Number : doc_id ,
+              Proposed_vendor_code:pvcode ,
+              techacc : tech_acc,
+              techrank : tech_app,
+            })
             
+            tech_acc = "";
+            tech_app = "";
             vfinal_quote=0;
             ainv_id="";
             acc_subdate="";
@@ -2285,55 +2330,55 @@ module.exports = cds.service.impl(async function () {
 
     console.log("stage4")
 
-    if(l1amount.length == 1){
-      l1AmountObtained = l1amount[0];
+  //   if(l1amount.length == 1){
+  //     l1AmountObtained = l1amount[0];
 
-  }
+  // }
   
-  if(l1amount.length > 1){
-    l1AmountObtained = Math.min(...l1amount);
-  }   
+  // if(l1amount.length > 1){
+  //   l1AmountObtained = Math.min(...l1amount);
+  // }   
 
  
    
     
-    if(ser_mate == "Material"||ser_mate == "Both"){
-      web_amt = l1AmountObtained
-    }
-    else if(ser_mate == "Service"){
-      if(ex_price1.length == 1){
-        web_amt = ex_price1[0];
-    }
+    // if(ser_mate == "Material"||ser_mate == "Both"){
+    //   web_amt = l1AmountObtained
+    // }
+    // else if(ser_mate == "Service"){
+    //   if(ex_price1.length == 1){
+    //     web_amt = ex_price1[0];
+    // }
     
-    if(ex_price1.length > 1){
-      web_amt = Math.min(...ex_price1);
-    }  
+    // if(ex_price1.length > 1){
+    //   web_amt = Math.min(...ex_price1);
+    // }  
       
-    }
-     web_tab_dates.push({
-      document_id : `${doc_id}`,
-      publish_date : `${no_of_docs[i1].web_pub_date}`,
-      pvendor : `${pvendor}`,
-      icon_type : icon_type,
-      status : `${award_vendor1}`,
-      l1amount : `${web_amt}`
-     })
+    // }
+    //  web_tab_dates.push({
+    //   document_id : `${doc_id}`,
+    //   publish_date : `${no_of_docs[i1].web_pub_date}`,
+    //   pvendor : `${pvendor}`,
+    //   icon_type : icon_type,
+    //   status : `${award_vendor1}`,
+    //   l1amount : `${web_amt}`
+    //  })
      pvendor = 0;
 
      award_vendor1 = "NO";
 
 
-    if(ser_mate == "Material"||ser_mate == "Both"){
-    if(web_tab1_amt.length == 1){
-      web_tab_amt  = web_tab1_amt[0];
-     }
+  //   if(ser_mate == "Material"||ser_mate == "Both"){
+  //   if(web_tab1_amt.length == 1){
+  //     web_tab_amt  = web_tab1_amt[0];
+  //    }
   
-  if(web_tab1_amt.length > 1){
-    web_tab_amt = Math.min(...web_tab1_amt);
-  }  
-  }else if(ser_mate == "Service"){
-    web_tab_amt = web_amt;
-  }
+  // if(web_tab1_amt.length > 1){
+  //   web_tab_amt = Math.min(...web_tab1_amt);
+  // }  
+  // }else if(ser_mate == "Service"){
+  //   web_tab_amt = web_amt;
+  // }
     
 
     // web_tab1.push({
@@ -2471,7 +2516,7 @@ module.exports = cds.service.impl(async function () {
         }
         
       }
-       if(oneround1 == 0 && typew=="RFP" ){
+       if(oneround1 == 0 && typew=="RFP"|| oneround1 == 0 && typew=="RFI" ){
         if(fstdoc !=web_logic[d].PAN_Number){
           oneround = 1;
           type = web_logic[d].type;
@@ -2559,7 +2604,7 @@ for(let r=0;r<web_logic.length;r++){
 
   //SECOND PUBLISHED
 
-if(oneround == 1 && type == "RFP"){
+if(oneround == 1 && type == "RFP"|| oneround == 1 && type == "RFI"){
 var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0]);
  for(let q= 0;q<sc_web_tab2.length;q++){
   for(let r=0;r<web_logic.length;r++){
@@ -3228,7 +3273,17 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       dis_per = dis_per + " %";
                     }
     
-    
+                    if(tec_rank.length != 0){
+                      for(let t=0;t<tec_rank.length;t++){
+                        if(tec_rank[t].PAN_Number == tsk_doc_id){
+                          if(tec_rank[t].Proposed_vendor_code == sm_id){
+                            trank = tec_rank[t].techrank;
+                            tapp = tec_rank[t].techacc;
+                          }
+                        }
+                      }
+                    }
+                    
     
     
     
@@ -3254,8 +3309,8 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       PAN_Number                         : `${tsk_doc_id}`,
                       Awarded_Vendor                     : "YES",
                       Vendor_Name                        : `${vname}`,//disp
-                      Vendor_Location                    : `${returnamt(vendor_loc)}`,
-                      Technically_Approved               : "",
+                      Vendor_Location                    : `${trank}`,
+                      Technically_Approved               : `${tapp}`,
                       Original_quote                     :`${returnamt(original_quote)}`,//disp
                       Final_Quote                        : `${returnamt(final_quote1)}`, //disp
                       Order_amount_OR_Split_order_amount : `${returnamt(vendor_loc)}`,
@@ -4065,8 +4120,30 @@ for(let q= 0;q<sc_web_tab2.length;q++){
       if(vendordata3[j].Original_quote=="NaN"){
         vendordata3[j].Original_quote="0";
       }
+      if(vendordata3[j].Awarded_Vendor == "YES"){
+        tec_app = tec_app + 1;
+      }
+      if(vendordata3[j]. Awarded_Vendor == "NO" && vendordata3[j].PAN_Number == tsk_doc_id){
+        if(tec_rank.length != 0){
+          for(let t=0;t<tec_rank.length;t++){
+            if(tec_rank[t].PAN_Number == tsk_doc_id){
+              if(tec_rank[t].Proposed_vendor_code == vendordata3[j].Proposed_Vendor_Code){
+                vendordata3[j].Vendor_Location = tec_rank[t].techrank;
+                vendordata3[j].Technically_Approved = tec_rank[t].techacc;
+              }
+            }
+          }
+        }
+      }
+      
+
     }
 
+    for(let p=0;p<panheader.length;p++){
+      if(panheader[p].PAN_Number == tsk_doc_id){
+        panheader[p].Number_of_Vendors_Technically_Qualified = `${tec_app}`
+      }
+    }
 
 
       for(let k = 0;k<pan_web_event.length;k++){
