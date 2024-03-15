@@ -254,6 +254,9 @@ module.exports = cds.service.impl(async function () {
     var tech_app='';
     var web_event = [];
     var pageno = 0;
+    var extfield = [];
+    var ptype = "";
+    var ptype1 =[];
    
     
     
@@ -721,7 +724,30 @@ module.exports = cds.service.impl(async function () {
           if("description" in result ){
             proj_desc = result.description;
           }
+          // if("sourcingProjectCustomFields" in result){
+          //   extfield = result.sourcingProjectCustomFields;
+          //   for(let k=0;k<extfield.length;k++){
+          //     if(extfield[k].fieldId=="cus_PRDocumentType"){
+          //       if("textValue" in extfield[k] ){
+          //          ptype1 = extfield[k].textValue;
+          //         for(let t=0;t<ptype1.length;t++){
+          //           ptype = ptype1[0];
+          //           if(ptype !=""){
+          //             break;
+          //           }
+          //         }
+          //       }
+          //     }
+          //     if(ptype !=""){
+          //       break;
+          //     }
+          //   }
+            
+          // }
+          
+
           if("businessSystem" in result ){
+            ptype = result.businessSystem.documentCategory[0].key;
             if("purchasingGroup" in result.businessSystem && result.businessSystem.purchasingGroup.length !=0){
               if( "value" in result.businessSystem.purchasingGroup[0]){
                 purchasing_grp = result.businessSystem.purchasingGroup[0].value;
@@ -2556,7 +2582,7 @@ module.exports = cds.service.impl(async function () {
         "Previous_PAN_References": "",
         "Split_OrderORNo_of_vendors":sup_count.toString(),
         "SOP_Type": "",
-        "Order_Type_OR_Document_tyFuuidpe": "",
+        "Order_Type_OR_Document_tyFuuidpe": `${ptype}`,
         "Asset_Type": "", //hided
         "Nature_of_Transaction": "",
         "Order_Location_OR_Plant":`${plant_name}`,
