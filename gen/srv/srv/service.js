@@ -257,6 +257,7 @@ module.exports = cds.service.impl(async function () {
     var extfield = [];
     var ptype = "";
     var ptype1 =[];
+    var Advance_per="";
    
     
     
@@ -441,7 +442,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1036345908";
+    //  tsk_doc_id = "Doc1028526631";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -747,7 +748,12 @@ module.exports = cds.service.impl(async function () {
           
 
           if("businessSystem" in result ){
-            ptype = result.businessSystem.documentCategory[0].key;
+            if("documentCategory" in result.businessSystem){
+              if("key" in result.businessSystem.documentCategory[0]){
+                ptype = result.businessSystem.documentCategory[0].key;
+              }
+            }
+           
             if("purchasingGroup" in result.businessSystem && result.businessSystem.purchasingGroup.length !=0){
               if( "value" in result.businessSystem.purchasingGroup[0]){
                 purchasing_grp = result.businessSystem.purchasingGroup[0].value;
@@ -946,7 +952,8 @@ module.exports = cds.service.impl(async function () {
         
      thread_results =[];
      workerPromises = [];
-
+   
+     if(doc_id == tsk_doc_id){
      do{
 
 
@@ -1080,7 +1087,9 @@ module.exports = cds.service.impl(async function () {
 
          
       }
-    }while(plant==""&& RequisitionID=="")
+    }while((plant==""&& RequisitionID=="")|| pageno != 5)
+
+  }
 
 
         //  try{
@@ -1683,6 +1692,18 @@ module.exports = cds.service.impl(async function () {
                       if("simpleValue" in  response_data4.payload[k2].item.terms[0].value){
                         Advance = response_data4.payload[k2].item.terms[0].value.simpleValue;
                         Advance = Advance.toString();
+                      }
+                    
+                    }
+                  }
+                  }
+
+                  if( response_data4.payload[k2].item.title == "Down Payment Percentage"){
+                    if("terms" in response_data4.payload[k2].item  && response_data4.payload[k2].item.terms.length !=0){
+                    if("value" in response_data4.payload[k2].item.terms[0] ){
+                      if("bigDecimalValue" in  response_data4.payload[k2].item.terms[0].value){
+                        Advance_per = response_data4.payload[k2].item.terms[0].value.bigDecimalValue;
+                        Advance_per = Advance_per + " %";
                       }
                     
                     }
@@ -2293,8 +2314,8 @@ module.exports = cds.service.impl(async function () {
               "PAN_Number"                                         :`${doc_id}`,
               "iddd"                                               : "Advance",
               "Payment_methord"                                    : `${payment_type}`,
-              "Percentage"                                         : `${Advance}`,
-              "Description"                                        : "",
+              "Percentage"                                         : `${Advance_per}`,
+              "Description"                                        : `${Advance}`,
               "Due_date"                                           :  `${due_date}`,
               "Mandatory_Documents_OR_Submissions"                  : "",
               "To_be_certified_in_Company"                          : "",
@@ -2319,7 +2340,7 @@ module.exports = cds.service.impl(async function () {
                   "iddd"                                               : "Retention",
                   "Payment_methord"                                    : `${payment_type}`,
                   "Percentage"                                         : `${per_pay_ret}`,
-                  "Description"                                        : "",
+                  "Description"                                        : `${retention}`,
                   "Due_date"                                           :  `${due_date}`,
                   "Mandatory_Documents_OR_Submissions"                  : `${retention_documents}`,
                   "To_be_certified_in_Company"                          : `${by1}`
