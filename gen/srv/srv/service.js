@@ -112,6 +112,7 @@ module.exports = cds.service.impl(async function () {
     var vfinal_quote =0;
     var acc_subdate='';
     var tec_rank=[];
+    var eventNo=0;
     
     var proj_desc = "";
     var proj_currency = "";
@@ -251,6 +252,8 @@ module.exports = cds.service.impl(async function () {
     var tec_app = 0;
     var tech_acc='';
     var tech_app='';
+    var web_event = [];
+    var pageno = 0;
    
     
     
@@ -299,6 +302,7 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1029893746";
       // cur_pro_id = "WS1026781862";//18 suppliers
       // cur_pro_id="WS1038454212";
+      // cur_pro_id = "WS1026978351";
       // cur_pro_id = "WS1036334661"; //original issue
       // cur_pro_id="WS1038657481"; //serv comp
       // cur_pro_id = "WS1038420644"; //comp
@@ -307,7 +311,9 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1038885710";
       // cur_pro_id="WS1039638442";
       // cur_pro_id="WS1040861899";
-      // cur_pro_id="WS1041531151"
+      // cur_pro_id="WS1041531151";
+      // cur_pro_id = "WS1040861899";
+      // cur_pro_id = "WS1043622865"
 
     
      
@@ -432,7 +438,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1038690674";
+    //  tsk_doc_id = "Doc1036345908";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -670,6 +676,7 @@ module.exports = cds.service.impl(async function () {
   //       }
   //     }
   //   }
+  
      
   var url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
   var query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
@@ -683,10 +690,10 @@ module.exports = cds.service.impl(async function () {
   query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
   basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH';
   workerPromises.push(createWorker(url,query,basis));
-  url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items';
-  query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-  basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
-  workerPromises.push(createWorker(url,query,basis));
+  // url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
+  // query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+  // basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  // workerPromises.push(createWorker(url,query,basis));
 
 
 
@@ -709,7 +716,7 @@ module.exports = cds.service.impl(async function () {
       
       if(thread_results.length != 0){
        console.log("thread results started")
-       thread_results.forEach((result)=>{
+       thread_results.forEach(async (result)=>{
          if(!Array.isArray(result.payload) && (!(result instanceof Error))  ){
           if("description" in result ){
             proj_desc = result.description;
@@ -775,155 +782,136 @@ module.exports = cds.service.impl(async function () {
    
  
            }
-           else if(item in result.payload[0] && (!(result instanceof Error))){
-             const response_data2 = result;
+          //  else if(item in result.payload[0] && (!(result instanceof Error))){
+          //    const response_data2 = result;
  
-             if (response_data2.payload.length != 0) {
+          //    if (response_data2.payload.length != 0) {
      
            
-               for( j = 0; j<response_data2.payload.length;j++){
+          //      for( j = 0; j<response_data2.payload.length;j++){
+                
+          //        if(response_data2.payload[j].terms.length != 0){
      
-                 if(response_data2.payload[j].terms.length != 0){
-     
-                  if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
-                    if("terms" in response_data2.payload[j]){
-                      if(response_data2.payload[j].terms.length !=0 &&"value" in response_data2.payload[j].terms[0]){
-                        ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
-                      }
+          //         if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
+          //           if("terms" in response_data2.payload[j]){
+          //             if(response_data2.payload[j].terms.length !=0 &&"value" in response_data2.payload[j].terms[0]){
+          //               ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
+          //             }
                      
-                    }
+          //           }
                     
-                  }
+          //         }
                    
-                 if(doc_id == tsk_doc_id){
-                 if(ser_mate == "Material"||ser_mate == "Both"){
-                  if("terms" in response_data2.payload[j] ){
-                    if(response_data2.payload[j].terms.length != 0){
-                 if (response_data2.payload[j].terms[0].title == "Price"){
-                   var terms1 = response_data2.payload[j].terms;
-                   // if (terms1.length != 0){
-                   for(let s=0;s<terms1.length;s++){
-                     if(terms1[s].title == "Requisition ID" ){
-                      if("value" in terms1[s] ){
-                        if("simpleValue" in terms1[s].value ){
-                          RequisitionID = terms1[s].value.simpleValue;
-                        }
+          //        if(doc_id == tsk_doc_id){
+          //        if(ser_mate == "Material"||ser_mate == "Both"){
+          //         if("terms" in response_data2.payload[j] ){
+          //           if(response_data2.payload[j].terms.length != 0){
+          //        if (response_data2.payload[j].terms[0].title == "Price"){
+          //          var terms1 = response_data2.payload[j].terms;
+          //          // if (terms1.length != 0){
+          //          for(let s=0;s<terms1.length;s++){
+          //            if(terms1[s].title == "Requisition ID" ){
+          //             if("value" in terms1[s] ){
+          //               if("simpleValue" in terms1[s].value ){
+          //                 RequisitionID = terms1[s].value.simpleValue;
+          //               }
                         
-                      }
+          //             }
                      
-                     }
-                     if(terms1[s].title == "Plant"){
-                      if("value" in terms1[s] ){
-                        if("simpleValue" in terms1[s].value ){
-                        plant = terms1[s].value.simpleValue;
-                        plant_id = plant.split(' ')[0];
-                        plant_name = plant.split(' ').slice(1).join(' ');
-                      }
-                      }
+          //            }
+          //            if(terms1[s].title == "Plant"){
+          //             if("value" in terms1[s] ){
+          //               if("simpleValue" in terms1[s].value ){
+          //               plant = terms1[s].value.simpleValue;
+          //               plant_id = plant.split(' ')[0];
+          //               plant_name = plant.split(' ').slice(1).join(' ');
+          //             }
+          //             }
                       
-                     }
-                   }
-                 }
-                }
-              }
-                 }
-                 else if(ser_mate == "Service"){
-                  if("terms" in response_data2.payload[j] ){
-                    if(response_data2.payload[j].terms.length !=0){
-                   if (response_data2.payload[j].terms[0].title == "Extended Price"){
+          //            }
+          //          }
+          //        }
+          //       }
+          //     }
+          //        }
+          //        else if(ser_mate == "Service"){
+          //         if("terms" in response_data2.payload[j] ){
+          //           if(response_data2.payload[j].terms.length !=0){
+          //          if (response_data2.payload[j].terms[0].title == "Extended Price"){
                     
-                     var terms1 = response_data2.payload[j].terms;
-                     // if (terms1.length != 0){
-                     for(let s=0;s<terms1.length;s++){
-                       if(terms1[s].title == "Requisition ID" ){
-                        if("value" in terms1[s] ){
-                          if("simpleValue" in terms1[s].value ){
-                            RequisitionID = terms1[s].value.simpleValue;
-                          }
+          //            var terms1 = response_data2.payload[j].terms;
+          //            // if (terms1.length != 0){
+          //            for(let s=0;s<terms1.length;s++){
+          //              if(terms1[s].title == "Requisition ID" ){
+          //               if("value" in terms1[s] ){
+          //                 if("simpleValue" in terms1[s].value ){
+          //                   RequisitionID = terms1[s].value.simpleValue;
+          //                 }
                         
-                        }
-                       }
-                       if(terms1[s].title == "Plant"){
-                        if("value" in terms1[s]){
-                          if("simpleValue" in terms1[s].value ){
-                            plant = terms1[s].value.simpleValue;
-                            plant_id = plant.split(' ')[0];
-                            plant_name = plant.split(' ').slice(1).join(' ');
-                          }
+          //               }
+          //              }
+          //              if(terms1[s].title == "Plant"){
+          //               if("value" in terms1[s]){
+          //                 if("simpleValue" in terms1[s].value ){
+          //                   plant = terms1[s].value.simpleValue;
+          //                   plant_id = plant.split(' ')[0];
+          //                   plant_name = plant.split(' ').slice(1).join(' ');
+          //                 }
                          
-                        }
+          //               }
                          
-                       }
-                     }
-                    }
-                  }
-                   }
-                 }
+          //              }
+          //            }
+          //           }
+          //         }
+          //          }
+          //        }
                  
-                 if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
-                   // order_currency = response_data2.payload[j].currency.name;
-                  //  itemid = response_data2.payload[j].itemId;
-                   if("currency" in response_data2.payload[j]){
-                    if("name" in response_data2.payload[j].currency){
-                      order_currency = response_data2.payload[j].currency.name;
-                    }
-                   }
-                   if("terms" in response_data2.payload[j]){
-                   if(response_data2.payload[j].terms.length != 0){
-                   for(let s=0;s<response_data2.payload[j].terms.length;s++){
-                       if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
-                         var value = "value";
-                         if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
-                          if("simpleValue" in response_data2.payload[j].terms[s].value ){
-                            subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
-                          }
+          //        if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
+          //          // order_currency = response_data2.payload[j].currency.name;
+          //         //  itemid = response_data2.payload[j].itemId;
+          //          if("currency" in response_data2.payload[j]){
+          //           if("name" in response_data2.payload[j].currency){
+          //             order_currency = response_data2.payload[j].currency.name;
+          //           }
+          //          }
+          //          if("terms" in response_data2.payload[j]){
+          //          if(response_data2.payload[j].terms.length != 0){
+          //          for(let s=0;s<response_data2.payload[j].terms.length;s++){
+          //              if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
+          //                var value = "value";
+          //                if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
+          //                 if("simpleValue" in response_data2.payload[j].terms[s].value ){
+          //                   subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
+          //                 }
                            
-                        }else{
-                         subject_of_proposal = "";
-                        }
-                       }
+          //               }else{
+          //                subject_of_proposal = "";
+          //               }
+          //              }
      
-                   }
-                 }
-                }
-                   // if
+          //          }
+          //        }
+          //       }
+          //          // if
      
-                 }
-               }
-               }
+          //        }
+          //      }
+          //      }
                
      
-               }
-                 // var plant_query = "/plant?$filter=plant eq '"+plant_id+"'";
-                 //  plant_details = await plant_data.tx(req).get(plant_query);
-                 //  if(plant_details.value.length != 0 ){
-                 //   sbg = plant_details.value[0].SBG;
-                 //   sbu = plant_details.value[0].SBU;
-                 //  }
-                 //  else{
-                 //   sbg =null;
-                 //   sbu =null;
-                 //  }
-                 // var plant_res = plant_details;
-     
-                 // if(itemid != ""){
-                 //   console.log(response_data2);
-                 // getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/'+itemid;
-                 // getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-                 // getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+          //      }
+               
                  
-                 
-                 // order_currency = currency.currency.name;
-             // }
-     
+                   
      
                   
-               }
-               else{
-                 return "no response data from event API ";
-               }
+          //      }
+          //      else{
+          //        return "no response data from event API ";
+          //      }
  
-           }
+          //  }
              
          }
  
@@ -933,6 +921,140 @@ module.exports = cds.service.impl(async function () {
      thread_results =[];
      workerPromises = [];
 
+     do{
+
+
+               pageno = pageno + 1;
+                getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
+                getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
+                getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+                const response_data2 = await getcall.tx(req).get('/getcall');
+
+
+
+     if (response_data2.payload.length != 0) {
+     
+           
+      for( j = 0; j<response_data2.payload.length;j++){
+       
+        if(response_data2.payload[j].terms.length != 0){
+
+         if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
+           if("terms" in response_data2.payload[j]){
+             if(response_data2.payload[j].terms.length !=0 &&"value" in response_data2.payload[j].terms[0]){
+               ser_mate = response_data2.payload[j].terms[0].value.simpleValue; 
+             }
+            
+           }
+           
+         }
+          
+        if(doc_id == tsk_doc_id){
+        if(ser_mate == "Material"||ser_mate == "Both"){
+         if("terms" in response_data2.payload[j] ){
+           if(response_data2.payload[j].terms.length != 0){
+        if (response_data2.payload[j].terms[0].title == "Price"){
+          var terms1 = response_data2.payload[j].terms;
+          // if (terms1.length != 0){
+          for(let s=0;s<terms1.length;s++){
+            if(terms1[s].title == "Requisition ID" ){
+             if("value" in terms1[s] ){
+               if("simpleValue" in terms1[s].value ){
+                 RequisitionID = terms1[s].value.simpleValue;
+               }
+               
+             }
+            
+            }
+            if(terms1[s].title == "Plant"){
+             if("value" in terms1[s] ){
+               if("simpleValue" in terms1[s].value ){
+               plant = terms1[s].value.simpleValue;
+               plant_id = plant.split(' ')[0];
+               plant_name = plant.split(' ').slice(1).join(' ');
+             }
+             }
+             
+            }
+          }
+        }
+       }
+     }
+        }
+        else if(ser_mate == "Service"){
+         if("terms" in response_data2.payload[j] ){
+           if(response_data2.payload[j].terms.length !=0){
+          if (response_data2.payload[j].terms[0].title == "Extended Price"){
+           
+            var terms1 = response_data2.payload[j].terms;
+            // if (terms1.length != 0){
+            for(let s=0;s<terms1.length;s++){
+              if(terms1[s].title == "Requisition ID" ){
+               if("value" in terms1[s] ){
+                 if("simpleValue" in terms1[s].value ){
+                   RequisitionID = terms1[s].value.simpleValue;
+                 }
+               
+               }
+              }
+              if(terms1[s].title == "Plant"){
+               if("value" in terms1[s]){
+                 if("simpleValue" in terms1[s].value ){
+                   plant = terms1[s].value.simpleValue;
+                   plant_id = plant.split(' ')[0];
+                   plant_name = plant.split(' ').slice(1).join(' ');
+                 }
+                
+               }
+                
+              }
+            }
+           }
+         }
+          }
+        }
+        
+        if (response_data2.payload[j].title == "Subject of Proposal/Order"){ 
+          // order_currency = response_data2.payload[j].currency.name;
+         //  itemid = response_data2.payload[j].itemId;
+          if("currency" in response_data2.payload[j]){
+           if("name" in response_data2.payload[j].currency){
+             order_currency = response_data2.payload[j].currency.name;
+           }
+          }
+          if("terms" in response_data2.payload[j]){
+          if(response_data2.payload[j].terms.length != 0){
+          for(let s=0;s<response_data2.payload[j].terms.length;s++){
+              if(response_data2.payload[j].terms[s].title == "Subject of Proposal/Order"){
+                var value = "value";
+                if(Object.keys(response_data2.payload[j].terms[s]).includes(value)){
+                 if("simpleValue" in response_data2.payload[j].terms[s].value ){
+                   subject_of_proposal = response_data2.payload[j].terms[s].value.simpleValue;
+                 }
+                  
+               }else{
+                subject_of_proposal = "";
+               }
+              }
+
+          }
+        }
+       }
+          // if
+
+        }
+      }
+      }
+      
+
+      }
+      
+        
+          
+
+         
+      }
+    }while(plant==""&& RequisitionID=="")
 
 
         //  try{
@@ -1409,7 +1531,7 @@ module.exports = cds.service.impl(async function () {
 
           if(response_data4 != []){
           if (response_data4.payload.length != 0){
-
+            eventNo = 0;
           
 
             for(let k2 = 0;k2<response_data4.payload.length;k2++){
@@ -2055,7 +2177,8 @@ module.exports = cds.service.impl(async function () {
                 
                }
               }
-              else if(response_data4.payload[k2].bidStatus == "Replaced"){
+              else if(response_data4.payload[k2].bidStatus == "Replaced" ){
+              //  if(response_data4.payload[k2].bidStatus == "Replaced" || response_data4.payload[k2].bidStatus == "Accepted" || response_data4.payload[k2].bidStatus == "Archived" ){
                 var value3="value";
                 var roll = "rollUpTerms";
                 var roll1 = "terms"
@@ -2094,6 +2217,21 @@ module.exports = cds.service.impl(async function () {
                         type :icon_type,
                         
                       })
+                      var sdate = response_data4.payload[k2].submissionDate;
+                      sdate = sdate.substring(0,10);
+
+                      eventNo = eventNo + 1;
+                      // web_event.push({
+                      //   idd : `${eventNo}` ,
+                      //   PAN_Number :`${tsk_doc_id}`,
+                      //   eventNo : `${"V"+eventNo}`,
+                      //   number:`${doc_id}`,
+                      //   date:`${sdate}`,
+                      //   numberOfVendorsParticipated :`${supplier.length}`,
+                      //   l1AmountObtained :`${v1amt}`,
+                      //   status : `${response_data4.payload[k2].bidStatus}`
+
+                      // })
                     }
                   }
                 }
@@ -2208,8 +2346,7 @@ module.exports = cds.service.impl(async function () {
               techrank : tech_app,
             })
             
-            tech_acc = "";
-            tech_app = "";
+            
             vfinal_quote=0;
             ainv_id="";
             acc_subdate="";
@@ -2293,8 +2430,8 @@ module.exports = cds.service.impl(async function () {
           PAN_Number                         : `${doc_id}`,
           Awarded_Vendor                     : "NO",
           Vendor_Name                        :  `${vendorids[k].org_name}`,//disp
-          Vendor_Location                    : "",
-          Technically_Approved               : "",
+          Vendor_Location                    : `${tech_acc}`,
+          Technically_Approved               : `${tech_app}`,
           Original_quote                     :"",//disp
           Final_Quote                        : "", //disp
           Order_amount_OR_Split_order_amount : "",
@@ -2304,6 +2441,9 @@ module.exports = cds.service.impl(async function () {
           Rank                               : "0",
     
          })
+
+            tech_acc = "";
+            tech_app = "";
         // }
         
       }
@@ -3878,8 +4018,8 @@ for(let q= 0;q<sc_web_tab2.length;q++){
               if(pan_vendor_response[k].PAN_Number == tsk_doc_id  ){
               if(pan_vendor_response[k].Proposed_Vendor_Code == vendordata1[p].Proposed_Vendor_Code ){
             
-              pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT =`${vendordata1[p].Vendor_Location}`;
-              pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${vendordata1[p].Vendor_Location}`;
+              pan_vendor_response[k].Order_Value_BKTIn_Project_CurrencyBKT =`${vendordata1[p].Order_amount_OR_Split_order_amount}`;
+              pan_vendor_response[k].Order_Value_BKTIn_Bid_CurrencyBKT = `${vendordata1[p].Order_amount_OR_Split_order_amount}`;
               // pan_vendor_response[k].Vendor_Final_Quotation_Amount = `${final_quote1}`;
             }
             
@@ -4123,18 +4263,18 @@ for(let q= 0;q<sc_web_tab2.length;q++){
       if(vendordata3[j].Awarded_Vendor == "YES"){
         tec_app = tec_app + 1;
       }
-      if(vendordata3[j]. Awarded_Vendor == "NO" && vendordata3[j].PAN_Number == tsk_doc_id){
-        if(tec_rank.length != 0){
-          for(let t=0;t<tec_rank.length;t++){
-            if(tec_rank[t].PAN_Number == tsk_doc_id){
-              if(tec_rank[t].Proposed_vendor_code == vendordata3[j].Proposed_Vendor_Code){
-                vendordata3[j].Vendor_Location = tec_rank[t].techrank;
-                vendordata3[j].Technically_Approved = tec_rank[t].techacc;
-              }
-            }
-          }
-        }
-      }
+      // if(vendordata3[j]. Awarded_Vendor == "NO" && vendordata3[j].PAN_Number == tsk_doc_id){
+      //   if(tec_rank.length != 0){
+      //     for(let t=0;t<tec_rank.length;t++){
+      //       if(tec_rank[t].PAN_Number == tsk_doc_id){
+      //         if(tec_rank[t].Proposed_vendor_code == vendordata3[j].Proposed_Vendor_Code){
+      //           vendordata3[j].Vendor_Location = tec_rank[t].techrank;
+      //           vendordata3[j].Technically_Approved = tec_rank[t].techacc;
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
       
 
     }
