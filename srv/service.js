@@ -6,7 +6,7 @@ const axios = require('axios');
 const { array, insert } = require('@sap/cds/lib');
 const { URLSearchParams } = require('url');
 const { isNumberObject } = require('util/types');
-const { vary } = require('express/lib/response');F
+const { vary } = require('express/lib/response');
 require('log-timestamp');
 const {
   Worker, isMainThread, parentPort, workerData,
