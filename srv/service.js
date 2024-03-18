@@ -442,7 +442,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1028526631";
+    //  tsk_doc_id = "Doc1012639535";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -956,6 +956,9 @@ module.exports = cds.service.impl(async function () {
      if(doc_id == tsk_doc_id){
      do{
 
+      if(pageno == 3){
+        break;
+      }
 
                pageno = pageno + 1;
                 getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
@@ -1087,7 +1090,7 @@ module.exports = cds.service.impl(async function () {
 
          
       }
-    }while((plant==""&& RequisitionID=="")|| pageno != 5)
+    }while(plant==""&& RequisitionID=="")
 
   }
 
