@@ -54,7 +54,7 @@ module.exports = cds.service.impl(async function () {
     // let re = await SELECT.from(PAN_Details_APR);
     // let re1 = await SELECT.from(PAN_WEB_EVENT_APR);
     // await DELETE.from(PAN_Details);
-    // try{
+    try{
     let array = [];
     let vendordata = [];
     let panheader = [];
@@ -4754,15 +4754,16 @@ for(let q= 0;q<sc_web_tab2.length;q++){
  
   // }
     return tsk_doc_id;
-// }catch(e){
-//   if("message" in e){
-//     console.log(e.message);
-//     return e.message;
-//   }else{
-//     return e;
-//   }
+}
+catch(e){
+  if("message" in e){
+    console.log(e.message);
+    return e.message;
+  }else{
+    return e;
+  }
   
-// }
+}
   });
 
   });
