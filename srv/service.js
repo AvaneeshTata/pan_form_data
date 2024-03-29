@@ -339,8 +339,8 @@ module.exports = cds.service.impl(async function () {
       var number_of_docs="";
       try{
       getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/documents';
-      getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
-      getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH';
+      getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
+      getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
        number_of_docs = await getcall.tx(req).get('/getcall');
       }catch(error){
         return "no data for this user";
@@ -355,8 +355,8 @@ module.exports = cds.service.impl(async function () {
          
 
           getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id;
-          getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-          getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+          getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+          getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
           project_currency = await getcall.tx(req).get('/getcall');
           var d = project_currency;
           if(project_currency != ""){
@@ -452,7 +452,12 @@ module.exports = cds.service.impl(async function () {
        
           function returnamt(amt){
             let formattedamt = parseFloat(amt);
-            formattedamt = formattedamt.toLocaleString('en-IN');;
+            if(proj_currency == "USD"){
+              formattedamt = formattedamt.toLocaleString('en-US');
+            }else{
+              formattedamt = formattedamt.toLocaleString('en-IN');
+            }
+            
             return formattedamt;
            }
           
@@ -467,8 +472,8 @@ module.exports = cds.service.impl(async function () {
   //       var proj_details ="";
   //       try{
   //     getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
-  //     getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
-  //     getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH'
+  //     getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
+  //     getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx'
   //     proj_details = await getcall.tx(req).get('/getcall');
   //       }catch(e){
   //         return e;
@@ -488,8 +493,8 @@ module.exports = cds.service.impl(async function () {
          
 
   //        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items';
-  //       getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-  //       getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  //       getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+  //       getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
   //         const response_data2 = await getcall.tx(req).get('/getcall');
 
   //         if (response_data2.payload.length != 0) {
@@ -575,8 +580,8 @@ module.exports = cds.service.impl(async function () {
   
   //             if(doc_id==tsk_doc_id){
   //             getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/'+itemid;
-  //             getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-  //             getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  //             getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+  //             getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
   //             const currency = await getcall.tx(req).get('/getcall');
   //             // var d = currency
   //             order_currency = currency.currency.name;
@@ -609,8 +614,8 @@ module.exports = cds.service.impl(async function () {
   //         var split_order="";
   //         try{
   //         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/scenarios';
-  //         getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-  //         getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  //         getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+  //         getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
   //          split_order = await getcall.tx(req).get('/getcall');
   //         }catch(e){
   //           return e;
@@ -641,8 +646,8 @@ module.exports = cds.service.impl(async function () {
   //     var teams="";
   //     try{
   //     getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
-  //     getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
-  //     getcall.destination.headers.basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH'
+  //     getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
+  //     getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx'
   //      teams = await getcall.tx(req).get('/getcall');
   //     }catch(e){
   //       return e;
@@ -663,20 +668,20 @@ module.exports = cds.service.impl(async function () {
   
      
   var url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
-  var query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
-  var basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH';
+  var query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
+  var basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
   workerPromises.push(createWorker(url,query,basis));
   url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/scenarios';
-  query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&dataFetchMode=DETAIL';
-  basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&dataFetchMode=DETAIL';
+  basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
   workerPromises.push(createWorker(url,query,basis));
   url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
-  query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=sBh8lruEqVaengu68NvPZgjEnPHhbCdw';
-  basis = 'Basic YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH';
+  query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
+  basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
   workerPromises.push(createWorker(url,query,basis));
   // url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
-  // query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-  // basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+  // query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+  // basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
   // workerPromises.push(createWorker(url,query,basis));
 
 
@@ -689,8 +694,8 @@ module.exports = cds.service.impl(async function () {
        console.log(doc_id);
 
        url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierInvitations';
-        query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-       basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+        query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+       basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
          workerPromises.push(createWorker(url,query,basis));
 
       //  const thread_results1 = await Promise.all(workerPromises);
@@ -793,8 +798,8 @@ module.exports = cds.service.impl(async function () {
 
                pageno = pageno + 1;
                 getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
-                getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-                getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+                getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+                getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
                 const response_data2 = await getcall.tx(req).get('/getcall');
 
 
@@ -928,8 +933,8 @@ module.exports = cds.service.impl(async function () {
 
         //  try{
         //  getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierInvitations';
-        //  getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-        //  getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+        //  getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+        //  getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
         //  web_sup_count = await getcall.tx(req).get('/getcall');
         //  }catch(error){
 
@@ -1033,12 +1038,12 @@ module.exports = cds.service.impl(async function () {
         // }
         
         // url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
-        // query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
-        // basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
+        // query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&bidHistory=True&dataFetchMode=BASIC';
+        // basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k';
         // workerPromises.push(createWorker(url,query,basis));
         // url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
-        // query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
-        // basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
+        // query = 'realm=tataprojects&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=zOEdYvwp8aOkxrsnKW6dKPIrJ1h3Fq9k';
+        // basis = 'Basic OTdlZGNmOWEtZWU4ZC00NWE3LTlmOTktZDY1NGVmZGEwNTg5OnpZMTZQVERZZ3dMc0NoVXE4cnhGWmlkS3pKWTFwOE5Z';
         // workerPromises.push(createWorker(url,query,basis));
 
         // var supplierdata ="";
@@ -1071,8 +1076,8 @@ module.exports = cds.service.impl(async function () {
         
           try{
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM';
-        getcall.destination.headers.basis = 'Basic M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM';
+        getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=zOEdYvwp8aOkxrsnKW6dKPIrJ1h3Fq9k';
+        getcall.destination.headers.basis = 'Basic OTdlZGNmOWEtZWU4ZC00NWE3LTlmOTktZDY1NGVmZGEwNTg5OnpZMTZQVERZZ3dMc0NoVXE4cnhGWmlkS3pKWTFwOE5Z';
          supplierdata = await getcall.tx(req).get('/getcall');
           }catch(error){
             return error;
@@ -1165,8 +1170,8 @@ module.exports = cds.service.impl(async function () {
         pageno = pageno + 1;
        try{
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname+'/pages/'+pageno;
-        getcall.destination.headers.query = 'realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN&bidHistory=True&dataFetchMode=BASIC';
-        getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS';
+        getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&bidHistory=True&dataFetchMode=BASIC';
+        getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k';
          response_data4 = await getcall.tx(req).get('/getcall');
        }catch(e){
         // return e;
@@ -2503,8 +2508,8 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     console.log("stage5.3")
 
       //  getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+tsk_doc_id+'/scenarios';
-      //   getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm=tataprojects-T&user='+userName+'&passwordAdapter='+password+'&apikey=luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN';
-      //   getcall.destination.headers.basis = 'Basic M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS'
+      //   getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
+      //   getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
       //    shrt_lst_count = await getcall.tx(req).get('/getcall');
       var ch=0
          if (shrt_lst_count.payload.length != 0){
