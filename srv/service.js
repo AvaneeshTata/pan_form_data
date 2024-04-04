@@ -21,7 +21,10 @@ module.exports = cds.service.impl(async function () {
         PAN_Details_APR,PAN_WEB_EVENT_APR,PAN_TYPE_APR,PAN_vendor_data_APR,PAN_vendor_response_APR,PAN_PAYMENT_TERM_DETAILS_APR,PAN_PRICE_DETAILS_APR,PAN_WORKFLOW_HISTORY_APR,PAN_attachments_APR,PAN_proj_APR,PAN_Comments_APR,vendorTaxDetails_APR
     } = this.entities;
   
-  const getcall = await cds.connect.to('getcall');
+    var space = process.env.tenant_space;
+    console.log(space);
+  const getcall = await cds.connect.to(space);
+  
 
   
 
@@ -249,8 +252,15 @@ module.exports = cds.service.impl(async function () {
     var ptype1 =[];
     var Advance_per="";
     var price_ind = 0;
+  
    
   
+
+
+
+
+
+
 
    var createdby = "";
     // // GETTING ALL PENDING TASKS
@@ -259,6 +269,8 @@ module.exports = cds.service.impl(async function () {
     var userName = req.data.userName;
     // var userName = "TPLBuyer";
     // var userName = "rakeshdattatrayshelars@tataprojects.com"
+    // var userName = "ajaykunj@tataprojects.com";
+    // var userName = "sunill@tataprojects.com"
     // var userName = "nitind@tataprojects.com";
     password = "PasswordAdapter1"
     if(userName == "TPLBuyer"){
@@ -304,6 +316,10 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id="WS1041531151";
       // cur_pro_id = "WS1040861899";
       // cur_pro_id = "WS1043622865"
+      // cur_pro_id = "WS1062218337";
+      // cur_pro_id ="WS1061481377";
+      // cur_pro_id = "WS1057792118";
+      // cur_pro_id = "WS1057697117";
 
     
      
@@ -338,10 +354,10 @@ module.exports = cds.service.impl(async function () {
      
       var number_of_docs="";
       try{
-      getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/documents';
-      getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
-      getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
-       number_of_docs = await getcall.tx(req).get('/getcall');
+        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/documents';
+        getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.pro_apikey;
+        getcall.destination.headers.basis = 'Basic '+getcall.destination.pro_base;
+        number_of_docs = await getcall.tx(req).get('/getcall');
       }catch(error){
         return "no data for this user";
       }
@@ -355,8 +371,8 @@ module.exports = cds.service.impl(async function () {
          
 
           getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id;
-          getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-          getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+          getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+          getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
           project_currency = await getcall.tx(req).get('/getcall');
           var d = project_currency;
           if(project_currency != ""){
@@ -425,7 +441,7 @@ module.exports = cds.service.impl(async function () {
         }
      
 
-    //  tsk_doc_id = "Doc1038690674";
+    //  tsk_doc_id = "Doc1057798070";
     //  version=3;
     // pro_ind = 1; //dont forget to  comment it only for now d
       
@@ -472,8 +488,8 @@ module.exports = cds.service.impl(async function () {
   //       var proj_details ="";
   //       try{
   //     getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
-  //     getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
-  //     getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx'
+  //     getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.pro_apikey;
+  //     getcall.destination.headers.basis = 'Basic '+getcall.destination.pro_base;
   //     proj_details = await getcall.tx(req).get('/getcall');
   //       }catch(e){
   //         return e;
@@ -493,8 +509,8 @@ module.exports = cds.service.impl(async function () {
          
 
   //        getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items';
-  //       getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-  //       getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+  //       getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+  //       getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
   //         const response_data2 = await getcall.tx(req).get('/getcall');
 
   //         if (response_data2.payload.length != 0) {
@@ -580,8 +596,8 @@ module.exports = cds.service.impl(async function () {
   
   //             if(doc_id==tsk_doc_id){
   //             getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/'+itemid;
-  //             getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-  //             getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+  //             getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+  //             getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
   //             const currency = await getcall.tx(req).get('/getcall');
   //             // var d = currency
   //             order_currency = currency.currency.name;
@@ -614,8 +630,8 @@ module.exports = cds.service.impl(async function () {
   //         var split_order="";
   //         try{
   //         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/scenarios';
-  //         getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-  //         getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+  //         getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+  //         getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
   //          split_order = await getcall.tx(req).get('/getcall');
   //         }catch(e){
   //           return e;
@@ -646,8 +662,8 @@ module.exports = cds.service.impl(async function () {
   //     var teams="";
   //     try{
   //     getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
-  //     getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
-  //     getcall.destination.headers.basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx'
+  //     getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.pro_apikey;
+  //     getcall.destination.headers.basis = 'Basic '+getcall.destination.pro_base;
   //      teams = await getcall.tx(req).get('/getcall');
   //     }catch(e){
   //       return e;
@@ -668,20 +684,20 @@ module.exports = cds.service.impl(async function () {
   
      
   var url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id;
-  var query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
-  var basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
+  var query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.pro_apikey;
+  var basis = 'Basic '+getcall.destination.pro_base;;
   workerPromises.push(createWorker(url,query,basis));
   url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/scenarios';
-  query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&dataFetchMode=DETAIL';
-  basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+  query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey+'&dataFetchMode=DETAIL';
+  basis = 'Basic '+getcall.destination.evt_base;
   workerPromises.push(createWorker(url,query,basis));
   url = 'https://openapi.ariba.com/api/sourcing-project-management/v2/prod/projects/'+project_id+'/teams';
-  query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=GL82lckxuJOOSC3359gREvoPwGqrO9AZ';
-  basis = 'Basic YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx';
+  query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.pro_apikey;
+  basis = 'Basic '+getcall.destination.pro_base;;
   workerPromises.push(createWorker(url,query,basis));
   // url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
-  // query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-  // basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+  // query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+  // basis = 'Basic '+getcall.destination.evt_base;
   // workerPromises.push(createWorker(url,query,basis));
 
 
@@ -694,8 +710,8 @@ module.exports = cds.service.impl(async function () {
        console.log(doc_id);
 
        url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierInvitations';
-        query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-       basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+        query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+       basis = 'Basic '+getcall.destination.evt_base;
          workerPromises.push(createWorker(url,query,basis));
 
       //  const thread_results1 = await Promise.all(workerPromises);
@@ -797,9 +813,9 @@ module.exports = cds.service.impl(async function () {
             }
 
                pageno = pageno + 1;
-                getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
-                getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-                getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+               getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/items/pages/'+pageno;
+               getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+               getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
                 const response_data2 = await getcall.tx(req).get('/getcall');
 
 
@@ -933,8 +949,8 @@ module.exports = cds.service.impl(async function () {
 
         //  try{
         //  getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierInvitations';
-        //  getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-        //  getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+        //  getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+        //  getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
         //  web_sup_count = await getcall.tx(req).get('/getcall');
         //  }catch(error){
 
@@ -1038,12 +1054,12 @@ module.exports = cds.service.impl(async function () {
         // }
         
         // url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname;
-        // query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&bidHistory=True&dataFetchMode=BASIC';
-        // basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k';
+        // query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey+'&bidHistory=True&dataFetchMode=BASIC';
+        // basis = 'Basic '+getcall.destination.evt_base;
         // workerPromises.push(createWorker(url,query,basis));
         // url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
-        // query = 'realm=tataprojects&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=zOEdYvwp8aOkxrsnKW6dKPIrJ1h3Fq9k';
-        // basis = 'Basic OTdlZGNmOWEtZWU4ZC00NWE3LTlmOTktZDY1NGVmZGEwNTg5OnpZMTZQVERZZ3dMc0NoVXE4cnhGWmlkS3pKWTFwOE5Z';
+        // query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey='+getcall.destination.page_apikey;
+        // basis = 'Basic '+getcall.destination.page_base;
         // workerPromises.push(createWorker(url,query,basis));
 
         // var supplierdata ="";
@@ -1076,9 +1092,9 @@ module.exports = cds.service.impl(async function () {
         
           try{
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/supplierdatapagination/v4/prod//vendors/'+vendorid+'/workspaces/questionnaires/qna';
-        getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey=zOEdYvwp8aOkxrsnKW6dKPIrJ1h3Fq9k';
-        getcall.destination.headers.basis = 'Basic OTdlZGNmOWEtZWU4ZC00NWE3LTlmOTktZDY1NGVmZGEwNTg5OnpZMTZQVERZZ3dMc0NoVXE4cnhGWmlkS3pKWTFwOE5Z';
-         supplierdata = await getcall.tx(req).get('/getcall');
+        getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter=&dataFetchMode=detail&apikey='+getcall.destination.page_apikey;
+        getcall.destination.headers.basis = 'Basic '+getcall.destination.page_base;
+        supplierdata = await getcall.tx(req).get('/getcall');
           }catch(error){
             return error;
           }
@@ -1170,8 +1186,8 @@ module.exports = cds.service.impl(async function () {
         pageno = pageno + 1;
        try{
         getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+doc_id+'/supplierBids/'+sname+'/pages/'+pageno;
-        getcall.destination.headers.query = 'realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1&bidHistory=True&dataFetchMode=BASIC';
-        getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k';
+        getcall.destination.headers.query = 'realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey+'&bidHistory=True&dataFetchMode=BASIC';
+        getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
          response_data4 = await getcall.tx(req).get('/getcall');
        }catch(e){
         // return e;
@@ -1276,14 +1292,14 @@ module.exports = cds.service.impl(async function () {
                               // vfinal_quote = vfinal_quote.toString();
                               acc_subdate = response_data4.payload[k2].submissionDate;
                             }
-                          }
+                          }vfinal_quote
                        
                           }
                         }
                       }
                       
                     }
-                    // acc_subdate = response_data4.payload[k2].submissionDate;
+                    acc_subdate = response_data4.payload[k2].submissionDate;
                 }
 
                    if( response_data4.payload[k2].item.title == "Progress"){
@@ -2508,8 +2524,8 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     console.log("stage5.3")
 
       //  getcall.destination.headers.url = 'https://openapi.ariba.com/api/sourcing-event/v2/prod/events/'+tsk_doc_id+'/scenarios';
-      //   getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm=tataprojects&user='+userName+'&passwordAdapter='+password+'&apikey=bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1';
-      //   getcall.destination.headers.basis = 'Basic M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k'
+      //   getcall.destination.headers.query = 'dataFetchMode=DETAIL&realm='+getcall.destination.realm+'&user='+userName+'&passwordAdapter='+password+'&apikey='+getcall.destination.evt_apikey;
+      //   getcall.destination.headers.basis = 'Basic '+getcall.destination.evt_base;
       //    shrt_lst_count = await getcall.tx(req).get('/getcall');
       var ch=0
          if (shrt_lst_count.payload.length != 0){
@@ -2930,6 +2946,22 @@ for(let q= 0;q<sc_web_tab2.length;q++){
   
                       }
                      }
+                    //  for(let p=0;p<price_details.length;p++){
+                    //   if(price_details[p].PAN_Number == tsk_doc_id && price_details[p].Proposed_Vendor_Code == pvcode1 && price_details[p].Item_Short_Description == shrt_lst_count.payload[r].supplierBids[k].item.title){
+                    //     price_details[p].Item_Code =  `${ItemCode}`;
+                    //     price_details[p].HSN_OR_SAC_Code              = `${SACCode}`,
+                    //     price_details[p].Item_Short_Description       =`${shrt_lst_count.payload[r].supplierBids[k].item.title}`;
+                    //     price_details[p].UOM                          =`${UOM}`;
+                    //     price_details[p].Quantity                     =`${Quantity}`;
+                    //     price_details[p].Unit_Price                   =`${Amount}` ;
+                    //     price_details[p].Amount                       =`${l3Amount}`;
+                    //     price_details[p].extendedPrice                = `${extend_price}`;
+                    //     price_details[p].Indian_Tax_PER               =`${IndianTaxPER}`;
+                    //     price_details[p].Quantity_Over_Delivery_Tolerance   = `${tolerence}`;
+              
+  
+                    //   }
+                    //  }
   
                       price_details.push({
                         Proposed_Vendor_Code                                                         : `${pvcode1}`, 
@@ -3135,6 +3167,24 @@ for(let q= 0;q<sc_web_tab2.length;q++){
 
                     }
                    }
+                  //  for(let p=0;p<price_details.length;p++){
+                  //   if(price_details[p].PAN_Number == tsk_doc_id && price_details[p].Proposed_Vendor_Code == pvcode1 && price_details[p].Item_Short_Description == shrt_lst_count.payload[r].supplierBids[k].item.title){
+                  //     price_details[p].Item_Code =  `${ItemCode}`;
+                  //     price_details[p].HSN_OR_SAC_Code              = `${SACCode}`,
+                  //     price_details[p].Item_Short_Description       =`${shrt_lst_count.payload[r].supplierBids[k].item.title}`;
+                  //     price_details[p].UOM                          =`${UOM}`;
+                  //     price_details[p].Quantity                     =`${Quantity}`;
+                  //     price_details[p].Unit_Price                   =`${Amount}` ;
+                  //     price_details[p].Amount                       =`${Amount}`;
+                  //     price_details[p].extendedPrice                = `${Amount}`;
+                  //     price_details[p].Indian_Tax_PER               =`${IndianTaxPER}`;
+                  //     price_details[p].Quantity_Over_Delivery_Tolerance   = `${tolerence}`;
+            
+
+                  //   }
+                  //  }
+
+                  
 
                     price_details.push({
                       Proposed_Vendor_Code                                                         : `${pvcode1}`, 
@@ -3648,7 +3698,9 @@ catch(e){
 }else{
 
   (async () => {
-    const getcall = await cds.connect.to('getcall');
+    var space = process.env.tenant_space;
+    console.log(space);
+    const getcall = await cds.connect.to(space);
     console.log("async call");
     try{
     getcall.destination.headers.url = workerData.url;

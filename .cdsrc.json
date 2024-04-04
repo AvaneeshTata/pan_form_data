@@ -5,7 +5,29 @@
       "requires": {
        
        
-        "getcall": {
+        "devuat": {
+          "kind": "rest",
+          "credentials": {
+            "url": "https://tpl-cpi-a0qwl4l9.it-cpi021-rt.cfapps.in30.hana.ondemand.com/http",
+            "authentication": "BasicAuthentication",
+            "username":"sb-0b97c40d-3f35-4404-9105-b46caad5f19b!b5206|it-rt-tpl-cpi-a0qwl4l9!b148",
+            "password":"72ffaf31-45ac-47d4-b110-8a9f6295bd6f$5He2sa_sIzuf9H_hcPXuTLu-u1QmWkLktwS00qvrz48=",
+            "headers":{
+              "url": "",
+              "query":"",
+              "basis":""
+            },
+            "realm" : "tataprojects-T",
+            "pro_apikey" : "sBh8lruEqVaengu68NvPZgjEnPHhbCdw",
+            "pro_base" : "YTE3MzUzZjMtOTJlNy00NTM3LWI0NzctZmQ2MDVhYmFmN2FiOnBHVDdlZmduczFXOG9ZYUFycDlWQjJ6d0t2UEFhcFJH",
+            "evt_apikey" : "luMlEgWHIOb7lNhS6HMWHz2t8tkPD3QN",
+            "evt_base" : "M2QyM2NjMzQtMjhmNC00YzMzLWIxMGUtZjAwMjdkMzExMGE4OlpyZjJzR3RNRFA3YVNEclBoNlhrNW9kNGM0UllWUFVS",
+            "page_apikey" : "Dn92XBUT3MCNOedJG3aSKhU8QqkD4FRM",
+            "page_base" : "M2I4MmJkYzMtOTQzZi00NWRiLWJjYjYtNGZkYTc5MzkxODExOjFYdFIwOTJTZndQY3RaakUwejU3NGg2Q0F6Y1VqeVRM"
+          }
+        },
+
+        "production": {
           "kind": "rest",
           "credentials": {
             "url": "https://tpl-cpi-prd-lhp51bg6.it-cpi021-rt.cfapps.in30.hana.ondemand.com/http",
@@ -16,12 +38,21 @@
               "url": "",
               "query":"",
               "basis":""
-            }
+            },
+              "realm" : "tataprojects",
+              "pro_apikey" : "GL82lckxuJOOSC3359gREvoPwGqrO9AZ",
+              "pro_base" : "YzVjZGNiMTEtMjA5ZC00NDhiLThhNGMtYTJkODVmYzUyYjkwOjQ4dXNxVDV4Z3Y0ZzVBNDVsb2h2RE1nMU1sdmRZVTlx",
+              "evt_apikey" : "bXSoZDH83mQF7Pr7tN1jFFPKXF0MnZe1",
+              "evt_base" : "M2YwOTQ3MzUtZTlmOS00ZjIzLWJlMjctODlkZWJiOTVkNzcxOlp1ODA0THB6eWhhRmptZTJZTnd5THBab3BYNEIzTG5k",
+              "page_apikey" : "zOEdYvwp8aOkxrsnKW6dKPIrJ1h3Fq9k",
+              "page_base" : "OTdlZGNmOWEtZWU4ZC00NWE3LTlmOTktZDY1NGVmZGEwNTg5OnpZMTZQVERZZ3dMc0NoVXE4cnhGWmlkS3pKWTFwOE5Z"
+            
           }
         }
        
        
         }
+        
 
       }
         
