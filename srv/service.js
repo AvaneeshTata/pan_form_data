@@ -272,7 +272,12 @@ module.exports = cds.service.impl(async function () {
     // var userName = "ajaykunj@tataprojects.com";
     // var userName = "sunill@tataprojects.com"
     // var userName = "nitind@tataprojects.com";
-    password = "PasswordAdapter1"
+    if(space == "devuat"){
+      password = "PasswordAdapter1";
+    }else if(space == "production"){
+      password = "ThirdPartyUser";
+    }
+    console.log(password);
     if(userName == "TPLBuyer"){
        createdby = "harshvardhans-v@tataprojects.com";
        password = "ThirdPartyUser"
@@ -350,7 +355,7 @@ module.exports = cds.service.impl(async function () {
 
 
 
-     
+      console.log(space);
      
       var number_of_docs="";
       try{
