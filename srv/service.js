@@ -23,7 +23,9 @@ module.exports = cds.service.impl(async function () {
   
     var space = process.env.tenant_space;
     console.log(space);
+  // space ="dev/uat"
   const getcall = await cds.connect.to(space);
+ 
   
 
   
@@ -272,20 +274,22 @@ module.exports = cds.service.impl(async function () {
     // var userName = "ajaykunj@tataprojects.com";
     // var userName = "sunill@tataprojects.com"
     // var userName = "nitind@tataprojects.com";
-    if(space == "devuat"){
+    createdby = userName;
+    if(space == "dev/uat"){
       password = "PasswordAdapter1";
-    }else if(space == "production"){
+    }else if(space == "production" || userName == "TPLBuyer"){
       password = "ThirdPartyUser";
+      createdby = "harshvardhans-v@tataprojects.com";
     }
     console.log(password);
-    if(userName == "TPLBuyer"){
-       createdby = "harshvardhans-v@tataprojects.com";
-       password = "ThirdPartyUser"
-    }else{
-      createdby = userName;
+    // if(userName == "TPLBuyer"){
+    //    createdby = "harshvardhans-v@tataprojects.com";
+    //    password = "ThirdPartyUser"
+    // }else{
+    //   createdby = userName;
 
-    }
-    console.log(createdby);
+    // }
+    // console.log(createdby);
     
     // password = "ThirdPartyUser"
     
@@ -1872,7 +1876,11 @@ module.exports = cds.service.impl(async function () {
                       }
                     }
 
-             
+             if(ser_mate == "Service"){
+              Quantity = "1";
+              ItemCode = ItemShortDescription;
+              l4Amount = extend_price
+             }
                 if( ItemShortDescription != ""){
 
                 price_details.push({
@@ -2831,7 +2839,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                                 Quantity = terms3[it].value.quantityValue.amount;
                                 Quantity = Quantity.toLocaleString('en-US');
                                }else{
-                                 Quantity = "";
+                                 Quantity = "1";
                                }
                              }
                              if(terms3[it].title == "Total Cost"){
@@ -3093,12 +3101,12 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                               UnitPrice = terms3[it].value.supplierValue.currency;
                               Amount = terms3[it].value.supplierValue.amount;
                               if(UnitPrice == "INR"){
-                              Amount = Amount.toLocaleString('en-IN');
+                              // Amount = Amount.toLocaleString('en-IN');
                               Amount = returnamt(Amount);
                               }
                               if(UnitPrice == "USD"){
                                Amount = Amount.toLocaleString('en-US'); 
-                               Amount = returnamt(Amount);  
+                              //  Amount = returnamt(Amount);  
                               }
                              }
                              else{
@@ -3199,7 +3207,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
                       HSN_OR_SAC_Code                                                              : `${SACCode}`,
                       Item_Short_Description                                                       : `${shrt_lst_count.payload[r].supplierBids[k].item.title}`,
                       UOM                                                                          : `${UOM}`,
-                      Quantity                                                                     : `${Quantity}`,
+                      Quantity                                                                     : `${1}`,
                       Unit_Price                                                                   : `${Amount}`,
                       Amount                                                                       : `${Amount }`,
                       extendedPrice                                                                :  `${Amount}`,
@@ -3705,6 +3713,7 @@ catch(e){
   (async () => {
     var space = process.env.tenant_space;
     console.log(space);
+    // var space = "dev/uat"
     const getcall = await cds.connect.to(space);
     console.log("async call");
     try{

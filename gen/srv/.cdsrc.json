@@ -5,7 +5,7 @@
       "requires": {
        
        
-        "devuat": {
+        "dev/uat": {
           "kind": "rest",
           "credentials": {
             "url": "https://tpl-cpi-a0qwl4l9.it-cpi021-rt.cfapps.in30.hana.ondemand.com/http",
