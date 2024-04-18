@@ -277,9 +277,9 @@ module.exports = cds.service.impl(async function () {
     createdby = userName;
     if(space == "dev/uat"){
       password = "PasswordAdapter1";
-    }else if(space == "production" || userName == "TPLBuyer"){
-      password = "ThirdPartyUser";
-      createdby = "harshvardhans-v@tataprojects.com";
+    }else if(space == "production"){
+      password = "PasswordAdapter1";
+      
     }
     console.log(password);
     // if(userName == "TPLBuyer"){
