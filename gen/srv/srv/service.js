@@ -22,8 +22,10 @@ module.exports = cds.service.impl(async function () {
     } = this.entities;
   
     var space = process.env.tenant_space;
+    // var space = "production";
+  //  var space ="dev/uat"
     console.log(space);
-  // space ="dev/uat"
+  
   const getcall = await cds.connect.to(space);
  
   
@@ -32,7 +34,7 @@ module.exports = cds.service.impl(async function () {
 
   var body = " ";
   this.on('postUserDataDate',async (req)=>{
-    console.log(req?.data);
+    // console.log(req?.data);
   // })
   // this.before('READ', PAN_Details_APR, async (req) => {
     debugger
@@ -254,6 +256,7 @@ module.exports = cds.service.impl(async function () {
     var ptype1 =[];
     var Advance_per="";
     var price_ind = 0;
+    var asset_type = "";
   
    
   
@@ -266,22 +269,29 @@ module.exports = cds.service.impl(async function () {
 
    var createdby = "";
     // // GETTING ALL PENDING TASKS
-    var userName1 = "PANCreator";
+    // var userName1 = "PANCreator";
    
     var userName = req.data.userName;
     // var userName = "TPLBuyer";
+    // var userName = "ambika-v@tataprojects.com"
     // var userName = "rakeshdattatrayshelars@tataprojects.com"
     // var userName = "ajaykunj@tataprojects.com";
     // var userName = "sunill@tataprojects.com"
     // var userName = "nitind@tataprojects.com";
     createdby = userName;
-    if(space == "dev/uat"){
+    // if(space == "dev/uat"){
       password = "PasswordAdapter1";
-    }else if(space == "production"){
-      password = "PasswordAdapter1";
+      if(userName == "TPLBuyer"){
+        password = "ThirdPartyUser"
+        createdby = "harshvardhans-v@tataprojects.com"
+      }
+     
+    // }else if(space == "production"){
+      // password = "PasswordAdapter1";
       
-    }
-    console.log(password);
+    // }
+    console.log("password :" + password);
+    console.log("createdby :" + createdby)
     // if(userName == "TPLBuyer"){
     //    createdby = "harshvardhans-v@tataprojects.com";
     //    password = "ThirdPartyUser"
@@ -328,7 +338,10 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1062218337";
       // cur_pro_id ="WS1061481377";
       // cur_pro_id = "WS1057792118";
-      // cur_pro_id = "WS1057697117";
+      // cur_pro_id = 'WS1094126557';
+      // cur_pro_id = "WS1121130798";
+      // cur_pro_id = "WS1114424454"
+      
 
     
      
@@ -368,9 +381,12 @@ module.exports = cds.service.impl(async function () {
         getcall.destination.headers.basis = 'Basic '+getcall.destination.pro_base;
         number_of_docs = await getcall.tx(req).get('/getcall');
       }catch(error){
+        console.log(number_of_docs);
         return "no data for this user";
+        
       }
-      
+
+      console.log(number_of_docs);
       if (number_of_docs.payload.length != 0){
      
       for(let k=0;k<number_of_docs.payload.length;k++){
@@ -750,6 +766,13 @@ module.exports = cds.service.impl(async function () {
                 purchasing_grp = result.businessSystem.purchasingGroup[0].value;
               }
             }  
+
+            if("companyCode" in result.businessSystem && result.businessSystem.companyCode.length != 0 ){
+              if("value" in result.businessSystem.companyCode[0]){
+                asset_type = result.businessSystem.companyCode[0].value.substring(0, 4);
+              }
+              
+            }
           }
            
           if("baselineSpend" in result){
@@ -834,7 +857,7 @@ module.exports = cds.service.impl(async function () {
            
       for( j = 0; j<response_data2.payload.length;j++){
        
-        if(response_data2.payload[j].terms.length != 0){
+        if( "terms" in response_data2.payload[j] && response_data2.payload[j].terms.length != 0){
 
          if(response_data2.payload[j].title == "Is this for Material/Service/Both?"){
            if("terms" in response_data2.payload[j]){
@@ -877,7 +900,7 @@ module.exports = cds.service.impl(async function () {
         }
        }
      }
-        }
+    }
         else if(ser_mate == "Service"){
          if("terms" in response_data2.payload[j] ){
            if(response_data2.payload[j].terms.length !=0){
@@ -1203,11 +1226,10 @@ module.exports = cds.service.impl(async function () {
          break;
         
        }
-       if(pageno == 3){
+       if(response_data4.payload.length == 0){
         break;
        }
       
-        
         // var d = response_data4;
        if(response_data4 !=[]){
         if(response_data4.payload.length != 0){
@@ -1951,6 +1973,11 @@ module.exports = cds.service.impl(async function () {
           
         }
       }
+
+      if(pageno == 3){
+        break;
+       }
+
     }while(price_ind == 0 && material_items.length != 0)
     price_ind = 0;
         response_data4=[]
@@ -2197,7 +2224,7 @@ module.exports = cds.service.impl(async function () {
         "Split_OrderORNo_of_vendors":sup_count.toString(),
         "SOP_Type": "",
         "Order_Type_OR_Document_tyFuuidpe": `${ptype}`,
-        "Asset_Type": "", //hided
+        "Asset_Type": `${asset_type}`, //hided
         "Nature_of_Transaction": "",
         "Order_Location_OR_Plant":`${plant_name}`,
         "Base_line_spend": baselinespend1.toString(),
@@ -3627,7 +3654,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     //PRICE DETAILS
 
     var qind=0;
-    var body7 
+    var body7;
     if(price_details.length != 0){
     for(let j = 0;j<price_details.length;j++){
       if(price_details[j].Item_Code != " "){
@@ -3713,6 +3740,7 @@ catch(e){
   (async () => {
     var space = process.env.tenant_space;
     console.log(space);
+    // var space = "production";
     // var space = "dev/uat"
     const getcall = await cds.connect.to(space);
     console.log("async call");
