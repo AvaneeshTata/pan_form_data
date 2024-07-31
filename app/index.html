@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title> Project Preview </title>
+    <script src="shared-config.js"></script>
+    <script src="https://ui5.sap.com/1.120.13/resources/sap-ui-core.js" 
+            id="sap-ui-bootstrap"
+            data-sap-ui-theme="sap_horizon"
+            data-sap-ui-bindingSyntax="complex" 
+            data-sap-ui-xx-bindingSyntax="complex"
+            data-sap-ui-resourceroots='{"assets": "assets"}' 
+            data-sap-ui-libs="sap.m,sap.uxap,sap.ui.layout,sap.f">
+    </script>
+    <link rel="stylesheet" href="assets/preview.css">
+</head>
+
+<body id="body" class="sapUiBody">
+    <script>
+        "use strict";
+        sap.ui.localResources("assets");
+        (function (jQuery, App, Page) {
+            sap.ui.getCore().attachInit(function () {
+                sap.ui.define([
+                    "sap/ui/core/mvc/Controller",
+                    "sap/ui/model/json/JSONModel"
+                ], function (Controller, JSONModel) {
+                    return Controller.extend("PreviewController", {
+                        onInit: function () {
+
+                            const data = {"Services":[{"ServiceName":"CatalogService","DetailsURL":"./odata/v4/catalog/","Metadata":"./odata/v4/catalog/$metadata","Entities":[{"Name":"tab1","URL":"./odata/v4/catalog/tab1","FioriURL":"$fiori-preview/CatalogService/tab1#preview-app"},{"Name":"tab2","URL":"./odata/v4/catalog/tab2","FioriURL":"$fiori-preview/CatalogService/tab2#preview-app"},{"Name":"tab3","URL":"./odata/v4/catalog/tab3","FioriURL":"$fiori-preview/CatalogService/tab3#preview-app"},{"Name":"vendor_data","URL":"./odata/v4/catalog/vendor_data","FioriURL":"$fiori-preview/CatalogService/vendor_data#preview-app"},{"Name":"Fvendor_responseoo","URL":"./odata/v4/catalog/Fvendor_responseoo","FioriURL":"$fiori-preview/CatalogService/Fvendor_responseoo#preview-app"},{"Name":"PAYMENT_TERM_DETAILS","URL":"./odata/v4/catalog/PAYMENT_TERM_DETAILS","FioriURL":"$fiori-preview/CatalogService/PAYMENT_TERM_DETAILS#preview-app"},{"Name":"PAN_PRICE_DETAILS","URL":"./odata/v4/catalog/PAN_PRICE_DETAILS","FioriURL":"$fiori-preview/CatalogService/PAN_PRICE_DETAILS#preview-app"},{"Name":"WORKFLOW_HISTORY","URL":"./odata/v4/catalog/WORKFLOW_HISTORY","FioriURL":"$fiori-preview/CatalogService/WORKFLOW_HISTORY#preview-app"},{"Name":"attachments","URL":"./odata/v4/catalog/attachments","FioriURL":"$fiori-preview/CatalogService/attachments#preview-app"},{"Name":"PAN_Payment_Method_Drop","URL":"./odata/v4/catalog/PAN_Payment_Method_Drop","FioriURL":"$fiori-preview/CatalogService/PAN_Payment_Method_Drop#preview-app"},{"Name":"PAN_Comments","URL":"./odata/v4/catalog/PAN_Comments","FioriURL":"$fiori-preview/CatalogService/PAN_Comments#preview-app"}],"EntitiesCount":11},{"ServiceName":"PanApproval","DetailsURL":"./odata/v4/pan-approval/","Metadata":"./odata/v4/pan-approval/$metadata","Entities":[{"Name":"PAN_Details_APR","URL":"./odata/v4/pan-approval/PAN_Details_APR","FioriURL":"$fiori-preview/PanApproval/PAN_Details_APR#preview-app"},{"Name":"PAN_WEB_EVENT_APR","URL":"./odata/v4/pan-approval/PAN_WEB_EVENT_APR","FioriURL":"$fiori-preview/PanApproval/PAN_WEB_EVENT_APR#preview-app"},{"Name":"PAN_TYPE_APR","URL":"./odata/v4/pan-approval/PAN_TYPE_APR","FioriURL":"$fiori-preview/PanApproval/PAN_TYPE_APR#preview-app"},{"Name":"PAN_vendor_data_APR","URL":"./odata/v4/pan-approval/PAN_vendor_data_APR","FioriURL":"$fiori-preview/PanApproval/PAN_vendor_data_APR#preview-app"},{"Name":"PAN_vendor_response_APR","URL":"./odata/v4/pan-approval/PAN_vendor_response_APR","FioriURL":"$fiori-preview/PanApproval/PAN_vendor_response_APR#preview-app"},{"Name":"PAN_PAYMENT_TERM_DETAILS_APR","URL":"./odata/v4/pan-approval/PAN_PAYMENT_TERM_DETAILS_APR","FioriURL":"$fiori-preview/PanApproval/PAN_PAYMENT_TERM_DETAILS_APR#preview-app"},{"Name":"PAN_PRICE_DETAILS_APR","URL":"./odata/v4/pan-approval/PAN_PRICE_DETAILS_APR","FioriURL":"$fiori-preview/PanApproval/PAN_PRICE_DETAILS_APR#preview-app"},{"Name":"PAN_WORKFLOW_HISTORY_APR","URL":"./odata/v4/pan-approval/PAN_WORKFLOW_HISTORY_APR","FioriURL":"$fiori-preview/PanApproval/PAN_WORKFLOW_HISTORY_APR#preview-app"},{"Name":"PAN_attachments_APR","URL":"./odata/v4/pan-approval/PAN_attachments_APR","FioriURL":"$fiori-preview/PanApproval/PAN_attachments_APR#preview-app"},{"Name":"PAN_Payment_Method_Drop_APR","URL":"./odata/v4/pan-approval/PAN_Payment_Method_Drop_APR","FioriURL":"$fiori-preview/PanApproval/PAN_Payment_Method_Drop_APR#preview-app"},{"Name":"PAN_Comments_APR","URL":"./odata/v4/pan-approval/PAN_Comments_APR","FioriURL":"$fiori-preview/PanApproval/PAN_Comments_APR#preview-app"},{"Name":"vendorTaxDetails_APR","URL":"./odata/v4/pan-approval/vendorTaxDetails_APR","FioriURL":"$fiori-preview/PanApproval/vendorTaxDetails_APR#preview-app"}],"EntitiesCount":12}]}
+                            this.getView().setModel(new JSONModel(data));
+                        }
+                    });
+                });
+                var oApp = new App()
+                var previewView = sap.ui.view({
+                    viewName: "assets.Preview",
+                    type: sap.ui.core.mvc.ViewType.XML
+                });
+                oApp.addPage(new Page({
+                    content: [previewView],
+                    showHeader: false
+                })).placeAt("content");
+            });
+
+        }(jQuery, sap.m.App, sap.m.Page));
+    </script>
+    <div id="content"></div>
+</body>
+
+</html>
