@@ -365,8 +365,8 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1167215933"
       // cur_pro_id = "WS1131649512";
       // cur_pro_id = "WS1173939111";
-      // cur_pro_id = "WS1185727112"
-      // cur_pro_id = "WS1204994191"
+      // cur_pro_id = "WS1057697117"
+      // cur_pro_id = "WS1209449322"
 
       // let doc_id = "Doc1156314025";
 
@@ -2391,6 +2391,7 @@ module.exports = cds.service.impl(async function () {
   // scenario 4
     var date = [];
     var date1 = [];
+    var ra_dates = [];
 
 
     web_logic = [
@@ -2404,7 +2405,7 @@ module.exports = cds.service.impl(async function () {
      if(web_logic.length != 0){
      
       for(let i=0;i<web_logic.length;i++){
-        if(web_logic[i].type != "RFQ"){
+        if(web_logic[i].type != "RFQ" && web_logic[i].sub_date !="" ){
           fstdoc = web_logic[i].PAN_Number;
           break;
         }
@@ -2438,6 +2439,7 @@ module.exports = cds.service.impl(async function () {
       if(web_logic[d].type == "RFQ"){
         oneround = 1;
         type1=web_logic[d].type;
+        ra_dates.push(web_logic[d].sub_date);
       }
      }
    
@@ -2563,13 +2565,19 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
 //    }) 
 
 // }
+ra_date = "";
+if(ra_dates.length != 0){
+  ra_date = ra_dates.reduce((acc, curr) => curr > acc ? curr : acc, date[0]);
+}
 
- if(oneround == 1 && type == "RFQ" || oneround == 1 && type1 == "RFQ" )
+
+
+ if(oneround == 1 && type == "RFQ" || oneround == 1 && type1 == "RFQ" ){
 for(let q= 0;q<sc_web_tab2.length;q++){
   for(let r=0;r<web_logic.length;r++){
     if(web_logic[r].sub_date != ""){
     if((web_logic[r].type == "RFQ")&&(web_logic[r].PAN_Number == sc_web_tab2[q].doc_id) ){
-      if(web_logic[r].sub_date==greatestDate){
+      if(web_logic[r].sub_date==ra_date){
       var dateString = web_logic[r].sub_date;
       var datesub = dateString.substring(0, 10)
       datesub = returndate(datesub);
@@ -2610,6 +2618,7 @@ for(let q= 0;q<sc_web_tab2.length;q++){
     }
     // break;
   }
+}
 }
 
 
