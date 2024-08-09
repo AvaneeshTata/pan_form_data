@@ -37,7 +37,7 @@ module.exports = cds.service.impl(async function () {
     console.log(req?.data);
   // })
   // this.before('READ', PAN_Details_APR, async (req) => {
-    debugger
+    
 
     const createWorker = function(url,query,basis){
       return new Promise((resolve,reject)=>{
@@ -366,7 +366,7 @@ module.exports = cds.service.impl(async function () {
       // cur_pro_id = "WS1131649512";
       // cur_pro_id = "WS1173939111";
       // cur_pro_id = "WS1057697117"
-      // cur_pro_id = "WS1209449322"
+      // cur_pro_id = "WS1211575505"
 
       // let doc_id = "Doc1156314025";
 
@@ -1882,6 +1882,7 @@ module.exports = cds.service.impl(async function () {
                                   extend_price = returnamt(extend_price);
                                   if(ser_mate == "Service"){
                                     Amount = terms[m].value.moneyValue.amount;
+                                   
                                   }
                                   }
                                   else{
@@ -2008,6 +2009,9 @@ module.exports = cds.service.impl(async function () {
                    }
                   if(Quantity == ""){
                     Quantity = "0";
+                  }
+                  if(Amount == ""){
+                    Amount = "0";
                   }
 
                 price_details.push({
@@ -2565,7 +2569,7 @@ var round2_date = date1.reduce((acc, curr) => curr > acc ? curr : acc, date1[0])
 //    }) 
 
 // }
-ra_date = "";
+var ra_date = "";
 if(ra_dates.length != 0){
   ra_date = ra_dates.reduce((acc, curr) => curr > acc ? curr : acc, date[0]);
 }

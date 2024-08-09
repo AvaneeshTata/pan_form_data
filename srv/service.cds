@@ -1,5 +1,7 @@
 using { proj_schema as my } from '../db/schema';
 
+
+//below mentioned catalog service is not used in this project.
 @requires: 'authenticated-user'
 service CatalogService {
     @odata.draft.enabled
@@ -49,5 +51,7 @@ service PanApproval {
  function getuser(ID:String) returns String;
  function Reject(data:String) returns String;
  function getcomments(ID:String) returns String;
+ //from 46 to 53 function are not used.
+ //below function import used to extract the data from ariba and insert it into the database.
  function postUserDataDate(userName:String,projectid:String) returns String;
 }
